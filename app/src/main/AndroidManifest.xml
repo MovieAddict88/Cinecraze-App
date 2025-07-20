@@ -27,6 +27,11 @@
             android:name=".DetailsActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
             android:theme="@style/Theme.CineCraze.NoActionBar" />
+        <activity
+            android:name=".FullScreenActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.CineCraze.NoActionBar" />
     </application>
 
 </manifest>
