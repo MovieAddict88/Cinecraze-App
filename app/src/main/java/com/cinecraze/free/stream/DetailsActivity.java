@@ -20,8 +20,10 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
+import android.media.AudioManager;
+import android.view.WindowManager;
 
-public class DetailsActivity extends AppCompatActivity {
+public class DetailsActivity extends AppCompatActivity implements CustomPlayerView.PlayerDoubleTapListener, CustomPlayerView.PlayerScrollListener {
 
     public static void start(Context context, Entry entry, List<Entry> allEntries) {
         Intent intent = new Intent(context, DetailsActivity.class);
@@ -30,7 +32,7 @@ public class DetailsActivity extends AppCompatActivity {
         context.startActivity(intent);
     }
 
-    private PlayerView playerView;
+    private CustomPlayerView playerView;
     private ExoPlayer player;
     private TextView title;
     private TextView description;
@@ -72,6 +74,8 @@ public class DetailsActivity extends AppCompatActivity {
         playerView.setPlayer(player);
         playerView.setControllerShowTimeoutMs(2000);
         playerView.setControllerHideOnTouch(true);
+        playerView.setPlayerDoubleTapListener(this);
+        playerView.setPlayerScrollListener(this);
 
         if (entry.getServers() != null && !entry.getServers().isEmpty()) {
             MediaItem mediaItem = MediaItem.fromUri(entry.getServers().get(0).getUrl());
@@ -88,6 +92,50 @@ public class DetailsActivity extends AppCompatActivity {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             }
         });
+    }
+
+    @Override
+    public void onDoubleTapForward() {
+        player.seekTo(player.getCurrentPosition() + 10000);
+    }
+
+    @Override
+    public void onDoubleTapRewind() {
+        player.seekTo(player.getCurrentPosition() - 10000);
+    }
+
+    @Override
+    public void onHorizontalScroll(float distanceX) {
+        player.seekTo(player.getCurrentPosition() + (long) (distanceX * 100));
+    }
+
+    @Override
+    public void onVerticalScroll(float distanceY, boolean isRightSide) {
+        if (isRightSide) {
+            // Volume control
+            AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+            int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            int newVolume = currentVolume - (int) (distanceY / 100);
+            if (newVolume > maxVolume) {
+                newVolume = maxVolume;
+            } else if (newVolume < 0) {
+                newVolume = 0;
+            }
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, newVolume, 0);
+        } else {
+            // Brightness control
+            WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+            float currentBrightness = layoutParams.screenBrightness;
+            float newBrightness = currentBrightness - distanceY / 1000;
+            if (newBrightness > 1.0f) {
+                newBrightness = 1.0f;
+            } else if (newBrightness < 0.0f) {
+                newBrightness = 0.0f;
+            }
+            layoutParams.screenBrightness = newBrightness;
+            getWindow().setAttributes(layoutParams);
+        }
     }
 
     private void setupRelatedContentRecyclerView() {
