@@ -14,12 +14,21 @@ import android.widget.ImageButton;
 import com.google.android.exoplayer2.ui.PlayerView;
 import android.content.pm.ActivityInfo;
 
+import android.content.Context;
+import android.content.Intent;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DetailsActivity extends AppCompatActivity {
+
+    public static void start(Context context, Entry entry, List<Entry> allEntries) {
+        Intent intent = new Intent(context, DetailsActivity.class);
+        intent.putExtra("entry", new Gson().toJson(entry));
+        intent.putExtra("allEntries", new Gson().toJson(allEntries));
+        context.startActivity(intent);
+    }
 
     private PlayerView playerView;
     private ExoPlayer player;

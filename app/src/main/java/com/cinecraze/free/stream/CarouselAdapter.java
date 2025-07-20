@@ -20,10 +20,12 @@ public class CarouselAdapter extends RecyclerView.Adapter<CarouselAdapter.ViewHo
 
     private Context context;
     private List<Entry> entryList;
+    private List<Entry> allEntries;
 
-    public CarouselAdapter(Context context, List<Entry> entryList) {
+    public CarouselAdapter(Context context, List<Entry> entryList, List<Entry> allEntries) {
         this.context = context;
         this.entryList = entryList;
+        this.allEntries = allEntries;
     }
 
     public void setEntries(List<Entry> entries) {
@@ -46,6 +48,10 @@ public class CarouselAdapter extends RecyclerView.Adapter<CarouselAdapter.ViewHo
         holder.year.setText(String.valueOf(entry.getYear()));
         holder.duration.setText(entry.getDuration());
         Glide.with(context).load(entry.getPoster()).into(holder.poster);
+
+        holder.playButton.setOnClickListener(v -> {
+            DetailsActivity.start(context, entry, allEntries);
+        });
     }
 
     @Override

@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupCarousel() {
-        carouselAdapter = new CarouselAdapter(this, new ArrayList<>());
+        carouselAdapter = new CarouselAdapter(this, new ArrayList<>(), allEntries);
         carouselViewPager.setAdapter(carouselAdapter);
     }
 
