@@ -65,7 +65,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupRecyclerView() {
         movieAdapter = new MovieAdapter(this, entryList, isGridView);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        if (isGridView) {
+            recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        } else {
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        }
         recyclerView.setAdapter(movieAdapter);
     }
 
@@ -91,17 +95,17 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupViewSwitch() {
         gridViewIcon.setOnClickListener(v -> {
-            isGridView = true;
-            recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, 3));
-            movieAdapter.setGridView(true);
-            movieAdapter.notifyDataSetChanged();
+            isGridView = false;
+            setupRecyclerView();
+            gridViewIcon.setVisibility(View.GONE);
+            listViewIcon.setVisibility(View.VISIBLE);
         });
 
         listViewIcon.setOnClickListener(v -> {
-            isGridView = false;
-            recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-            movieAdapter.setGridView(false);
-            movieAdapter.notifyDataSetChanged();
+            isGridView = true;
+            setupRecyclerView();
+            listViewIcon.setVisibility(View.GONE);
+            gridViewIcon.setVisibility(View.VISIBLE);
         });
     }
 

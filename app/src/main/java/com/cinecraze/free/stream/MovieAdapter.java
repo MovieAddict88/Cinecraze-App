@@ -60,10 +60,16 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         Glide.with(context).load(entry.getPoster()).into(holder.poster);
         holder.rating.setRating(entry.getRating());
 
-        if (!isGridView) {
+        if (holder.description != null) {
             holder.description.setText(entry.getDescription());
+        }
+        if (holder.year != null) {
             holder.year.setText(String.valueOf(entry.getYear()));
+        }
+        if (holder.country != null) {
             holder.country.setText(entry.getCountry());
+        }
+        if (holder.duration != null) {
             holder.duration.setText(entry.getDuration());
         }
 
@@ -96,13 +102,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             poster = itemView.findViewById(R.id.poster);
             title = itemView.findViewById(R.id.title);
             rating = itemView.findViewById(R.id.rating);
-
-            if (!isGridView) {
-                description = itemView.findViewById(R.id.description);
-                year = itemView.findViewById(R.id.year);
-                country = itemView.findViewById(R.id.country);
-                duration = itemView.findViewById(R.id.duration);
-            }
+            description = itemView.findViewById(R.id.description);
+            year = itemView.findViewById(R.id.year);
+            country = itemView.findViewById(R.id.country);
+            duration = itemView.findViewById(R.id.duration);
         }
     }
 }
