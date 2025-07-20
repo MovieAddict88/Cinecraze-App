@@ -11,6 +11,8 @@ import com.cinecraze.free.stream.models.Entry;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.ui.PlayerView;
+import android.content.pm.ActivityInfo;
+
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -51,6 +53,8 @@ public class DetailsActivity extends AppCompatActivity {
     private void initializePlayer() {
         player = new ExoPlayer.Builder(this).build();
         playerView.setPlayer(player);
+        playerView.setControllerShowTimeoutMs(2000);
+        playerView.setControllerHideOnTouch(true);
 
         if (entry.getServers() != null && !entry.getServers().isEmpty()) {
             MediaItem mediaItem = MediaItem.fromUri(entry.getServers().get(0).getUrl());
@@ -58,6 +62,15 @@ public class DetailsActivity extends AppCompatActivity {
             player.prepare();
             player.play();
         }
+
+        ImageButton fullscreenButton = playerView.findViewById(R.id.exo_fullscreen_button);
+        fullscreenButton.setOnClickListener(v -> {
+            if (getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            } else {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            }
+        });
     }
 
     private void setupRelatedContentRecyclerView() {

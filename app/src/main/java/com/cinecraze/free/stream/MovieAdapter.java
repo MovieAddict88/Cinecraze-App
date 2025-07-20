@@ -32,6 +32,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         isGridView = gridView;
     }
 
+    public void setEntryList(List<Entry> entryList) {
+        this.entryList = entryList;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
