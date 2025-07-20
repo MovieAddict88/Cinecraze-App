@@ -11,8 +11,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import com.bumptech.glide.Glide;
 import com.cinecraze.free.stream.models.Entry;
+import com.google.gson.Gson;
 
 import java.util.List;
 
