@@ -17,6 +17,7 @@ import android.content.pm.ActivityInfo;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DetailsActivity extends AppCompatActivity {
 
@@ -27,6 +28,7 @@ public class DetailsActivity extends AppCompatActivity {
     private RecyclerView relatedContentRecyclerView;
     private MovieAdapter relatedContentAdapter;
     private Entry entry;
+    private List<Entry> allEntries;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +43,11 @@ public class DetailsActivity extends AppCompatActivity {
         String entryJson = getIntent().getStringExtra("entry");
         if (entryJson != null) {
             entry = new Gson().fromJson(entryJson, Entry.class);
+        }
+
+        String allEntriesJson = getIntent().getStringExtra("allEntries");
+        if (allEntriesJson != null) {
+            allEntries = new Gson().fromJson(allEntriesJson, new com.google.gson.reflect.TypeToken<List<Entry>>() {}.getType());
         }
 
         if (entry != null) {
@@ -75,11 +82,17 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void setupRelatedContentRecyclerView() {
-        relatedContentAdapter = new MovieAdapter(this, new ArrayList<>(), false);
-        relatedContentRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        relatedContentRecyclerView.setAdapter(relatedContentAdapter);
-        // In a real app, you would fetch related content from your data source
-        // For now, we'll just leave it empty.
+        if (allEntries != null) {
+            List<Entry> relatedEntries = new ArrayList<>();
+            for (Entry e : allEntries) {
+                if (e.getSubCategory().equals(entry.getSubCategory()) && !e.getTitle().equals(entry.getTitle())) {
+                    relatedEntries.add(e);
+                }
+            }
+            relatedContentAdapter = new MovieAdapter(this, relatedEntries, false);
+            relatedContentRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+            relatedContentRecyclerView.setAdapter(relatedContentAdapter);
+        }
     }
 
     @Override

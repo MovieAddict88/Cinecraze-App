@@ -39,6 +39,9 @@ public class Entry {
     @SerializedName("Seasons")
     private List<Season> seasons;
 
+    @SerializedName("Related")
+    private List<Entry> related;
+
     public String getTitle() {
         return title;
     }
@@ -81,5 +84,9 @@ public class Entry {
 
     public List<Season> getSeasons() {
         return seasons;
+    }
+
+    public List<Entry> getRelated() {
+        return related;
     }
 }

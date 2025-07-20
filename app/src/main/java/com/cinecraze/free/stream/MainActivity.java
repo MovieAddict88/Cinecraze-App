@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private MovieAdapter movieAdapter;
     private List<Entry> entryList = new ArrayList<>();
-    private List<Entry> allEntries = new ArrayList<>();
+    public List<Entry> allEntries = new ArrayList<>();
     private ViewPager2 carouselViewPager;
     private CarouselAdapter carouselAdapter;
     private ImageView gridViewIcon;
