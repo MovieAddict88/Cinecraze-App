@@ -137,10 +137,12 @@ public class PaginatedMovieAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 }
             });
             
-            // Handle Next button
-            paginationHolder.nextButton.setEnabled(hasMorePages && !isLoading);
+            // Handle Next button with additional validation
+            boolean canGoNext = hasMorePages && !isLoading && ((currentPage + 1) * 20 < totalCount);
+            paginationHolder.nextButton.setEnabled(canGoNext);
             paginationHolder.nextButton.setOnClickListener(v -> {
-                if (paginationListener != null && hasMorePages && !isLoading) {
+                boolean canClickNext = hasMorePages && !isLoading && ((currentPage + 1) * 20 < totalCount);
+                if (paginationListener != null && canClickNext) {
                     paginationListener.onNextPage();
                 }
             });

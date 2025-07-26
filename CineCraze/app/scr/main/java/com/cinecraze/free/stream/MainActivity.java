@@ -415,13 +415,19 @@ public class MainActivity extends AppCompatActivity {
         currentPageEntries.clear();
         currentPageEntries.addAll(entries);
         
-                    movieAdapter.setEntryList(currentPageEntries);
-            updatePaginationUI();
+        movieAdapter.setEntryList(currentPageEntries);
+        updatePaginationUI();
+        
+        // Additional check to ensure Next button is properly disabled when no more data
+        if (btnNext != null && (!hasMorePages || ((currentPage + 1) * pageSize >= totalCount))) {
+            btnNext.setEnabled(false);
+        }
         
         // Scroll to top of the list
         recyclerView.scrollToPosition(0);
         
-        Log.d("MainActivity", "Page updated: " + entries.size() + " items on page " + (currentPage + 1));
+        Log.d("MainActivity", "Page updated: " + entries.size() + " items on page " + (currentPage + 1) + 
+              ", HasMore: " + hasMorePages + ", Total: " + totalCount);
     }
 
     private void handlePageLoadError(String error) {
@@ -441,10 +447,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onNextPage() {
-        if (hasMorePages && !isLoading) {
+        // Additional validation to ensure we don't go beyond available data
+        boolean canGoNext = hasMorePages && !isLoading && ((currentPage + 1) * pageSize < totalCount);
+        if (canGoNext) {
             currentPage++;
             loadPage();
-            Log.d("MainActivity", "Next page: " + currentPage);
+            Log.d("MainActivity", "Next page: " + currentPage + " (Total items: " + totalCount + ")");
+        } else {
+            Log.d("MainActivity", "Cannot go to next page. HasMore: " + hasMorePages + ", Loading: " + isLoading + ", TotalCount: " + totalCount);
+            // Ensure Next button is disabled
+            if (btnNext != null) {
+                btnNext.setEnabled(false);
+            }
         }
     }
     
@@ -453,9 +467,15 @@ public class MainActivity extends AppCompatActivity {
         if (totalCount > pageSize) {
             paginationLayout.setVisibility(View.VISIBLE);
             
-            // Update button states
-            btnPrevious.setEnabled(currentPage > 0);
-            btnNext.setEnabled(hasMorePages);
+            // Update button states with additional safety checks
+            if (btnPrevious != null) {
+                btnPrevious.setEnabled(currentPage > 0 && !isLoading);
+            }
+            if (btnNext != null) {
+                // Disable Next button if no more pages or if we're at the last possible page
+                boolean canGoNext = hasMorePages && !isLoading && ((currentPage + 1) * pageSize < totalCount);
+                btnNext.setEnabled(canGoNext);
+            }
         } else {
             // Hide pagination if not needed
             paginationLayout.setVisibility(View.GONE);
