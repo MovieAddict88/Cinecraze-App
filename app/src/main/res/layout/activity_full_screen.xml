@@ -10,4 +10,17 @@
         android:layout_height="match_parent"
         app:controller_layout_id="@layout/custom_exo_player_control_view" />
 
+    <!-- Exit button overlay -->
+    <ImageView
+        android:id="@+id/exit_fullscreen_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="top|start"
+        android:layout_margin="16dp"
+        android:background="@drawable/exit_button_background"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        android:contentDescription="Exit fullscreen"
+        android:padding="12dp"
+        android:visibility="visible" />
+
 </FrameLayout>

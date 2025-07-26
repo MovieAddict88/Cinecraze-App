@@ -210,9 +210,10 @@ public class DetailsActivity extends AppCompatActivity {
                 videoUrl = entry.getServers().get(0).getUrl();
             }
             
-            if (videoUrl != null) {
+            if (videoUrl != null && player != null) {
                 long currentPosition = player.getCurrentPosition();
-                FullScreenActivity.start(this, videoUrl, currentPosition);
+                boolean isPlaying = player.isPlaying();
+                FullScreenActivity.start(this, videoUrl, currentPosition, isPlaying);
             }
         });
     }
@@ -228,6 +229,15 @@ public class DetailsActivity extends AppCompatActivity {
             relatedContentAdapter = new MovieAdapter(this, relatedEntries, false);
             relatedContentRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
             relatedContentRecyclerView.setAdapter(relatedContentAdapter);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Resume player if it was paused
+        if (player != null && !player.isPlaying()) {
+            player.play();
         }
     }
 

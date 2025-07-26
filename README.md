@@ -14,6 +14,7 @@
 8. **Lifecycle Management**: Improved app lifecycle handling to prevent unnecessary API calls
 9. **Data Type Parsing**: Fixed JSON parsing issues with mixed data types (Rating and Year fields)
 10. **TV Series Player**: Fixed player handling for TV series with season and episode selectors
+11. **Fullscreen Player**: Fixed fullscreen functionality with proper exit handling and player state preservation
 
 ### Key Improvements:
 
@@ -28,6 +29,7 @@
 - **Timeout Increase**: Extended timeouts to 60 seconds for better reliability
 - **Data Type Handling**: Fixed parsing of mixed data types (Rating can be float/int/string, Year can be int/string)
 - **TV Series Support**: Added season and episode selectors for TV series with proper player handling
+- **Fullscreen Improvements**: Fixed fullscreen exit handling and player state preservation
 
 ### API Endpoint:
 - **Base URL**: `https://raw.githubusercontent.com/MovieAddict88/Movie-Source/main/`
@@ -69,7 +71,8 @@ The API endpoint has been tested and is returning valid JSON data with movie/str
 ### Player Functionality:
 - **Movies**: Direct playback from server URLs
 - **TV Series**: Season and episode selection with automatic playback
-- **Fullscreen**: Support for both movies and TV series episodes
+- **Fullscreen**: Support for both movies and TV series episodes with proper exit handling
 - **Error Handling**: Graceful fallbacks for missing data
+- **Player State**: Preserves playing state when entering/exiting fullscreen
 
 The app should now properly fetch and display streaming content with improved reliability and user experience, including full TV series support with season and episode navigation.

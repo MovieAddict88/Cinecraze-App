@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.widget.ImageButton;
+import android.view.View;
+import android.widget.ImageView;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
@@ -15,6 +17,7 @@ public class FullScreenActivity extends AppCompatActivity {
     private PlayerView playerView;
     private ExoPlayer player;
     private ImageButton resizeModeButton;
+    private ImageView exitButton;
     private int currentResizeMode = 0;
     private static final int[] RESIZE_MODES = {
             AspectRatioFrameLayout.RESIZE_MODE_FIT,
@@ -27,10 +30,11 @@ public class FullScreenActivity extends AppCompatActivity {
             R.drawable.ic_zoom
     };
 
-    public static void start(Context context, String videoUrl, long currentPosition) {
+    public static void start(Context context, String videoUrl, long currentPosition, boolean wasPlaying) {
         Intent intent = new Intent(context, FullScreenActivity.class);
         intent.putExtra("video_url", videoUrl);
         intent.putExtra("current_position", currentPosition);
+        intent.putExtra("was_playing", wasPlaying);
         context.startActivity(intent);
     }
 
@@ -43,18 +47,33 @@ public class FullScreenActivity extends AppCompatActivity {
 
         playerView = findViewById(R.id.player_view_fullscreen);
         resizeModeButton = findViewById(R.id.exo_resize_mode);
+        exitButton = findViewById(R.id.exit_fullscreen_button);
 
         String videoUrl = getIntent().getStringExtra("video_url");
         long currentPosition = getIntent().getLongExtra("current_position", 0);
+        boolean wasPlaying = getIntent().getBooleanExtra("was_playing", true);
 
         if (videoUrl != null) {
-            initializePlayer(videoUrl, currentPosition);
+            initializePlayer(videoUrl, currentPosition, wasPlaying);
         }
 
+        // Setup exit button
+        exitButton.setOnClickListener(v -> finish());
+
+        // Setup resize mode button
         resizeModeButton.setOnClickListener(v -> {
             currentResizeMode = (currentResizeMode + 1) % RESIZE_MODES.length;
             playerView.setResizeMode(RESIZE_MODES[currentResizeMode]);
             resizeModeButton.setImageResource(RESIZE_MODE_ICONS[currentResizeMode]);
+        });
+
+        // Setup player view click listener to toggle exit button visibility
+        playerView.setOnClickListener(v -> {
+            if (exitButton.getVisibility() == View.VISIBLE) {
+                exitButton.setVisibility(View.GONE);
+            } else {
+                exitButton.setVisibility(View.VISIBLE);
+            }
         });
     }
 
@@ -74,7 +93,14 @@ public class FullScreenActivity extends AppCompatActivity {
                 | android.view.View.SYSTEM_UI_FLAG_FULLSCREEN);
     }
 
-    private void initializePlayer(String videoUrl, long currentPosition) {
+    private void showSystemUI() {
+        getWindow().getDecorView().setSystemUiVisibility(
+                android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | android.view.View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+    }
+
+    private void initializePlayer(String videoUrl, long currentPosition, boolean wasPlaying) {
         player = new ExoPlayer.Builder(this).build();
         playerView.setPlayer(player);
 
@@ -82,7 +108,21 @@ public class FullScreenActivity extends AppCompatActivity {
         player.setMediaItem(mediaItem);
         player.seekTo(currentPosition);
         player.prepare();
-        player.play();
+        
+        // Resume playing state if it was playing before
+        if (wasPlaying) {
+            player.play();
+        }
+        
+        // Set controller timeout to show controls longer
+        playerView.setControllerShowTimeoutMs(5000);
+        playerView.setControllerHideOnTouch(true);
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Handle back button press
+        finish();
     }
 
     @Override
