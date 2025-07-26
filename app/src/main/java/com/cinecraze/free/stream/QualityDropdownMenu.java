@@ -54,8 +54,8 @@ public class QualityDropdownMenu {
                     Server server = servers.get(position);
                     textView.setText(server.getName());
                     textView.setTextColor(0xFFFFFFFF); // White text
-                    textView.setTextSize(12); // Smaller text size
-                    textView.setPadding(16, 8, 16, 8); // Reduced padding
+                    textView.setTextSize(11); // Even smaller text size
+                    textView.setPadding(12, 6, 12, 6); // Minimal padding
                     
                     // Highlight current selection
                     if (position == currentServerIndex) {
@@ -84,7 +84,7 @@ public class QualityDropdownMenu {
             dismiss();
         });
 
-        // Create PopupWindow with limited height
+        // Create PopupWindow with content-based sizing
         popupWindow = new PopupWindow(listView, ViewGroup.LayoutParams.WRAP_CONTENT, 
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         popupWindow.setBackgroundDrawable(context.getResources().getDrawable(android.R.drawable.dialog_holo_light_frame));
@@ -92,11 +92,21 @@ public class QualityDropdownMenu {
         popupWindow.setFocusable(true);
         popupWindow.setOutsideTouchable(true);
         
-        // Limit maximum height to prevent oversized dropdown
-        int maxHeight = Math.min(servers.size() * 40, 200); // Max 200dp height
-        listView.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, 
-                maxHeight));
+        // Calculate width based on longest server name
+        int maxWidth = 0;
+        android.text.TextPaint textPaint = new android.text.TextPaint();
+        textPaint.setTextSize(11 * context.getResources().getDisplayMetrics().density); // 11sp to pixels
+        
+        for (Server server : servers) {
+            int textWidth = (int) textPaint.measureText(server.getName());
+            maxWidth = Math.max(maxWidth, textWidth);
+        }
+        
+        // Add minimal padding for the dropdown
+        int totalWidth = maxWidth + 48; // 24dp padding on each side (12dp * 2)
+        int maxHeight = Math.min(servers.size() * 28, 140); // Even smaller height per item
+        
+        listView.setLayoutParams(new ViewGroup.LayoutParams(totalWidth, maxHeight));
     }
 
     public void setOnQualitySelectedListener(OnQualitySelectedListener listener) {
