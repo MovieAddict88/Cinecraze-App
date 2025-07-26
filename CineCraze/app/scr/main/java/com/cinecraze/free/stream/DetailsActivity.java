@@ -58,7 +58,7 @@ public class DetailsActivity extends AppCompatActivity {
     // Quality selection
     private ImageButton qualityButton;
     private int currentServerIndex = 0;
-    private QualityDropdownMenu qualityDropdownMenu;
+    private SmartServerSpinner serverSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -240,30 +240,30 @@ public class DetailsActivity extends AppCompatActivity {
         qualityButton.setOnClickListener(v -> {
             List<Server> servers = getCurrentServers();
             if (servers != null && servers.size() > 1) {
-                // Create or update dropdown menu
-                if (qualityDropdownMenu == null) {
-                    qualityDropdownMenu = new QualityDropdownMenu(this, servers, currentServerIndex);
-                    qualityDropdownMenu.setOnQualitySelectedListener(new QualityDropdownMenu.OnQualitySelectedListener() {
+                // Create or update smart server spinner
+                if (serverSpinner == null) {
+                    serverSpinner = new SmartServerSpinner(this, servers, currentServerIndex);
+                    serverSpinner.setOnServerSelectedListener(new SmartServerSpinner.OnServerSelectedListener() {
                         @Override
-                        public void onQualitySelected(Server server, int position) {
+                        public void onServerSelected(Server server, int position) {
                             currentServerIndex = position;
                             playCurrentVideo();
                         }
                     });
                 } else {
-                    // Update existing dropdown with new servers and current index
-                    qualityDropdownMenu = new QualityDropdownMenu(this, servers, currentServerIndex);
-                    qualityDropdownMenu.setOnQualitySelectedListener(new QualityDropdownMenu.OnQualitySelectedListener() {
+                    // Update existing spinner with new servers and current index
+                    serverSpinner = new SmartServerSpinner(this, servers, currentServerIndex);
+                    serverSpinner.setOnServerSelectedListener(new SmartServerSpinner.OnServerSelectedListener() {
                         @Override
-                        public void onQualitySelected(Server server, int position) {
+                        public void onServerSelected(Server server, int position) {
                             currentServerIndex = position;
                             playCurrentVideo();
                         }
                     });
                 }
                 
-                // Show dropdown
-                qualityDropdownMenu.show(qualityButton);
+                // Show smart spinner
+                serverSpinner.show(qualityButton);
             }
         });
     }
