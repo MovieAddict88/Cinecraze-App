@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.cinecraze.free.stream.models.Entry;
 import com.cinecraze.free.stream.models.Season;
 import com.cinecraze.free.stream.models.Episode;
+import com.cinecraze.free.stream.models.Server;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import android.widget.ImageButton;
