@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
+    app:cardBackgroundColor="@color/netflix_dark_gray"
     app:cardCornerRadius="8dp"
     app:cardElevation="4dp">
 
@@ -12,11 +13,33 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/poster"
+        <FrameLayout
             android:layout_width="120dp"
-            android:layout_height="180dp"
-            android:scaleType="centerCrop" />
+            android:layout_height="180dp">
+
+            <ImageView
+                android:id="@+id/poster"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop" />
+
+            <TextView
+                android:id="@+id/category_badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|end"
+                android:layout_margin="4dp"
+                android:background="@drawable/badge_background"
+                android:paddingStart="6dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="6dp"
+                android:paddingBottom="2dp"
+                android:text="MOVIE"
+                android:textColor="@color/netflix_white"
+                android:textSize="8sp"
+                android:textStyle="bold" />
+
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -29,7 +52,8 @@
                 android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceHeadline6" />
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:textColor="@color/netflix_white" />
 
             <TextView
                 android:id="@+id/description"
@@ -37,7 +61,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:maxLines="3"
-                android:textAppearance="?attr/textAppearanceBody2" />
+                android:textAppearance="?attr/textAppearanceBody2"
+                android:textColor="@color/netflix_light_gray" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -49,21 +74,24 @@
                     android:id="@+id/year"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?attr/textAppearanceCaption" />
+                    android:textAppearance="?attr/textAppearanceCaption"
+                    android:textColor="@color/netflix_light_gray" />
 
                 <TextView
                     android:id="@+id/country"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:textAppearance="?attr/textAppearanceCaption" />
+                    android:textAppearance="?attr/textAppearanceCaption"
+                    android:textColor="@color/netflix_light_gray" />
 
                 <TextView
                     android:id="@+id/duration"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:textAppearance="?attr/textAppearanceCaption" />
+                    android:textAppearance="?attr/textAppearanceCaption"
+                    android:textColor="@color/netflix_light_gray" />
             </LinearLayout>
 
             <RatingBar

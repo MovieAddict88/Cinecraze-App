@@ -1,6 +1,7 @@
 package com.cinecraze.free.stream;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
@@ -72,6 +74,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         if (holder.duration != null) {
             holder.duration.setText(entry.getDuration());
         }
+        
+        // Set category badge
+        if (holder.categoryBadge != null) {
+            setCategoryBadge(holder.categoryBadge, entry.getSubCategory());
+        }
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, DetailsActivity.class);
@@ -87,6 +94,42 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         return entryList.size();
     }
 
+    private void setCategoryBadge(TextView badge, String category) {
+        String badgeText;
+        int badgeColor;
+        
+        if (category == null || category.trim().isEmpty()) {
+            category = "Other";
+        }
+        
+        // Determine badge text and color based on category
+        if (category.toLowerCase().contains("movie") || category.toLowerCase().contains("film")) {
+            badgeText = "MOVIE";
+            badgeColor = ContextCompat.getColor(context, R.color.badge_movies);
+        } else if (category.toLowerCase().contains("series") || category.toLowerCase().contains("tv")) {
+            badgeText = "SERIES";
+            badgeColor = ContextCompat.getColor(context, R.color.badge_series);
+        } else if (category.toLowerCase().contains("live") || category.toLowerCase().contains("tv")) {
+            badgeText = "LIVE TV";
+            badgeColor = ContextCompat.getColor(context, R.color.badge_live_tv);
+        } else {
+            badgeText = category.toUpperCase();
+            if (badgeText.length() > 8) {
+                badgeText = badgeText.substring(0, 8);
+            }
+            badgeColor = ContextCompat.getColor(context, R.color.badge_default);
+        }
+        
+        badge.setText(badgeText);
+        
+        // Create colored background
+        GradientDrawable background = new GradientDrawable();
+        background.setShape(GradientDrawable.RECTANGLE);
+        background.setColor(badgeColor);
+        background.setCornerRadius(4 * context.getResources().getDisplayMetrics().density);
+        badge.setBackground(background);
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView poster;
         TextView title;
@@ -95,6 +138,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         TextView year;
         TextView country;
         TextView duration;
+        TextView categoryBadge;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -105,6 +149,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             year = itemView.findViewById(R.id.year);
             country = itemView.findViewById(R.id.country);
             duration = itemView.findViewById(R.id.duration);
+            categoryBadge = itemView.findViewById(R.id.category_badge);
         }
     }
 }

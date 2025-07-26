@@ -108,7 +108,7 @@
                 android:orientation="horizontal"
                 android:padding="16dp"
                 android:gravity="center"
-                android:background="@color/dark_surface">
+                android:background="@color/netflix_dark_gray">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_genre_filter"

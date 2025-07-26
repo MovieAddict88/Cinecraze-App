@@ -15,6 +15,23 @@
         android:layout_height="match_parent"
         android:background="@drawable/gradient_overlay" />
 
+    <TextView
+        android:id="@+id/category_badge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        android:background="@drawable/badge_background"
+        android:paddingStart="12dp"
+        android:paddingTop="6dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="6dp"
+        android:text="MOVIE"
+        android:textColor="@color/netflix_white"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -62,6 +79,6 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:src="@drawable/ic_play_arrow"
-        app:backgroundTint="@color/gold" />
+        app:backgroundTint="@color/netflix_red" />
 
 </RelativeLayout>
