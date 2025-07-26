@@ -1,12 +1,16 @@
 package com.cinecraze.free.stream;
 
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
+import android.widget.Toast;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -43,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
 
     private boolean isGridView = true;
+    private int retryCount = 0;
+    private static final int MAX_RETRY_COUNT = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +66,10 @@ public class MainActivity extends AppCompatActivity {
         setupBottomNavigation();
         setupViewSwitch();
 
-        fetchPlaylist();
+        // Only fetch data if we don't have it already
+        if (allEntries.isEmpty()) {
+            fetchPlaylist();
+        }
     }
 
     private void setupRecyclerView() {
@@ -114,9 +123,13 @@ public class MainActivity extends AppCompatActivity {
         if (category.isEmpty()) {
             filteredEntries.addAll(allEntries);
         } else {
-            for (Category cat : playlistCache.getCategories()) {
-                if (cat.getMainCategory().equalsIgnoreCase(category)) {
-                    filteredEntries.addAll(cat.getEntries());
+            if (playlistCache != null && playlistCache.getCategories() != null) {
+                for (Category cat : playlistCache.getCategories()) {
+                    if (cat != null && cat.getMainCategory() != null && 
+                        cat.getMainCategory().equalsIgnoreCase(category) && 
+                        cat.getEntries() != null) {
+                        filteredEntries.addAll(cat.getEntries());
+                    }
                 }
             }
         }
@@ -128,6 +141,12 @@ public class MainActivity extends AppCompatActivity {
     private Playlist playlistCache;
 
     private void fetchPlaylist() {
+        if (!isNetworkAvailable()) {
+            Toast.makeText(this, "No internet connection available", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        Log.d("MainActivity", "Fetching playlist data...");
         findViewById(R.id.progress_bar).setVisibility(View.VISIBLE);
         ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
         Call<Playlist> call = apiService.getPlaylist();
@@ -135,12 +154,24 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Playlist> call, Response<Playlist> response) {
                 findViewById(R.id.progress_bar).setVisibility(View.GONE);
+                Log.d("MainActivity", "Response received: " + response.code());
                 if (response.isSuccessful() && response.body() != null) {
                     playlistCache = response.body();
                     allEntries.clear();
-                    for (Category category : playlistCache.getCategories()) {
-                        allEntries.addAll(category.getEntries());
+                    
+                    if (playlistCache.getCategories() != null) {
+                        for (Category category : playlistCache.getCategories()) {
+                            if (category != null && category.getEntries() != null) {
+                                allEntries.addAll(category.getEntries());
+                            }
+                        }
                     }
+                    
+                    if (allEntries.isEmpty()) {
+                        Toast.makeText(MainActivity.this, "No data available", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    
                     filterEntries(""); // Show all entries initially
 
                     // For now, just use the first 5 entries for the carousel
@@ -152,22 +183,60 @@ public class MainActivity extends AppCompatActivity {
                     carouselAdapter.notifyDataSetChanged();
 
                     setupSearch();
+                    retryCount = 0; // Reset retry count on success
+                    Log.d("MainActivity", "Data loaded successfully with " + allEntries.size() + " items");
+                    Toast.makeText(MainActivity.this, "Data loaded successfully (" + allEntries.size() + " items)", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.e("MainActivity", "Failed to load data: " + response.code());
+                    Toast.makeText(MainActivity.this, "Failed to load data: " + response.code(), Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<Playlist> call, Throwable t) {
                 findViewById(R.id.progress_bar).setVisibility(View.GONE);
-                // Handle failure
+                Log.e("MainActivity", "Network failure: " + t.getMessage(), t);
+                
+                if (retryCount < MAX_RETRY_COUNT) {
+                    retryCount++;
+                    Log.d("MainActivity", "Retrying... Attempt " + retryCount + "/" + MAX_RETRY_COUNT);
+                    Toast.makeText(MainActivity.this, "Retrying... Attempt " + retryCount + "/" + MAX_RETRY_COUNT, Toast.LENGTH_SHORT).show();
+                    // Retry after a short delay
+                    new android.os.Handler().postDelayed(() -> fetchPlaylist(), 2000);
+                } else {
+                    Log.e("MainActivity", "Failed to load data after " + MAX_RETRY_COUNT + " attempts");
+                    Toast.makeText(MainActivity.this, "Failed to load data after " + MAX_RETRY_COUNT + " attempts", Toast.LENGTH_LONG).show();
+                    retryCount = 0; // Reset for next manual retry
+                }
             }
         });
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+            return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        }
+        return false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Check if we need to refresh data (e.g., if we came back from background)
+        if (allEntries.isEmpty() && isNetworkAvailable()) {
+            fetchPlaylist();
+        }
     }
 
     private void setupSearch() {
         AutoCompleteTextView searchBar = findViewById(R.id.search_bar);
         List<String> titles = new ArrayList<>();
         for (Entry entry : allEntries) {
-            titles.add(entry.getTitle());
+            if (entry != null && entry.getTitle() != null) {
+                titles.add(entry.getTitle());
+            }
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, titles);
         searchBar.setAdapter(adapter);
@@ -175,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
         searchBar.setOnItemClickListener((parent, view, position, id) -> {
             String selectedTitle = (String) parent.getItemAtPosition(position);
             for (Entry entry : allEntries) {
-                if (entry.getTitle().equals(selectedTitle)) {
+                if (entry != null && entry.getTitle() != null && entry.getTitle().equals(selectedTitle)) {
                     Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
                     intent.putExtra("entry", new Gson().toJson(entry));
                     startActivity(intent);
