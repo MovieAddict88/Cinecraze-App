@@ -21,6 +21,7 @@ import android.content.pm.ActivityInfo;
 
 import android.content.Context;
 import android.content.Intent;
+import android.app.Activity;
 import com.google.gson.Gson;
 
 
@@ -61,6 +62,7 @@ public class DetailsActivity extends AppCompatActivity {
     private ImageButton qualityButton;
     private int currentServerIndex = 0;
     private SmartServerSpinner serverSpinner;
+    private boolean isInFullscreen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -230,6 +232,13 @@ public class DetailsActivity extends AppCompatActivity {
             if (videoUrl != null && player != null) {
                 long currentPosition = player.getCurrentPosition();
                 boolean isPlaying = player.isPlaying();
+                
+                // Pause the current player before going to fullscreen
+                if (player.isPlaying()) {
+                    player.pause();
+                }
+                isInFullscreen = true;
+                
                 FullScreenActivity.start(this, videoUrl, currentPosition, isPlaying, currentServerIndex);
             }
         });
@@ -413,16 +422,53 @@ public class DetailsActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Resume player if it was paused
-        if (player != null && !player.isPlaying()) {
-            player.play();
+        
+        // Only resume player if we're not coming back from fullscreen
+        // and if we're not currently in fullscreen mode
+        if (player != null && !isInFullscreen) {
+            // Don't auto-resume here, let the user control playback
+            // This prevents unwanted auto-play when returning from other activities
         }
+        
+        // Reset fullscreen flag when we return
+        isInFullscreen = false;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        
+        if (requestCode == 1001 && resultCode == RESULT_OK && data != null) {
+            // Returning from fullscreen
+            long finalPosition = data.getLongExtra("final_position", 0);
+            boolean wasPlaying = data.getBooleanExtra("was_playing", false);
+            
+            if (player != null) {
+                // Seek to the position from fullscreen
+                player.seekTo(finalPosition);
+                
+                // Wait for player to be ready before resuming playback
+                if (wasPlaying) {
+                    // Use a small delay to ensure seeking is complete
+                    playerView.postDelayed(() -> {
+                        if (player != null) {
+                            player.play();
+                        }
+                    }, 100);
+                } else {
+                    player.pause();
+                }
+            }
+        }
+        
+        // Reset fullscreen flag
+        isInFullscreen = false;
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (player != null) {
+        if (player != null && !isInFullscreen) {
             player.pause();
         }
     }

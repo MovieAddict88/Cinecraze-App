@@ -37,7 +37,11 @@ public class FullScreenActivity extends AppCompatActivity {
         intent.putExtra("current_position", currentPosition);
         intent.putExtra("was_playing", wasPlaying);
         intent.putExtra("server_index", serverIndex);
-        context.startActivity(intent);
+        if (context instanceof DetailsActivity) {
+            ((DetailsActivity) context).startActivityForResult(intent, 1001);
+        } else {
+            context.startActivity(intent);
+        }
     }
 
     @Override
@@ -62,7 +66,7 @@ public class FullScreenActivity extends AppCompatActivity {
         }
 
         // Setup fullscreen button to exit fullscreen
-        fullscreenButton.setOnClickListener(v -> finish());
+        fullscreenButton.setOnClickListener(v -> finishWithResult());
 
         // Setup resize mode button
         resizeModeButton.setOnClickListener(v -> {
@@ -99,12 +103,22 @@ public class FullScreenActivity extends AppCompatActivity {
 
         MediaItem mediaItem = MediaItem.fromUri(videoUrl);
         player.setMediaItem(mediaItem);
+        
+        // Seek to position before preparing to avoid playback jump
         player.seekTo(currentPosition);
         player.prepare();
         
-        // Resume playing state if it was playing before
+        // Add a listener to ensure we start playing only when ready
         if (wasPlaying) {
-            player.play();
+            player.addListener(new com.google.android.exoplayer2.Player.Listener() {
+                @Override
+                public void onPlaybackStateChanged(int playbackState) {
+                    if (playbackState == com.google.android.exoplayer2.Player.STATE_READY) {
+                        player.play();
+                        player.removeListener(this);
+                    }
+                }
+            });
         }
         
         // Set controller timeout to show controls longer
@@ -115,13 +129,24 @@ public class FullScreenActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         // Handle back button press
+        finishWithResult();
+    }
+    
+    private void finishWithResult() {
+        Intent resultIntent = new Intent();
+        if (player != null) {
+            resultIntent.putExtra("final_position", player.getCurrentPosition());
+            resultIntent.putExtra("was_playing", player.isPlaying());
+        }
+        setResult(RESULT_OK, resultIntent);
         finish();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (player != null) {
+        // Only pause if we're actually being paused (not finishing)
+        if (player != null && !isFinishing()) {
             player.pause();
         }
     }
