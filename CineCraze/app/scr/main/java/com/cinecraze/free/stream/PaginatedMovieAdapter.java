@@ -74,7 +74,7 @@ public class PaginatedMovieAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     }
 
     @Override
-    public int getViewType(int position) {
+    public int getItemViewType(int position) {
         if (position == entryList.size()) {
             return VIEW_TYPE_PAGINATION;
         }

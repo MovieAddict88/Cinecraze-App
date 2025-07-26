@@ -120,7 +120,7 @@ public class PaginatedMainActivity extends AppCompatActivity implements Paginate
     }
 
     private void setupCarousel() {
-        carouselAdapter = new CarouselAdapter(this, new ArrayList<>());
+        carouselAdapter = new CarouselAdapter(this, new ArrayList<>(), new ArrayList<>());
         carouselViewPager.setAdapter(carouselAdapter);
     }
 
@@ -132,10 +132,12 @@ public class PaginatedMainActivity extends AppCompatActivity implements Paginate
                 String category = "";
                 if (item.getItemId() == R.id.nav_movies) {
                     category = "Movies";
-                } else if (item.getItemId() == R.id.nav_tv_shows) {
+                } else if (item.getItemId() == R.id.nav_series) {
                     category = "TV Shows";
-                } else if (item.getItemId() == R.id.nav_all) {
+                } else if (item.getItemId() == R.id.nav_home) {
                     category = "";
+                } else if (item.getItemId() == R.id.nav_live) {
+                    category = "Live";
                 }
                 
                 filterByCategory(category);
@@ -282,7 +284,10 @@ public class PaginatedMainActivity extends AppCompatActivity implements Paginate
         for (int i = 0; i < 5 && i < allEntries.size(); i++) {
             carouselEntries.add(allEntries.get(i));
         }
-        carouselAdapter.setEntries(carouselEntries);
+        
+        // Recreate adapter with all entries for proper navigation
+        carouselAdapter = new CarouselAdapter(this, carouselEntries, allEntries);
+        carouselViewPager.setAdapter(carouselAdapter);
         carouselAdapter.notifyDataSetChanged();
     }
 
