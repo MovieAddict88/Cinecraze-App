@@ -387,6 +387,12 @@ public class DetailsActivity extends AppCompatActivity {
                 playerView.setUseController(false);
                 // Use FIT resize mode to maintain aspect ratio without cropping
                 playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
+                
+                // Expand playerView to fill parent in PiP mode
+                androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams params = 
+                    (androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams) playerView.getLayoutParams();
+                params.height = androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams.MATCH_PARENT;
+                playerView.setLayoutParams(params);
             }
             
             // Hide action bar/toolbar completely
@@ -419,6 +425,16 @@ public class DetailsActivity extends AppCompatActivity {
                 playerView.setUseController(true);
                 // Restore original resize mode
                 playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
+                
+                // Restore playerView height to original size
+                androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams params = 
+                    (androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams) playerView.getLayoutParams();
+                params.height = (int) android.util.TypedValue.applyDimension(
+                    android.util.TypedValue.COMPLEX_UNIT_DIP, 
+                    250, 
+                    getResources().getDisplayMetrics()
+                );
+                playerView.setLayoutParams(params);
             }
             
             // Show action bar/toolbar
