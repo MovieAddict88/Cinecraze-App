@@ -54,10 +54,10 @@ import retrofit2.Response;
  * - Low memory: ~5MB vs 50MB for large datasets
  * - Scalable: Can handle 1000+ items efficiently
  */
-public class MainActivity extends AppCompatActivity implements PaginatedMovieAdapter.PaginationListener {
+public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private PaginatedMovieAdapter movieAdapter;
+    private MovieAdapter movieAdapter;
     private List<Entry> currentPageEntries = new ArrayList<>();
     private ViewPager2 carouselViewPager;
     private CarouselAdapter carouselAdapter;
@@ -69,6 +69,14 @@ public class MainActivity extends AppCompatActivity implements PaginatedMovieAda
     private LinearLayout titleLayout;
     private LinearLayout searchLayout;
     private AutoCompleteTextView searchBar;
+    
+    // Pagination UI elements
+    private LinearLayout paginationLayout;
+    private TextView paginationInfoText;
+    private TextView pageInfoText;
+    private com.google.android.material.button.MaterialButton btnPrevious;
+    private com.google.android.material.button.MaterialButton btnNext;
+    private ProgressBar paginationLoading;
 
     private boolean isGridView = true;
     private boolean isSearchVisible = false;
@@ -124,11 +132,22 @@ public class MainActivity extends AppCompatActivity implements PaginatedMovieAda
         titleLayout = findViewById(R.id.title_layout);
         searchLayout = findViewById(R.id.search_layout);
         searchBar = findViewById(R.id.search_bar);
+        
+        // Initialize pagination UI elements
+        paginationLayout = findViewById(R.id.pagination_layout);
+        paginationInfoText = findViewById(R.id.tv_pagination_info);
+        pageInfoText = findViewById(R.id.tv_page_info);
+        btnPrevious = findViewById(R.id.btn_previous);
+        btnNext = findViewById(R.id.btn_next);
+        paginationLoading = findViewById(R.id.pagination_loading);
+        
+        // Set up pagination button listeners
+        btnPrevious.setOnClickListener(v -> onPreviousPage());
+        btnNext.setOnClickListener(v -> onNextPage());
     }
 
     private void setupRecyclerView() {
-        movieAdapter = new PaginatedMovieAdapter(this, currentPageEntries, isGridView);
-        movieAdapter.setPaginationListener(this);
+        movieAdapter = new MovieAdapter(this, currentPageEntries, isGridView);
         
         if (isGridView) {
             recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
@@ -418,8 +437,7 @@ public class MainActivity extends AppCompatActivity implements PaginatedMovieAda
         Toast.makeText(this, "Failed to load page: " + error, Toast.LENGTH_SHORT).show();
     }
 
-    // PaginationListener implementation
-    @Override
+    // Pagination methods
     public void onPreviousPage() {
         if (currentPage > 0 && !isLoading) {
             currentPage--;
@@ -428,7 +446,6 @@ public class MainActivity extends AppCompatActivity implements PaginatedMovieAda
         }
     }
 
-    @Override
     public void onNextPage() {
         if (hasMorePages && !isLoading) {
             currentPage++;
