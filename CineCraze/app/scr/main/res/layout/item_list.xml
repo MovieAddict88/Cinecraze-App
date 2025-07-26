@@ -29,7 +29,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|end"
                 android:layout_margin="4dp"
-                android:background="@drawable/badge_background"
                 android:paddingStart="6dp"
                 android:paddingTop="2dp"
                 android:paddingEnd="6dp"
@@ -101,11 +100,10 @@
                 android:layout_marginTop="8dp"
                 android:gravity="center_vertical">
 
-                <TextView
+                                                 <TextView
                     android:id="@+id/type_badge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/badge_background"
                     android:paddingStart="8dp"
                     android:paddingTop="3dp"
                     android:paddingEnd="8dp"

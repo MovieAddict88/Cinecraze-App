@@ -8,7 +8,7 @@
     <color name="netflix_light_gray">#B3B3B3</color>
     <color name="netflix_white">#FFFFFF</color>
     
-    <!-- Category Badge Colors -->
+    <!-- Category Badge Colors (poster badges) -->
     <color name="badge_movies">#26C6DA</color>       <!-- Teal/Light Blue -->
     <color name="badge_series">#4CAF50</color>       <!-- Green -->
     <color name="badge_live_tv">#F44336</color>      <!-- Red -->
