@@ -382,86 +382,39 @@ public class DetailsActivity extends AppCompatActivity {
     public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, Configuration newConfig) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
         if (isInPictureInPictureMode) {
-            // Configure player view for PiP mode
+            // Hide controls and content except video
             if (playerView != null) {
                 playerView.setUseController(false);
-                // Use FIT resize mode to maintain aspect ratio without cropping
                 playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
             }
-            
-            // Hide action bar/toolbar completely
             if (getSupportActionBar() != null) {
                 getSupportActionBar().hide();
             }
-            
-            // Hide the toolbar within the collapsing toolbar layout
             androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
-            if (toolbar != null) {
-                toolbar.setVisibility(android.view.View.GONE);
-            }
-            
-            // Hide the nested scroll view content (everything below the video)
+            if (toolbar != null) toolbar.setVisibility(View.GONE);
             androidx.core.widget.NestedScrollView nestedScrollView = findViewById(R.id.nested_scroll_view);
-            if (nestedScrollView != null) {
-                nestedScrollView.setVisibility(android.view.View.GONE);
-            }
-            
-            // Make the collapsing toolbar layout fill the screen
-            com.google.android.material.appbar.CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.toolbar_layout);
-            if (collapsingToolbarLayout != null) {
-                androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams params = 
-                    (androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams) collapsingToolbarLayout.getLayoutParams();
-                params.height = androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams.MATCH_PARENT;
-                collapsingToolbarLayout.setLayoutParams(params);
-            }
-            
-            // Set the activity to fullscreen mode
+            if (nestedScrollView != null) nestedScrollView.setVisibility(View.GONE);
+            // Fullscreen system UI for PiP
             getWindow().getDecorView().setSystemUiVisibility(
-                android.view.View.SYSTEM_UI_FLAG_FULLSCREEN |
-                android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                View.SYSTEM_UI_FLAG_FULLSCREEN |
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
             );
-            
         } else {
-            // Restore UI elements when exiting PiP mode
+            // Restore controls and content
             if (playerView != null) {
                 playerView.setUseController(true);
-                // Restore original resize mode
                 playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
             }
-            
-            // Show action bar/toolbar
             if (getSupportActionBar() != null) {
                 getSupportActionBar().show();
             }
-            
-            // Show the toolbar
             androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
-            if (toolbar != null) {
-                toolbar.setVisibility(android.view.View.VISIBLE);
-            }
-            
-            // Show the nested scroll view content
+            if (toolbar != null) toolbar.setVisibility(View.VISIBLE);
             androidx.core.widget.NestedScrollView nestedScrollView = findViewById(R.id.nested_scroll_view);
-            if (nestedScrollView != null) {
-                nestedScrollView.setVisibility(android.view.View.VISIBLE);
-            }
-            
-            // Restore collapsing toolbar layout height
-            com.google.android.material.appbar.CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.toolbar_layout);
-            if (collapsingToolbarLayout != null) {
-                androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams params = 
-                    (androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams) collapsingToolbarLayout.getLayoutParams();
-                params.height = (int) android.util.TypedValue.applyDimension(
-                    android.util.TypedValue.COMPLEX_UNIT_DIP, 
-                    250, 
-                    getResources().getDisplayMetrics()
-                );
-                collapsingToolbarLayout.setLayoutParams(params);
-            }
-            
+            if (nestedScrollView != null) nestedScrollView.setVisibility(View.VISIBLE);
             // Restore normal system UI
-            getWindow().getDecorView().setSystemUiVisibility(android.view.View.SYSTEM_UI_FLAG_VISIBLE);
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         }
     }
 
