@@ -3,6 +3,7 @@ package com.cinecraze.free.stream;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import android.widget.ImageButton;
 import com.google.android.exoplayer2.ExoPlayer;

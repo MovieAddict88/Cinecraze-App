@@ -39,7 +39,7 @@ public class QualityDropdownMenu {
         ListView listView = new ListView(context);
         listView.setBackgroundColor(0xFF2C2C2C); // Dark background
         listView.setDividerHeight(1);
-        listView.setDivider(android.graphics.Color.parseColor("#404040"));
+        listView.setDivider(new android.graphics.drawable.ColorDrawable(android.graphics.Color.parseColor("#404040")));
 
         // Create adapter with custom styling
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, 
