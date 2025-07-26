@@ -159,36 +159,41 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.progress_bar).setVisibility(View.GONE);
                 Log.d("MainActivity", "Response received: " + response.code());
                 if (response.isSuccessful() && response.body() != null) {
-                    playlistCache = response.body();
-                    allEntries.clear();
-                    
-                    if (playlistCache.getCategories() != null) {
-                        for (Category category : playlistCache.getCategories()) {
-                            if (category != null && category.getEntries() != null) {
-                                allEntries.addAll(category.getEntries());
+                    try {
+                        playlistCache = response.body();
+                        allEntries.clear();
+                        
+                        if (playlistCache.getCategories() != null) {
+                            for (Category category : playlistCache.getCategories()) {
+                                if (category != null && category.getEntries() != null) {
+                                    allEntries.addAll(category.getEntries());
+                                }
                             }
                         }
-                    }
-                    
-                    if (allEntries.isEmpty()) {
-                        Toast.makeText(MainActivity.this, "No data available", Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                    
-                    filterEntries(""); // Show all entries initially
+                        
+                        if (allEntries.isEmpty()) {
+                            Toast.makeText(MainActivity.this, "No data available", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        
+                        filterEntries(""); // Show all entries initially
 
-                    // For now, just use the first 5 entries for the carousel
-                    List<Entry> carouselEntries = new ArrayList<>();
-                    for (int i = 0; i < 5 && i < allEntries.size(); i++) {
-                        carouselEntries.add(allEntries.get(i));
-                    }
-                    carouselAdapter.setEntries(carouselEntries);
-                    carouselAdapter.notifyDataSetChanged();
+                        // For now, just use the first 5 entries for the carousel
+                        List<Entry> carouselEntries = new ArrayList<>();
+                        for (int i = 0; i < 5 && i < allEntries.size(); i++) {
+                            carouselEntries.add(allEntries.get(i));
+                        }
+                        carouselAdapter.setEntries(carouselEntries);
+                        carouselAdapter.notifyDataSetChanged();
 
-                    setupSearch();
-                    retryCount = 0; // Reset retry count on success
-                    Log.d("MainActivity", "Data loaded successfully with " + allEntries.size() + " items");
-                    Toast.makeText(MainActivity.this, "Data loaded successfully (" + allEntries.size() + " items)", Toast.LENGTH_SHORT).show();
+                        setupSearch();
+                        retryCount = 0; // Reset retry count on success
+                        Log.d("MainActivity", "Data loaded successfully with " + allEntries.size() + " items");
+                        Toast.makeText(MainActivity.this, "Data loaded successfully (" + allEntries.size() + " items)", Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        Log.e("MainActivity", "Error processing data: " + e.getMessage(), e);
+                        Toast.makeText(MainActivity.this, "Error processing data: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
                 } else {
                     Log.e("MainActivity", "Failed to load data: " + response.code());
                     Toast.makeText(MainActivity.this, "Failed to load data: " + response.code(), Toast.LENGTH_LONG).show();

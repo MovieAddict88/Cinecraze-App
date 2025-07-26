@@ -4,6 +4,14 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+/**
+ * Entry model class for movie/show entries
+ * 
+ * Note: Rating and Year fields can contain mixed data types:
+ * - Rating: can be float (8.2), int (8), or String ("TV-Y7")
+ * - Year: can be int (2021) or String
+ * The getter methods handle type conversion safely.
+ */
 public class Entry {
 
     @SerializedName("Title")
@@ -25,13 +33,13 @@ public class Entry {
     private String thumbnail;
 
     @SerializedName("Rating")
-    private float rating;
+    private Object rating; // Can be float, int, or String
 
     @SerializedName("Duration")
     private String duration;
 
     @SerializedName("Year")
-    private int year;
+    private Object year; // Can be int or String
 
     @SerializedName("Servers")
     private List<Server> servers;
@@ -67,7 +75,25 @@ public class Entry {
     }
 
     public float getRating() {
-        return rating;
+        if (rating instanceof Number) {
+            return ((Number) rating).floatValue();
+        } else if (rating instanceof String) {
+            try {
+                return Float.parseFloat((String) rating);
+            } catch (NumberFormatException e) {
+                return 0.0f; // Default to 0 if string cannot be parsed
+            }
+        }
+        return 0.0f; // Default value
+    }
+
+    public String getRatingString() {
+        if (rating instanceof String) {
+            return (String) rating;
+        } else if (rating instanceof Number) {
+            return String.valueOf(rating);
+        }
+        return "0";
     }
 
     public String getDuration() {
@@ -75,7 +101,25 @@ public class Entry {
     }
 
     public int getYear() {
-        return year;
+        if (year instanceof Number) {
+            return ((Number) year).intValue();
+        } else if (year instanceof String) {
+            try {
+                return Integer.parseInt((String) year);
+            } catch (NumberFormatException e) {
+                return 0; // Default to 0 if string cannot be parsed
+            }
+        }
+        return 0; // Default value
+    }
+
+    public String getYearString() {
+        if (year instanceof String) {
+            return (String) year;
+        } else if (year instanceof Number) {
+            return String.valueOf(year);
+        }
+        return "0";
     }
 
     public List<Server> getServers() {

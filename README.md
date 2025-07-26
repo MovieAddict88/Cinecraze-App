@@ -12,6 +12,7 @@
 6. **Logging**: Added detailed logging for debugging network issues
 7. **Timeout Configuration**: Added proper timeout settings for network requests
 8. **Lifecycle Management**: Improved app lifecycle handling to prevent unnecessary API calls
+9. **Data Type Parsing**: Fixed JSON parsing issues with mixed data types (Rating and Year fields)
 
 ### Key Improvements:
 
@@ -24,6 +25,7 @@
 - **API URL Fix**: Updated to use direct raw.githubusercontent.com URL
 - **Enhanced Logging**: Added detailed network logging for debugging
 - **Timeout Increase**: Extended timeouts to 60 seconds for better reliability
+- **Data Type Handling**: Fixed parsing of mixed data types (Rating can be float/int/string, Year can be int/string)
 
 ### API Endpoint:
 - **Base URL**: `https://raw.githubusercontent.com/MovieAddict88/Movie-Source/main/`
