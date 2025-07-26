@@ -16,6 +16,7 @@ import com.cinecraze.free.stream.models.Server;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import android.widget.ImageButton;
+import android.widget.Button;
 import com.google.android.exoplayer2.ui.PlayerView;
 import android.content.pm.ActivityInfo;
 
@@ -79,6 +80,7 @@ public class DetailsActivity extends AppCompatActivity {
         
         // Initialize quality components
         qualityButton = findViewById(R.id.exo_quality_button);
+        qualityButton.setVisibility(View.GONE); // Hide gear button, use quality buttons instead
         qualityButtonsContainer = findViewById(R.id.quality_buttons_container);
         qualityButtonsLayout = findViewById(R.id.quality_buttons_layout);
 
@@ -159,10 +161,8 @@ public class DetailsActivity extends AppCompatActivity {
         // Initialize player with first episode
         initializePlayer();
         
-        // Show quality button if first episode has multiple servers
-        if (currentEpisode != null && currentEpisode.getServers() != null && currentEpisode.getServers().size() > 1) {
-            qualityButton.setVisibility(View.VISIBLE);
-        }
+        // Setup quality buttons for first episode
+        setupQualityButtons(currentEpisode != null ? currentEpisode.getServers() : null);
         
         playCurrentEpisode();
     }
@@ -175,10 +175,8 @@ public class DetailsActivity extends AppCompatActivity {
         // Initialize player for movie
         initializePlayer();
         
-        // Show quality button if multiple servers available
-        if (entry.getServers() != null && entry.getServers().size() > 1) {
-            qualityButton.setVisibility(View.VISIBLE);
-        }
+        // Setup quality buttons
+        setupQualityButtons(entry.getServers());
         
         // Play the movie
         playCurrentVideo();
@@ -197,12 +195,8 @@ public class DetailsActivity extends AppCompatActivity {
     
     private void playCurrentEpisode() {
         if (currentEpisode != null && currentEpisode.getServers() != null && !currentEpisode.getServers().isEmpty()) {
-            // Show quality button if multiple servers available
-            if (currentEpisode.getServers().size() > 1) {
-                qualityButton.setVisibility(View.VISIBLE);
-            } else {
-                qualityButton.setVisibility(View.GONE);
-            }
+            // Setup quality buttons for current episode
+            setupQualityButtons(currentEpisode.getServers());
             
             // Reset server index when changing episodes
             currentServerIndex = 0;
@@ -234,41 +228,55 @@ public class DetailsActivity extends AppCompatActivity {
                 FullScreenActivity.start(this, videoUrl, currentPosition, isPlaying, currentServerIndex);
             }
         });
-
-        // Setup quality button
-        setupQualityButton();
     }
     
-    private void setupQualityButton() {
-        qualityButton.setOnClickListener(v -> {
-            List<Server> servers = getCurrentServers();
-            if (servers != null && servers.size() > 1) {
-                // Create or update dropdown menu
-                if (qualityDropdownMenu == null) {
-                    qualityDropdownMenu = new QualityDropdownMenu(this, servers, currentServerIndex);
-                    qualityDropdownMenu.setOnQualitySelectedListener(new QualityDropdownMenu.OnQualitySelectedListener() {
-                        @Override
-                        public void onQualitySelected(Server server, int position) {
-                            currentServerIndex = position;
-                            playCurrentVideo();
-                        }
-                    });
-                } else {
-                    // Update existing dropdown with new servers and current index
-                    qualityDropdownMenu = new QualityDropdownMenu(this, servers, currentServerIndex);
-                    qualityDropdownMenu.setOnQualitySelectedListener(new QualityDropdownMenu.OnQualitySelectedListener() {
-                        @Override
-                        public void onQualitySelected(Server server, int position) {
-                            currentServerIndex = position;
-                            playCurrentVideo();
-                        }
-                    });
-                }
-                
-                // Show dropdown
-                qualityDropdownMenu.show(qualityButton);
+    private void setupQualityButtons(List<Server> servers) {
+        if (servers == null || servers.size() <= 1) {
+            qualityButtonsContainer.setVisibility(View.GONE);
+            return;
+        }
+
+        qualityButtonsContainer.setVisibility(View.VISIBLE);
+        qualityButtonsLayout.removeAllViews();
+
+        for (int i = 0; i < servers.size(); i++) {
+            Server server = servers.get(i);
+            Button qualityButton = new Button(this);
+            
+            // Set small button size
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            params.setMargins(4, 0, 4, 0); // Small margins
+            qualityButton.setLayoutParams(params);
+            
+            // Set button properties
+            qualityButton.setText(server.getName());
+            qualityButton.setTextSize(10); // Very small text
+            qualityButton.setBackgroundResource(R.drawable.quality_button_background);
+            qualityButton.setTextColor(0xFFFFFFFF); // White text
+            qualityButton.setSelected(i == currentServerIndex);
+            
+            // Set click listener
+            final int position = i;
+            qualityButton.setOnClickListener(v -> {
+                currentServerIndex = position;
+                updateQualityButtonsSelection();
+                playCurrentVideo();
+            });
+            
+            qualityButtonsLayout.addView(qualityButton);
+        }
+    }
+
+    private void updateQualityButtonsSelection() {
+        for (int i = 0; i < qualityButtonsLayout.getChildCount(); i++) {
+            View child = qualityButtonsLayout.getChildAt(i);
+            if (child instanceof Button) {
+                child.setSelected(i == currentServerIndex);
             }
-        });
+        }
     }
     
     private List<Server> getCurrentServers() {
