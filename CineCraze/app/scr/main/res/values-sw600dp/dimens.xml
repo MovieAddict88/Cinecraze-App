@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tablet dimensions for screens wider than 600dp -->
+    
+    <!-- Grid view - Larger posters for tablets -->
+    <dimen name="poster_width_grid">180dp</dimen>
+    <dimen name="poster_height_grid">270dp</dimen>
+    
+    <!-- List view -->
+    <dimen name="poster_width_list">120dp</dimen>
+    <dimen name="poster_height_list">180dp</dimen>
+    
+    <!-- Hero carousel - Taller for tablets -->
+    <dimen name="carousel_height">300dp</dimen>
+    
+    <!-- Episode thumbnails -->
+    <dimen name="episode_thumbnail_width">160dp</dimen>
+    <dimen name="episode_thumbnail_height">90dp</dimen>
+    
+    <!-- Larger spacing for tablets -->
+    <dimen name="spacing_md">20dp</dimen>
+    <dimen name="spacing_lg">32dp</dimen>
+    <dimen name="spacing_xl">48dp</dimen>
+    
+    <!-- Content padding -->
+    <dimen name="content_padding_horizontal">24dp</dimen>
+    <dimen name="content_padding_vertical">16dp</dimen>
+</resources>

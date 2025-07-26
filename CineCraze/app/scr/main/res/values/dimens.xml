@@ -1,25 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Image dimensions for consistent sizing -->
-    <dimen name="poster_width_grid">160dp</dimen>
-    <dimen name="poster_height_grid">240dp</dimen>
+    <!-- Netflix-style poster dimensions with 16:9 and 2:3 aspect ratios -->
     
-    <dimen name="poster_width_list">120dp</dimen>
-    <dimen name="poster_height_list">180dp</dimen>
+    <!-- Grid view - Portrait posters (2:3 ratio) -->
+    <dimen name="poster_width_grid">140dp</dimen>
+    <dimen name="poster_height_grid">210dp</dimen>
     
-    <dimen name="episode_thumbnail_width">80dp</dimen>
-    <dimen name="episode_thumbnail_height">80dp</dimen>
+    <!-- List view - Smaller portrait posters -->
+    <dimen name="poster_width_list">100dp</dimen>
+    <dimen name="poster_height_list">150dp</dimen>
     
-    <dimen name="season_poster_width">120dp</dimen>
-    <dimen name="season_poster_height">120dp</dimen>
+    <!-- Hero carousel - Landscape banners (16:9 ratio) -->
+    <dimen name="carousel_height">220dp</dimen>
     
-    <!-- Card margins and paddings -->
-    <dimen name="card_margin">8dp</dimen>
+    <!-- Episode thumbnails (16:9 ratio) -->
+    <dimen name="episode_thumbnail_width">120dp</dimen>
+    <dimen name="episode_thumbnail_height">68dp</dimen>
+    
+    <!-- Season selection -->
+    <dimen name="season_poster_width">100dp</dimen>
+    <dimen name="season_poster_height">100dp</dimen>
+    
+    <!-- Card styling - Netflix-inspired -->
+    <dimen name="card_margin">6dp</dimen>
     <dimen name="card_corner_radius">8dp</dimen>
-    <dimen name="card_elevation">4dp</dimen>
+    <dimen name="card_elevation">8dp</dimen>
+    
+    <!-- Spacing and margins -->
+    <dimen name="spacing_xs">4dp</dimen>
+    <dimen name="spacing_sm">8dp</dimen>
+    <dimen name="spacing_md">16dp</dimen>
+    <dimen name="spacing_lg">24dp</dimen>
+    <dimen name="spacing_xl">32dp</dimen>
     
     <!-- Text margins -->
-    <dimen name="text_margin_small">4dp</dimen>
-    <dimen name="text_margin_medium">8dp</dimen>
-    <dimen name="text_margin_large">16dp</dimen>
+    <dimen name="text_margin_small">@dimen/spacing_xs</dimen>
+    <dimen name="text_margin_medium">@dimen/spacing_sm</dimen>
+    <dimen name="text_margin_large">@dimen/spacing_md</dimen>
+    
+    <!-- Section headers -->
+    <dimen name="section_header_margin_top">@dimen/spacing_lg</dimen>
+    <dimen name="section_header_margin_bottom">@dimen/spacing_md</dimen>
+    
+    <!-- Bottom navigation height -->
+    <dimen name="bottom_nav_height">56dp</dimen>
+    
+    <!-- Toolbar height -->
+    <dimen name="toolbar_height">56dp</dimen>
+    
+    <!-- Content padding -->
+    <dimen name="content_padding_horizontal">@dimen/spacing_md</dimen>
+    <dimen name="content_padding_vertical">@dimen/spacing_sm</dimen>
+    
+    <!-- Minimum touch target size -->
+    <dimen name="min_touch_target">48dp</dimen>
 </resources>
