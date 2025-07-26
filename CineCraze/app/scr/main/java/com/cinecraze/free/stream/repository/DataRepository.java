@@ -26,12 +26,18 @@ public class DataRepository {
     private static final String TAG = "DataRepository";
     private static final String CACHE_KEY_PLAYLIST = "playlist_data";
     private static final long CACHE_EXPIRY_HOURS = 24; // Cache expires after 24 hours
+    public static final int DEFAULT_PAGE_SIZE = 20; // Default items per page
     
     private CineCrazeDatabase database;
     private ApiService apiService;
     
     public interface DataCallback {
         void onSuccess(List<Entry> entries);
+        void onError(String error);
+    }
+    
+    public interface PaginatedDataCallback {
+        void onSuccess(List<Entry> entries, boolean hasMorePages, int totalCount);
         void onError(String error);
     }
     
@@ -53,6 +59,63 @@ public class DataRepository {
         } else {
             Log.d(TAG, "Cache expired or empty, fetching from API");
             fetchFromApi(callback);
+        }
+    }
+    
+    /**
+     * Get paginated data from cache
+     */
+    public void getPaginatedData(int page, int pageSize, PaginatedDataCallback callback) {
+        try {
+            int offset = page * pageSize;
+            List<EntryEntity> entities = database.entryDao().getEntriesPaged(pageSize, offset);
+            List<Entry> entries = DatabaseUtils.entitiesToEntries(entities);
+            int totalCount = database.entryDao().getEntriesCount();
+            boolean hasMorePages = (offset + pageSize) < totalCount;
+            
+            Log.d(TAG, "Loaded page " + page + " with " + entries.size() + " items. Total: " + totalCount + ", HasMore: " + hasMorePages);
+            callback.onSuccess(entries, hasMorePages, totalCount);
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading paginated data: " + e.getMessage(), e);
+            callback.onError("Error loading page: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Get paginated data by category
+     */
+    public void getPaginatedDataByCategory(String category, int page, int pageSize, PaginatedDataCallback callback) {
+        try {
+            int offset = page * pageSize;
+            List<EntryEntity> entities = database.entryDao().getEntriesByCategoryPaged(category, pageSize, offset);
+            List<Entry> entries = DatabaseUtils.entitiesToEntries(entities);
+            int totalCount = database.entryDao().getEntriesCountByCategory(category);
+            boolean hasMorePages = (offset + pageSize) < totalCount;
+            
+            Log.d(TAG, "Loaded category '" + category + "' page " + page + " with " + entries.size() + " items. Total: " + totalCount);
+            callback.onSuccess(entries, hasMorePages, totalCount);
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading paginated category data: " + e.getMessage(), e);
+            callback.onError("Error loading category page: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Search with pagination
+     */
+    public void searchPaginated(String searchQuery, int page, int pageSize, PaginatedDataCallback callback) {
+        try {
+            int offset = page * pageSize;
+            List<EntryEntity> entities = database.entryDao().searchByTitlePaged(searchQuery, pageSize, offset);
+            List<Entry> entries = DatabaseUtils.entitiesToEntries(entities);
+            int totalCount = database.entryDao().getSearchResultsCount(searchQuery);
+            boolean hasMorePages = (offset + pageSize) < totalCount;
+            
+            Log.d(TAG, "Search '" + searchQuery + "' page " + page + " with " + entries.size() + " results. Total: " + totalCount);
+            callback.onSuccess(entries, hasMorePages, totalCount);
+        } catch (Exception e) {
+            Log.e(TAG, "Error searching with pagination: " + e.getMessage(), e);
+            callback.onError("Error searching: " + e.getMessage());
         }
     }
     
@@ -86,6 +149,13 @@ public class DataRepository {
     public List<Entry> getAllCachedEntries() {
         List<EntryEntity> entities = database.entryDao().getAllEntries();
         return DatabaseUtils.entitiesToEntries(entities);
+    }
+    
+    /**
+     * Get total count of cached entries
+     */
+    public int getTotalEntriesCount() {
+        return database.entryDao().getEntriesCount();
     }
     
     /**

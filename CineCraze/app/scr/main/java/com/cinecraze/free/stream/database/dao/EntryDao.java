@@ -36,4 +36,20 @@ public interface EntryDao {
     
     @Query("DELETE FROM entries WHERE main_category = :category")
     void deleteByCategory(String category);
+    
+    // Pagination queries
+    @Query("SELECT * FROM entries ORDER BY title ASC LIMIT :limit OFFSET :offset")
+    List<EntryEntity> getEntriesPaged(int limit, int offset);
+    
+    @Query("SELECT * FROM entries WHERE main_category = :category ORDER BY title ASC LIMIT :limit OFFSET :offset")
+    List<EntryEntity> getEntriesByCategoryPaged(String category, int limit, int offset);
+    
+    @Query("SELECT * FROM entries WHERE title LIKE '%' || :title || '%' ORDER BY title ASC LIMIT :limit OFFSET :offset")
+    List<EntryEntity> searchByTitlePaged(String title, int limit, int offset);
+    
+    @Query("SELECT COUNT(*) FROM entries WHERE main_category = :category")
+    int getEntriesCountByCategory(String category);
+    
+    @Query("SELECT COUNT(*) FROM entries WHERE title LIKE '%' || :title || '%'")
+    int getSearchResultsCount(String title);
 }
