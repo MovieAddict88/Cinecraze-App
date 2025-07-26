@@ -23,12 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import com.google.gson.Gson;
 
-// PiP imports
-import android.app.PictureInPictureParams;
-import android.content.res.Configuration;
-import android.os.Build;
-import android.util.Rational;
-import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -239,11 +234,8 @@ public class DetailsActivity extends AppCompatActivity {
             }
         });
 
-        // Setup PiP button
-        ImageButton pipButton = playerView.findViewById(R.id.exo_pip_button);
-        if (pipButton != null) {
-            pipButton.setOnClickListener(v -> startPictureInPictureMode());
-        }
+        // Setup next/previous episode buttons for TV series
+        setupEpisodeNavigationButtons();
 
         // Setup quality button
         setupQualityButton();
@@ -308,6 +300,101 @@ public class DetailsActivity extends AppCompatActivity {
         }
     }
 
+    private void setupEpisodeNavigationButtons() {
+        ImageButton nextButton = playerView.findViewById(R.id.exo_next);
+        ImageButton prevButton = playerView.findViewById(R.id.exo_prev);
+        
+        if (nextButton != null && prevButton != null) {
+            // Only show navigation buttons for TV series
+            if (isTVSeries()) {
+                nextButton.setVisibility(View.VISIBLE);
+                prevButton.setVisibility(View.VISIBLE);
+                
+                nextButton.setOnClickListener(v -> playNextEpisode());
+                prevButton.setOnClickListener(v -> playPreviousEpisode());
+            } else {
+                // Hide navigation buttons for movies
+                nextButton.setVisibility(View.GONE);
+                prevButton.setVisibility(View.GONE);
+            }
+        }
+    }
+    
+    private boolean isTVSeries() {
+        return seasons != null && !seasons.isEmpty() && currentSeason != null && currentEpisode != null;
+    }
+    
+    private void playNextEpisode() {
+        if (!isTVSeries()) return;
+        
+        List<Episode> episodes = currentSeason.getEpisodes();
+        if (episodes == null || episodes.isEmpty()) return;
+        
+        int currentEpisodeIndex = episodes.indexOf(currentEpisode);
+        
+        if (currentEpisodeIndex < episodes.size() - 1) {
+            // Next episode in current season
+            currentEpisode = episodes.get(currentEpisodeIndex + 1);
+            currentServerIndex = 0; // Reset server index for new episode
+            playCurrentEpisode();
+        } else {
+            // Try to move to next season
+            int currentSeasonIndex = seasons.indexOf(currentSeason);
+            if (currentSeasonIndex < seasons.size() - 1) {
+                Season nextSeason = seasons.get(currentSeasonIndex + 1);
+                if (nextSeason.getEpisodes() != null && !nextSeason.getEpisodes().isEmpty()) {
+                    currentSeason = nextSeason;
+                    currentEpisode = nextSeason.getEpisodes().get(0);
+                    currentServerIndex = 0; // Reset server index for new season
+                    updateEpisodeList();
+                    updateSeasonSelection();
+                    playCurrentEpisode();
+                }
+            }
+        }
+    }
+    
+    private void playPreviousEpisode() {
+        if (!isTVSeries()) return;
+        
+        List<Episode> episodes = currentSeason.getEpisodes();
+        if (episodes == null || episodes.isEmpty()) return;
+        
+        int currentEpisodeIndex = episodes.indexOf(currentEpisode);
+        
+        if (currentEpisodeIndex > 0) {
+            // Previous episode in current season
+            currentEpisode = episodes.get(currentEpisodeIndex - 1);
+            currentServerIndex = 0; // Reset server index for new episode
+            playCurrentEpisode();
+        } else {
+            // Try to move to previous season
+            int currentSeasonIndex = seasons.indexOf(currentSeason);
+            if (currentSeasonIndex > 0) {
+                Season prevSeason = seasons.get(currentSeasonIndex - 1);
+                if (prevSeason.getEpisodes() != null && !prevSeason.getEpisodes().isEmpty()) {
+                    currentSeason = prevSeason;
+                    List<Episode> prevSeasonEpisodes = prevSeason.getEpisodes();
+                    currentEpisode = prevSeasonEpisodes.get(prevSeasonEpisodes.size() - 1); // Last episode of previous season
+                    currentServerIndex = 0; // Reset server index for new season
+                    updateEpisodeList();
+                    updateSeasonSelection();
+                    playCurrentEpisode();
+                }
+            }
+        }
+    }
+    
+    private void updateSeasonSelection() {
+        if (seasonAdapter != null) {
+            int seasonIndex = seasons.indexOf(currentSeason);
+            if (seasonIndex >= 0) {
+                seasonAdapter.setSelectedSeason(seasonIndex);
+                seasonRecyclerView.scrollToPosition(seasonIndex);
+            }
+        }
+    }
+
     private void setupRelatedContentRecyclerView() {
         if (allEntries != null) {
             List<Entry> relatedEntries = new ArrayList<>();
@@ -339,109 +426,7 @@ public class DetailsActivity extends AppCompatActivity {
         }
     }
 
-    // Picture-in-Picture methods
-    private void startPictureInPictureMode() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (getPackageManager().hasSystemFeature(android.content.pm.PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
-                // Get video dimensions for proper aspect ratio
-                Rational aspectRatio = new Rational(16, 9); // Default aspect ratio
-                
-                // Try to get actual video dimensions if available
-                if (player != null && player.getVideoFormat() != null) {
-                    int videoWidth = player.getVideoFormat().width;
-                    int videoHeight = player.getVideoFormat().height;
-                    if (videoWidth > 0 && videoHeight > 0) {
-                        aspectRatio = new Rational(videoWidth, videoHeight);
-                        
-                        // Ensure aspect ratio is within acceptable bounds for PiP
-                        float ratio = (float) videoWidth / videoHeight;
-                        if (ratio < 0.42f) { // Too tall
-                            aspectRatio = new Rational(42, 100);
-                        } else if (ratio > 2.39f) { // Too wide
-                            aspectRatio = new Rational(239, 100);
-                        }
-                    }
-                }
-                
-                PictureInPictureParams params = new PictureInPictureParams.Builder()
-                        .setAspectRatio(aspectRatio)
-                        .build();
-                        
-                // Configure player view for PiP before entering
-                if (playerView != null) {
-                    // Use FIT mode to maintain aspect ratio
-                    playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
-                }
-                
-                enterPictureInPictureMode(params);
-            }
-        }
-    }
 
-    @Override
-    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, Configuration newConfig) {
-        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
-        if (isInPictureInPictureMode) {
-            // Configure player view for PiP mode
-            if (playerView != null) {
-                playerView.setUseController(false);
-                // Use FIT resize mode to maintain aspect ratio without cropping
-                playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
-            }
-            
-            // Hide action bar/toolbar completely
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().hide();
-            }
-            
-            // Hide the toolbar within the collapsing toolbar layout
-            androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
-            if (toolbar != null) {
-                toolbar.setVisibility(android.view.View.GONE);
-            }
-            
-            // Hide the nested scroll view content (everything below the video)
-            androidx.core.widget.NestedScrollView nestedScrollView = findViewById(R.id.nested_scroll_view);
-            if (nestedScrollView != null) {
-                nestedScrollView.setVisibility(android.view.View.GONE);
-            }
-            
-            // Set the activity to fullscreen mode
-            getWindow().getDecorView().setSystemUiVisibility(
-                android.view.View.SYSTEM_UI_FLAG_FULLSCREEN |
-                android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-            );
-            
-        } else {
-            // Restore UI elements when exiting PiP mode
-            if (playerView != null) {
-                playerView.setUseController(true);
-                // Restore original resize mode
-                playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
-            }
-            
-            // Show action bar/toolbar
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().show();
-            }
-            
-            // Show the toolbar
-            androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
-            if (toolbar != null) {
-                toolbar.setVisibility(android.view.View.VISIBLE);
-            }
-            
-            // Show the nested scroll view content
-            androidx.core.widget.NestedScrollView nestedScrollView = findViewById(R.id.nested_scroll_view);
-            if (nestedScrollView != null) {
-                nestedScrollView.setVisibility(android.view.View.VISIBLE);
-            }
-            
-            // Restore normal system UI
-            getWindow().getDecorView().setSystemUiVisibility(android.view.View.SYSTEM_UI_FLAG_VISIBLE);
-        }
-    }
 
     @Override
     protected void onDestroy() {
