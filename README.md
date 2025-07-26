@@ -13,6 +13,7 @@
 7. **Timeout Configuration**: Added proper timeout settings for network requests
 8. **Lifecycle Management**: Improved app lifecycle handling to prevent unnecessary API calls
 9. **Data Type Parsing**: Fixed JSON parsing issues with mixed data types (Rating and Year fields)
+10. **TV Series Player**: Fixed player handling for TV series with season and episode selectors
 
 ### Key Improvements:
 
@@ -26,6 +27,7 @@
 - **Enhanced Logging**: Added detailed network logging for debugging
 - **Timeout Increase**: Extended timeouts to 60 seconds for better reliability
 - **Data Type Handling**: Fixed parsing of mixed data types (Rating can be float/int/string, Year can be int/string)
+- **TV Series Support**: Added season and episode selectors for TV series with proper player handling
 
 ### API Endpoint:
 - **Base URL**: `https://raw.githubusercontent.com/MovieAddict88/Movie-Source/main/`
@@ -57,4 +59,17 @@ The API endpoint has been tested and is returning valid JSON data with movie/str
 - ✅ Added proper Gradle configuration files
 - ✅ All resource references now resolve correctly
 
-The app should now properly fetch and display streaming content with improved reliability and user experience.
+### TV Series Features:
+- ✅ Season selector with horizontal scrolling
+- ✅ Episode selector with episode details
+- ✅ Automatic player switching between episodes
+- ✅ Proper handling of TV series vs movies
+- ✅ Fallback to movie mode for entries without seasons/episodes
+
+### Player Functionality:
+- **Movies**: Direct playback from server URLs
+- **TV Series**: Season and episode selection with automatic playback
+- **Fullscreen**: Support for both movies and TV series episodes
+- **Error Handling**: Graceful fallbacks for missing data
+
+The app should now properly fetch and display streaming content with improved reliability and user experience, including full TV series support with season and episode navigation.
