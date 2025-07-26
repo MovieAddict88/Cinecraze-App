@@ -26,6 +26,7 @@ import com.cinecraze.free.stream.models.Entry;
 import com.cinecraze.free.stream.models.Playlist;
 import com.cinecraze.free.stream.net.ApiService;
 import com.cinecraze.free.stream.net.RetrofitClient;
+import com.cinecraze.free.stream.repository.DataRepository;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.Gson;
 
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isSearchVisible = false;
     private int retryCount = 0;
     private static final int MAX_RETRY_COUNT = 3;
+    private DataRepository dataRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,10 +92,11 @@ public class MainActivity extends AppCompatActivity {
         setupViewSwitch();
         setupSearchToggle();
 
-        // Only fetch data if we don't have it already
-        if (allEntries.isEmpty()) {
-            fetchPlaylist();
-        }
+        // Initialize repository
+        dataRepository = new DataRepository(this);
+
+        // Load data from cache or API
+        loadData();
     }
 
     private void setupRecyclerView() {
@@ -265,14 +268,9 @@ public class MainActivity extends AppCompatActivity {
         if (category.isEmpty()) {
             filteredEntries.addAll(allEntries);
         } else {
-            if (playlistCache != null && playlistCache.getCategories() != null) {
-                for (Category cat : playlistCache.getCategories()) {
-                    if (cat != null && cat.getMainCategory() != null && 
-                        cat.getMainCategory().equalsIgnoreCase(category) && 
-                        cat.getEntries() != null) {
-                        filteredEntries.addAll(cat.getEntries());
-                    }
-                }
+            // Use repository to get entries by category
+            if (dataRepository != null) {
+                filteredEntries = dataRepository.getEntriesByCategory(category);
             }
         }
         entryList.clear();
@@ -282,98 +280,57 @@ public class MainActivity extends AppCompatActivity {
 
     private Playlist playlistCache;
 
-    private void fetchPlaylist() {
-        if (!isNetworkAvailable()) {
-            Toast.makeText(this, "No internet connection available", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        Log.d("MainActivity", "Fetching playlist data from: " + "https://raw.githubusercontent.com/MovieAddict88/Movie-Source/main/playlist.json");
+    private void loadData() {
+        Log.d("MainActivity", "Loading data using repository");
         findViewById(R.id.progress_bar).setVisibility(View.VISIBLE);
         
-        // Add a small delay to ensure network is ready
-        new android.os.Handler().postDelayed(() -> {
-            ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
-            Call<Playlist> call = apiService.getPlaylist();
-            call.enqueue(new Callback<Playlist>() {
+        dataRepository.getPlaylistData(new DataRepository.DataCallback() {
             @Override
-            public void onResponse(Call<Playlist> call, Response<Playlist> response) {
+            public void onSuccess(List<Entry> entries) {
                 findViewById(R.id.progress_bar).setVisibility(View.GONE);
-                Log.d("MainActivity", "Response received: " + response.code());
-                if (response.isSuccessful() && response.body() != null) {
-                    try {
-                        playlistCache = response.body();
-                        allEntries.clear();
-                        
-                        if (playlistCache.getCategories() != null) {
-                            for (Category category : playlistCache.getCategories()) {
-                                if (category != null && category.getEntries() != null) {
-                                    allEntries.addAll(category.getEntries());
-                                }
-                            }
-                        }
-                        
-                        if (allEntries.isEmpty()) {
-                            Toast.makeText(MainActivity.this, "No data available", Toast.LENGTH_LONG).show();
-                            return;
-                        }
-                        
-                        filterEntries(""); // Show all entries initially
-
-                        // For now, just use the first 5 entries for the carousel
-                        List<Entry> carouselEntries = new ArrayList<>();
-                        for (int i = 0; i < 5 && i < allEntries.size(); i++) {
-                            carouselEntries.add(allEntries.get(i));
-                        }
-                        carouselAdapter.setEntries(carouselEntries);
-                        carouselAdapter.notifyDataSetChanged();
-
-                        setupSearch();
-                        retryCount = 0; // Reset retry count on success
-                        Log.d("MainActivity", "Data loaded successfully with " + allEntries.size() + " items");
-                        Toast.makeText(MainActivity.this, "Data loaded successfully (" + allEntries.size() + " items)", Toast.LENGTH_SHORT).show();
-                    } catch (Exception e) {
-                        Log.e("MainActivity", "Error processing data: " + e.getMessage(), e);
-                        Toast.makeText(MainActivity.this, "Error processing data: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                } else {
-                    Log.e("MainActivity", "Failed to load data: " + response.code());
-                    Toast.makeText(MainActivity.this, "Failed to load data: " + response.code(), Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Playlist> call, Throwable t) {
-                findViewById(R.id.progress_bar).setVisibility(View.GONE);
-                Log.e("MainActivity", "Network failure: " + t.getMessage(), t);
                 
-                String errorMessage = "Network error";
-                if (t.getMessage() != null) {
-                    if (t.getMessage().contains("timeout")) {
-                        errorMessage = "Connection timeout";
-                    } else if (t.getMessage().contains("Unable to resolve host")) {
-                        errorMessage = "No internet connection";
-                    } else if (t.getMessage().contains("SSL")) {
-                        errorMessage = "SSL connection error";
-                    } else {
-                        errorMessage = "Network error: " + t.getMessage();
-                    }
+                allEntries.clear();
+                allEntries.addAll(entries);
+                
+                if (allEntries.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "No data available", Toast.LENGTH_LONG).show();
+                    return;
                 }
+                
+                filterEntries(""); // Show all entries initially
+
+                // For now, just use the first 5 entries for the carousel
+                List<Entry> carouselEntries = new ArrayList<>();
+                for (int i = 0; i < 5 && i < allEntries.size(); i++) {
+                    carouselEntries.add(allEntries.get(i));
+                }
+                carouselAdapter.setEntries(carouselEntries);
+                carouselAdapter.notifyDataSetChanged();
+
+                setupSearch();
+                retryCount = 0; // Reset retry count on success
+                Log.d("MainActivity", "Data loaded successfully with " + allEntries.size() + " items");
+                Toast.makeText(MainActivity.this, "Data loaded (" + allEntries.size() + " items)", Toast.LENGTH_SHORT).show();
+            }
+            
+            @Override
+            public void onError(String error) {
+                findViewById(R.id.progress_bar).setVisibility(View.GONE);
+                Log.e("MainActivity", "Error loading data: " + error);
                 
                 if (retryCount < MAX_RETRY_COUNT) {
                     retryCount++;
                     Log.d("MainActivity", "Retrying... Attempt " + retryCount + "/" + MAX_RETRY_COUNT);
-                    Toast.makeText(MainActivity.this, errorMessage + " - Retrying... Attempt " + retryCount + "/" + MAX_RETRY_COUNT, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, error + " - Retrying... Attempt " + retryCount + "/" + MAX_RETRY_COUNT, Toast.LENGTH_SHORT).show();
                     // Retry after a short delay
-                    new android.os.Handler().postDelayed(() -> fetchPlaylist(), 2000);
+                    new android.os.Handler().postDelayed(() -> loadData(), 2000);
                 } else {
                     Log.e("MainActivity", "Failed to load data after " + MAX_RETRY_COUNT + " attempts");
-                    Toast.makeText(MainActivity.this, "Failed to load data after " + MAX_RETRY_COUNT + " attempts. " + errorMessage, Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "Failed to load data after " + MAX_RETRY_COUNT + " attempts. " + error, Toast.LENGTH_LONG).show();
                     retryCount = 0; // Reset for next manual retry
                 }
             }
         });
-        }, 500); // 500ms delay
     }
 
     private boolean isNetworkAvailable() {
@@ -392,15 +349,34 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         // Check if we need to refresh data (e.g., if we came back from background)
-        if (allEntries.isEmpty() && isNetworkAvailable()) {
-            fetchPlaylist();
+        if (allEntries.isEmpty()) {
+            loadData();
         }
     }
 
     // Method to manually refresh data (can be called from UI)
     public void refreshData() {
         retryCount = 0; // Reset retry count
-        fetchPlaylist();
+        if (dataRepository != null) {
+            findViewById(R.id.progress_bar).setVisibility(View.VISIBLE);
+            dataRepository.refreshData(new DataRepository.DataCallback() {
+                @Override
+                public void onSuccess(List<Entry> entries) {
+                    findViewById(R.id.progress_bar).setVisibility(View.GONE);
+                    allEntries.clear();
+                    allEntries.addAll(entries);
+                    filterEntries(""); // Refresh current view
+                    setupSearch();
+                    Toast.makeText(MainActivity.this, "Data refreshed (" + allEntries.size() + " items)", Toast.LENGTH_SHORT).show();
+                }
+                
+                @Override
+                public void onError(String error) {
+                    findViewById(R.id.progress_bar).setVisibility(View.GONE);
+                    Toast.makeText(MainActivity.this, "Failed to refresh: " + error, Toast.LENGTH_LONG).show();
+                }
+            });
+        }
     }
 
     @Override
