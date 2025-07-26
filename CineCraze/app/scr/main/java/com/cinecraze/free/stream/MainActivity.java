@@ -15,7 +15,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -95,14 +95,8 @@ public class MainActivity extends AppCompatActivity {
         
         Log.d("MainActivity", "Starting TRUE pagination implementation");
         
-        // Set up our custom toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setDisplayShowTitleEnabled(false);
-            }
-        }
+        // Netflix-style custom header - no traditional toolbar needed
+        // The custom header is implemented directly in the layout
 
         initializeViews();
         setupRecyclerView();

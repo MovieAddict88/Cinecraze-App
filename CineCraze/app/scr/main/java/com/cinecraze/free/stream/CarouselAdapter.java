@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.cinecraze.free.stream.models.Entry;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 
@@ -43,13 +43,32 @@ public class CarouselAdapter extends RecyclerView.Adapter<CarouselAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Entry entry = entryList.get(position);
 
+        // Set text content
         holder.title.setText(entry.getTitle());
-        holder.country.setText(entry.getCountry());
-        holder.year.setText(String.valueOf(entry.getYear()));
-        holder.duration.setText(entry.getDuration());
-        ImageUtils.loadBannerImage(context, entry.getPoster(), holder.poster);
+        holder.description.setText(entry.getDescription());
+        
+        // Set rating if available
+        if (entry.getRating() > 0) {
+            holder.ratingText.setText(String.format("%.1f", entry.getRating()));
+            holder.ratingText.setVisibility(View.VISIBLE);
+        } else {
+            holder.ratingText.setVisibility(View.GONE);
+        }
 
+        // Load background image using the existing ImageUtils
+        ImageUtils.loadBannerImage(context, entry.getPoster(), holder.backgroundImage);
+
+        // Set up click listeners
         holder.playButton.setOnClickListener(v -> {
+            DetailsActivity.start(context, entry, allEntries);
+        });
+
+        holder.infoButton.setOnClickListener(v -> {
+            DetailsActivity.start(context, entry, allEntries);
+        });
+
+        // Make the entire item clickable
+        holder.itemView.setOnClickListener(v -> {
             DetailsActivity.start(context, entry, allEntries);
         });
     }
@@ -60,21 +79,21 @@ public class CarouselAdapter extends RecyclerView.Adapter<CarouselAdapter.ViewHo
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView poster;
+        ImageView backgroundImage;
         TextView title;
-        TextView country;
-        TextView year;
-        TextView duration;
-        FloatingActionButton playButton;
+        TextView description;
+        TextView ratingText;
+        MaterialButton playButton;
+        MaterialButton infoButton;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            poster = itemView.findViewById(R.id.poster);
+            backgroundImage = itemView.findViewById(R.id.background_image);
             title = itemView.findViewById(R.id.title);
-            country = itemView.findViewById(R.id.country);
-            year = itemView.findViewById(R.id.year);
-            duration = itemView.findViewById(R.id.duration);
-            playButton = itemView.findViewById(R.id.play_button);
+            description = itemView.findViewById(R.id.description);
+            ratingText = itemView.findViewById(R.id.rating_text);
+            playButton = itemView.findViewById(R.id.btn_play);
+            infoButton = itemView.findViewById(R.id.btn_info);
         }
     }
 }
