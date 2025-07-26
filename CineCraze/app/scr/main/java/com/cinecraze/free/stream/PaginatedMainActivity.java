@@ -37,27 +37,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * TRUE PAGINATION IMPLEMENTATION
- * 
- * This activity implements proper pagination that only loads 20 items at a time.
- * It does NOT load all data at once like the original MainActivity.
- * 
- * Key differences:
- * 1. Only loads first page (20 items) on startup
- * 2. Subsequent pages loaded on demand via Previous/Next buttons
- * 3. Carousel loads only 5 items
- * 4. Search and filtering are also paginated
- * 
- * Performance benefits:
- * - Fast startup: ~0.5-1 second vs 2-5 seconds
- * - Low memory: ~5MB vs 50MB for large datasets
- * - Scalable: Can handle 1000+ items efficiently
- */
-public class MainActivity extends AppCompatActivity {
+public class PaginatedMainActivity extends AppCompatActivity implements PaginatedMovieAdapter.PaginationListener {
 
     private RecyclerView recyclerView;
-    private MovieAdapter movieAdapter;
+    private PaginatedMovieAdapter movieAdapter;
     private List<Entry> currentPageEntries = new ArrayList<>();
     private ViewPager2 carouselViewPager;
     private CarouselAdapter carouselAdapter;
@@ -69,19 +52,16 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout titleLayout;
     private LinearLayout searchLayout;
     private AutoCompleteTextView searchBar;
-    
-    // Pagination UI elements
-    private LinearLayout paginationLayout;
-    private com.google.android.material.button.MaterialButton btnPrevious;
-    private com.google.android.material.button.MaterialButton btnNext;
 
     private boolean isGridView = true;
     private boolean isSearchVisible = false;
+    private int retryCount = 0;
+    private static final int MAX_RETRY_COUNT = 3;
     private DataRepository dataRepository;
     
     // Pagination variables
     private int currentPage = 0;
-    private int pageSize = 20; // Small page size for fast loading
+    private int pageSize = DataRepository.DEFAULT_PAGE_SIZE;
     private boolean hasMorePages = false;
     private int totalCount = 0;
     private String currentCategory = "";
@@ -93,32 +73,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
-        Log.d("MainActivity", "Starting TRUE pagination implementation");
-        
-        // Set up our custom toolbar
+        // Set up our custom toolbar (no default ActionBar since we use NoActionBar theme)
         Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
+            // Hide the default title since we have our custom title layout
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setDisplayShowTitleEnabled(false);
             }
         }
 
-        initializeViews();
-        setupRecyclerView();
-        setupCarousel();
-        setupBottomNavigation();
-        setupViewSwitch();
-        setupSearchToggle();
-
-        // Initialize repository
-        dataRepository = new DataRepository(this);
-
-        // Load ONLY first page - this is the key difference!
-        loadInitialDataFast();
-    }
-
-    private void initializeViews() {
         recyclerView = findViewById(R.id.recycler_view);
         carouselViewPager = findViewById(R.id.carousel_view_pager);
         gridViewIcon = findViewById(R.id.grid_view_icon);
@@ -129,19 +93,23 @@ public class MainActivity extends AppCompatActivity {
         titleLayout = findViewById(R.id.title_layout);
         searchLayout = findViewById(R.id.search_layout);
         searchBar = findViewById(R.id.search_bar);
-        
-        // Initialize pagination UI elements
-        paginationLayout = findViewById(R.id.pagination_layout);
-        btnPrevious = findViewById(R.id.btn_previous);
-        btnNext = findViewById(R.id.btn_next);
-        
-        // Set up pagination button listeners
-        btnPrevious.setOnClickListener(v -> onPreviousPage());
-        btnNext.setOnClickListener(v -> onNextPage());
+
+        setupRecyclerView();
+        setupCarousel();
+        setupBottomNavigation();
+        setupViewSwitch();
+        setupSearchToggle();
+
+        // Initialize repository
+        dataRepository = new DataRepository(this);
+
+        // Load initial data and first page
+        loadInitialData();
     }
 
     private void setupRecyclerView() {
-        movieAdapter = new MovieAdapter(this, currentPageEntries, isGridView);
+        movieAdapter = new PaginatedMovieAdapter(this, currentPageEntries, isGridView);
+        movieAdapter.setPaginationListener(this);
         
         if (isGridView) {
             recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
@@ -152,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupCarousel() {
-        // Initialize empty carousel - will be populated with first 5 items only
         carouselAdapter = new CarouselAdapter(this, new ArrayList<>(), new ArrayList<>());
         carouselViewPager.setAdapter(carouselAdapter);
     }
@@ -161,15 +128,16 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                // Handle navigation item selection
                 String category = "";
                 if (item.getItemId() == R.id.nav_movies) {
                     category = "Movies";
                 } else if (item.getItemId() == R.id.nav_series) {
-                    category = "TV Series";
+                    category = "TV Shows";
                 } else if (item.getItemId() == R.id.nav_home) {
                     category = "";
                 } else if (item.getItemId() == R.id.nav_live) {
-                    category = "Live TV";
+                    category = "Live";
                 }
                 
                 filterByCategory(category);
@@ -240,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
                 searchBar.requestFocus();
             }
         } catch (Exception e) {
-            Log.e("MainActivity", "Error showing search bar: " + e.getMessage(), e);
+            Log.e("PaginatedMainActivity", "Error showing search bar: " + e.getMessage(), e);
         }
     }
 
@@ -264,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
                 clearSearch();
             }
         } catch (Exception e) {
-            Log.e("MainActivity", "Error hiding search bar: " + e.getMessage(), e);
+            Log.e("PaginatedMainActivity", "Error hiding search bar: " + e.getMessage(), e);
         }
     }
 
@@ -287,54 +255,52 @@ public class MainActivity extends AppCompatActivity {
         loadPage();
     }
 
-    /**
-     * FAST INITIAL LOAD - Only checks if cache exists, doesn't load all data
-     */
-    private void loadInitialDataFast() {
-        Log.d("MainActivity", "Fast initialization - checking cache only");
+    private void loadInitialData() {
+        Log.d("PaginatedMainActivity", "Initializing paginated data");
         findViewById(R.id.progress_bar).setVisibility(View.VISIBLE);
         
-        // Check if cache exists, if not populate it, but don't return all data
+        // Only ensure cache is available, don't load all data
         dataRepository.ensureDataAvailable(new DataRepository.DataCallback() {
             @Override
             public void onSuccess(List<Entry> entries) {
-                Log.d("MainActivity", "Cache ready - loading ONLY first page");
-                loadFirstPageOnly();
-                setupCarouselFast();
+                // Cache is ready, now load only the first page
+                Log.d("PaginatedMainActivity", "Cache ready - loading first page only");
+                loadFirstPage();
+                setupCarouselFromCache();
             }
             
             @Override
             public void onError(String error) {
                 findViewById(R.id.progress_bar).setVisibility(View.GONE);
-                Log.e("MainActivity", "Error initializing: " + error);
-                Toast.makeText(MainActivity.this, "Failed to initialize: " + error, Toast.LENGTH_LONG).show();
+                Log.e("PaginatedMainActivity", "Error initializing data: " + error);
+                Toast.makeText(PaginatedMainActivity.this, "Failed to initialize data: " + error, Toast.LENGTH_LONG).show();
             }
         });
     }
 
-    /**
-     * Load carousel with only 5 items - no bulk loading
-     */
-    private void setupCarouselFast() {
+    private void setupCarouselFromCache() {
+        // Setup carousel with only first few items - load efficiently
         dataRepository.getPaginatedData(0, 5, new DataRepository.PaginatedDataCallback() {
             @Override
             public void onSuccess(List<Entry> carouselEntries, boolean hasMorePages, int totalCount) {
-                Log.d("MainActivity", "Fast carousel loaded: " + carouselEntries.size() + " items only");
-                carouselAdapter = new CarouselAdapter(MainActivity.this, carouselEntries, carouselEntries);
+                // Use only the first 5 entries for carousel - no need to load all data
+                Log.d("PaginatedMainActivity", "Carousel loaded with " + carouselEntries.size() + " items");
+                carouselAdapter = new CarouselAdapter(PaginatedMainActivity.this, carouselEntries, carouselEntries);
                 carouselViewPager.setAdapter(carouselAdapter);
                 carouselAdapter.notifyDataSetChanged();
             }
             
             @Override
             public void onError(String error) {
-                Log.e("MainActivity", "Error loading carousel: " + error);
-                carouselAdapter = new CarouselAdapter(MainActivity.this, new ArrayList<>(), new ArrayList<>());
+                Log.e("PaginatedMainActivity", "Error loading carousel: " + error);
+                // Initialize empty carousel
+                carouselAdapter = new CarouselAdapter(PaginatedMainActivity.this, new ArrayList<>(), new ArrayList<>());
                 carouselViewPager.setAdapter(carouselAdapter);
             }
         });
     }
 
-    private void loadFirstPageOnly() {
+    private void loadFirstPage() {
         currentPage = 0;
         loadPage();
     }
@@ -343,9 +309,7 @@ public class MainActivity extends AppCompatActivity {
         if (isLoading) return;
         
         isLoading = true;
-        setPaginationLoading(true);
-        
-        Log.d("MainActivity", "Loading page " + currentPage + " with " + pageSize + " items");
+        movieAdapter.setLoading(true);
         
         if (!currentSearchQuery.isEmpty()) {
             loadSearchResults();
@@ -362,7 +326,6 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess(List<Entry> entries, boolean hasMorePages, int totalCount) {
                 findViewById(R.id.progress_bar).setVisibility(View.GONE);
                 updatePageData(entries, hasMorePages, totalCount);
-                Log.d("MainActivity", "Loaded page " + currentPage + ": " + entries.size() + " items (Total: " + totalCount + ")");
             }
             
             @Override
@@ -379,7 +342,6 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess(List<Entry> entries, boolean hasMorePages, int totalCount) {
                 findViewById(R.id.progress_bar).setVisibility(View.GONE);
                 updatePageData(entries, hasMorePages, totalCount);
-                Log.d("MainActivity", "Category '" + currentCategory + "' page " + currentPage + ": " + entries.size() + " items");
             }
             
             @Override
@@ -396,7 +358,6 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess(List<Entry> entries, boolean hasMorePages, int totalCount) {
                 findViewById(R.id.progress_bar).setVisibility(View.GONE);
                 updatePageData(entries, hasMorePages, totalCount);
-                Log.d("MainActivity", "Search '" + currentSearchQuery + "' page " + currentPage + ": " + entries.size() + " results");
             }
             
             @Override
@@ -416,87 +377,67 @@ public class MainActivity extends AppCompatActivity {
         currentPageEntries.addAll(entries);
         
         movieAdapter.setEntryList(currentPageEntries);
-        updatePaginationUI();
-        
-        // Additional check to ensure Next button is properly disabled when no more data
-        if (btnNext != null && (!hasMorePages || ((currentPage + 1) * pageSize >= totalCount))) {
-            btnNext.setEnabled(false);
-        }
+        movieAdapter.updatePaginationState(currentPage, hasMorePages, totalCount);
         
         // Scroll to top of the list
         recyclerView.scrollToPosition(0);
         
-        Log.d("MainActivity", "Page updated: " + entries.size() + " items on page " + (currentPage + 1) + 
-              ", HasMore: " + hasMorePages + ", Total: " + totalCount);
+        Log.d("PaginatedMainActivity", "Loaded page " + currentPage + " with " + entries.size() + " items");
     }
 
     private void handlePageLoadError(String error) {
         isLoading = false;
-        setPaginationLoading(false);
-        Log.e("MainActivity", "Error loading page: " + error);
+        movieAdapter.setLoading(false);
+        Log.e("PaginatedMainActivity", "Error loading page: " + error);
         Toast.makeText(this, "Failed to load page: " + error, Toast.LENGTH_SHORT).show();
     }
 
-    // Pagination methods
+    // PaginationListener implementation
+    @Override
     public void onPreviousPage() {
         if (currentPage > 0 && !isLoading) {
             currentPage--;
             loadPage();
-            Log.d("MainActivity", "Previous page: " + currentPage);
         }
     }
 
+    @Override
     public void onNextPage() {
-        // Additional validation to ensure we don't go beyond available data
-        boolean canGoNext = hasMorePages && !isLoading && ((currentPage + 1) * pageSize < totalCount);
-        if (canGoNext) {
+        if (hasMorePages && !isLoading) {
             currentPage++;
             loadPage();
-            Log.d("MainActivity", "Next page: " + currentPage + " (Total items: " + totalCount + ")");
-        } else {
-            Log.d("MainActivity", "Cannot go to next page. HasMore: " + hasMorePages + ", Loading: " + isLoading + ", TotalCount: " + totalCount);
-            // Ensure Next button is disabled
-            if (btnNext != null) {
-                btnNext.setEnabled(false);
-            }
-        }
-    }
-    
-    private void updatePaginationUI() {
-        // Show pagination layout only if there are more than pageSize items
-        if (totalCount > pageSize) {
-            paginationLayout.setVisibility(View.VISIBLE);
-            
-            // Update button states with additional safety checks
-            if (btnPrevious != null) {
-                btnPrevious.setEnabled(currentPage > 0 && !isLoading);
-            }
-            if (btnNext != null) {
-                // Disable Next button if no more pages or if we're at the last possible page
-                boolean canGoNext = hasMorePages && !isLoading && ((currentPage + 1) * pageSize < totalCount);
-                btnNext.setEnabled(canGoNext);
-            }
-        } else {
-            // Hide pagination if not needed
-            paginationLayout.setVisibility(View.GONE);
-        }
-    }
-    
-    private void setPaginationLoading(boolean loading) {
-        isLoading = loading;
-        if (btnPrevious != null) {
-            btnPrevious.setEnabled(!loading && currentPage > 0);
-        }
-        if (btnNext != null) {
-            btnNext.setEnabled(!loading && hasMorePages);
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        // Check if we need to refresh data
         if (currentPageEntries.isEmpty()) {
-            loadInitialDataFast();
+            loadInitialData();
+        }
+    }
+
+    public void refreshData() {
+        retryCount = 0;
+        currentPage = 0;
+        if (dataRepository != null) {
+            findViewById(R.id.progress_bar).setVisibility(View.VISIBLE);
+            dataRepository.refreshData(new DataRepository.DataCallback() {
+                @Override
+                public void onSuccess(List<Entry> entries) {
+                    // After refresh, load only first page - don't return all data
+                    loadFirstPage();
+                    setupCarouselFromCache();
+                    Toast.makeText(PaginatedMainActivity.this, "Data refreshed (" + dataRepository.getTotalEntriesCount() + " items)", Toast.LENGTH_SHORT).show();
+                }
+                
+                @Override
+                public void onError(String error) {
+                    findViewById(R.id.progress_bar).setVisibility(View.GONE);
+                    Toast.makeText(PaginatedMainActivity.this, "Failed to refresh: " + error, Toast.LENGTH_LONG).show();
+                }
+            });
         }
     }
 
@@ -509,7 +450,7 @@ public class MainActivity extends AppCompatActivity {
                 super.onBackPressed();
             }
         } catch (Exception e) {
-            Log.e("MainActivity", "Error handling back press: " + e.getMessage(), e);
+            Log.e("PaginatedMainActivity", "Error handling back press: " + e.getMessage(), e);
             super.onBackPressed();
         }
     }
