@@ -54,7 +54,8 @@ public class QualityDropdownMenu {
                     Server server = servers.get(position);
                     textView.setText(server.getName());
                     textView.setTextColor(0xFFFFFFFF); // White text
-                    textView.setPadding(32, 16, 32, 16);
+                    textView.setTextSize(12); // Smaller text size
+                    textView.setPadding(16, 8, 16, 8); // Reduced padding
                     
                     // Highlight current selection
                     if (position == currentServerIndex) {
@@ -83,13 +84,19 @@ public class QualityDropdownMenu {
             dismiss();
         });
 
-        // Create PopupWindow
+        // Create PopupWindow with limited height
         popupWindow = new PopupWindow(listView, ViewGroup.LayoutParams.WRAP_CONTENT, 
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         popupWindow.setBackgroundDrawable(context.getResources().getDrawable(android.R.drawable.dialog_holo_light_frame));
         popupWindow.setElevation(8f);
         popupWindow.setFocusable(true);
         popupWindow.setOutsideTouchable(true);
+        
+        // Limit maximum height to prevent oversized dropdown
+        int maxHeight = Math.min(servers.size() * 40, 200); // Max 200dp height
+        listView.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, 
+                maxHeight));
     }
 
     public void setOnQualitySelectedListener(OnQualitySelectedListener listener) {
