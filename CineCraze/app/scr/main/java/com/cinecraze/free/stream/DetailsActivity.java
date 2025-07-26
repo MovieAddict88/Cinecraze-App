@@ -406,10 +406,13 @@ public class DetailsActivity extends AppCompatActivity {
                 nestedScrollView.setVisibility(android.view.View.GONE);
             }
             
-            // Hide the app bar layout to remove the collapsing toolbar space
-            com.google.android.material.appbar.AppBarLayout appBarLayout = findViewById(R.id.app_bar);
-            if (appBarLayout != null) {
-                appBarLayout.setVisibility(android.view.View.GONE);
+            // Make the collapsing toolbar layout fill the screen
+            com.google.android.material.appbar.CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.toolbar_layout);
+            if (collapsingToolbarLayout != null) {
+                androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams params = 
+                    (androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams) collapsingToolbarLayout.getLayoutParams();
+                params.height = androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams.MATCH_PARENT;
+                collapsingToolbarLayout.setLayoutParams(params);
             }
             
             // Set the activity to fullscreen mode
@@ -444,10 +447,17 @@ public class DetailsActivity extends AppCompatActivity {
                 nestedScrollView.setVisibility(android.view.View.VISIBLE);
             }
             
-            // Show the app bar layout
-            com.google.android.material.appbar.AppBarLayout appBarLayout = findViewById(R.id.app_bar);
-            if (appBarLayout != null) {
-                appBarLayout.setVisibility(android.view.View.VISIBLE);
+            // Restore collapsing toolbar layout height
+            com.google.android.material.appbar.CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.toolbar_layout);
+            if (collapsingToolbarLayout != null) {
+                androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams params = 
+                    (androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams) collapsingToolbarLayout.getLayoutParams();
+                params.height = (int) android.util.TypedValue.applyDimension(
+                    android.util.TypedValue.COMPLEX_UNIT_DIP, 
+                    250, 
+                    getResources().getDisplayMetrics()
+                );
+                collapsingToolbarLayout.setLayoutParams(params);
             }
             
             // Restore normal system UI
