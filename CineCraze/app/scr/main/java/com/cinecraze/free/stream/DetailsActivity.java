@@ -241,7 +241,7 @@ public class DetailsActivity extends AppCompatActivity {
         // Setup PiP button
         ImageButton pipButton = playerView.findViewById(R.id.exo_pip_button);
         if (pipButton != null) {
-            pipButton.setOnClickListener(v -> enterPictureInPictureMode());
+            pipButton.setOnClickListener(v -> startPictureInPictureMode());
         }
 
         // Setup quality button
@@ -339,7 +339,7 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     // Picture-in-Picture methods
-    private void enterPictureInPictureMode() {
+    private void startPictureInPictureMode() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (getPackageManager().hasSystemFeature(android.content.pm.PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
                 PictureInPictureParams params = new PictureInPictureParams.Builder()
