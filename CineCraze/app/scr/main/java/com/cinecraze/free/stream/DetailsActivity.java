@@ -381,7 +381,7 @@ public class DetailsActivity extends AppCompatActivity {
     @Override
     public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, Configuration newConfig) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
-        android.view.View appBarLayout = findViewById(R.id.app_bar);
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
         if (isInPictureInPictureMode) {
             // Configure player view for PiP mode
             if (playerView != null) {
@@ -390,9 +390,9 @@ public class DetailsActivity extends AppCompatActivity {
                 playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
             }
 
-            // Hide the entire AppBarLayout (toolbar + video container)
-            if (appBarLayout != null) {
-                appBarLayout.setVisibility(android.view.View.GONE);
+            // Hide the toolbar within the collapsing toolbar layout
+            if (toolbar != null) {
+                toolbar.setVisibility(android.view.View.GONE);
             }
 
             // Hide the nested scroll view content (everything below the video)
@@ -416,9 +416,9 @@ public class DetailsActivity extends AppCompatActivity {
                 playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
             }
 
-            // Show the entire AppBarLayout (toolbar + video container)
-            if (appBarLayout != null) {
-                appBarLayout.setVisibility(android.view.View.VISIBLE);
+            // Show the toolbar
+            if (toolbar != null) {
+                toolbar.setVisibility(android.view.View.VISIBLE);
             }
 
             // Show the nested scroll view content
