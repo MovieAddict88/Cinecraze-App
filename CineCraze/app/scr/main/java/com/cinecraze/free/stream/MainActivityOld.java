@@ -293,7 +293,7 @@ public class MainActivityOld extends AppCompatActivity {
                 allEntries.addAll(entries);
                 
                 if (allEntries.isEmpty()) {
-                    Toast.makeText(MainActivity.this, "No data available", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivityOld.this, "No data available", Toast.LENGTH_LONG).show();
                     return;
                 }
                 
@@ -310,7 +310,7 @@ public class MainActivityOld extends AppCompatActivity {
                 setupSearch();
                 retryCount = 0; // Reset retry count on success
                 Log.d("MainActivity", "Data loaded successfully with " + allEntries.size() + " items");
-                Toast.makeText(MainActivity.this, "Data loaded (" + allEntries.size() + " items)", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivityOld.this, "Data loaded (" + allEntries.size() + " items)", Toast.LENGTH_SHORT).show();
             }
             
             @Override
@@ -321,12 +321,12 @@ public class MainActivityOld extends AppCompatActivity {
                 if (retryCount < MAX_RETRY_COUNT) {
                     retryCount++;
                     Log.d("MainActivity", "Retrying... Attempt " + retryCount + "/" + MAX_RETRY_COUNT);
-                    Toast.makeText(MainActivity.this, error + " - Retrying... Attempt " + retryCount + "/" + MAX_RETRY_COUNT, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivityOld.this, error + " - Retrying... Attempt " + retryCount + "/" + MAX_RETRY_COUNT, Toast.LENGTH_SHORT).show();
                     // Retry after a short delay
                     new android.os.Handler().postDelayed(() -> loadData(), 2000);
                 } else {
                     Log.e("MainActivity", "Failed to load data after " + MAX_RETRY_COUNT + " attempts");
-                    Toast.makeText(MainActivity.this, "Failed to load data after " + MAX_RETRY_COUNT + " attempts. " + error, Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivityOld.this, "Failed to load data after " + MAX_RETRY_COUNT + " attempts. " + error, Toast.LENGTH_LONG).show();
                     retryCount = 0; // Reset for next manual retry
                 }
             }
@@ -367,13 +367,13 @@ public class MainActivityOld extends AppCompatActivity {
                     allEntries.addAll(entries);
                     filterEntries(""); // Refresh current view
                     setupSearch();
-                    Toast.makeText(MainActivity.this, "Data refreshed (" + allEntries.size() + " items)", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivityOld.this, "Data refreshed (" + allEntries.size() + " items)", Toast.LENGTH_SHORT).show();
                 }
                 
                 @Override
                 public void onError(String error) {
                     findViewById(R.id.progress_bar).setVisibility(View.GONE);
-                    Toast.makeText(MainActivity.this, "Failed to refresh: " + error, Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivityOld.this, "Failed to refresh: " + error, Toast.LENGTH_LONG).show();
                 }
             });
         }
@@ -420,7 +420,7 @@ public class MainActivityOld extends AppCompatActivity {
                         if (selectedTitle != null && allEntries != null) {
                             for (Entry entry : allEntries) {
                                 if (entry != null && entry.getTitle() != null && entry.getTitle().equals(selectedTitle)) {
-                                    Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
+                                    Intent intent = new Intent(MainActivityOld.this, DetailsActivity.class);
                                     intent.putExtra("entry", new Gson().toJson(entry));
                                     startActivity(intent);
                                     hideSearchBar(); // Hide search bar after selection
@@ -430,7 +430,7 @@ public class MainActivityOld extends AppCompatActivity {
                         }
                     } catch (Exception e) {
                         Log.e("MainActivity", "Error handling search item click: " + e.getMessage(), e);
-                        Toast.makeText(MainActivity.this, "Error opening selected item", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivityOld.this, "Error opening selected item", Toast.LENGTH_SHORT).show();
                     }
                 });
             } else {
