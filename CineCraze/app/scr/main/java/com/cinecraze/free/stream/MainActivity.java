@@ -28,6 +28,7 @@ import com.cinecraze.free.stream.net.ApiService;
 import com.cinecraze.free.stream.net.RetrofitClient;
 import com.cinecraze.free.stream.repository.DataRepository;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.button.MaterialButton;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -74,6 +75,14 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout paginationLayout;
     private com.google.android.material.button.MaterialButton btnPrevious;
     private com.google.android.material.button.MaterialButton btnNext;
+    
+    // Filter UI elements
+    private MaterialButton btnGenreFilter;
+    private MaterialButton btnCountryFilter;
+    private MaterialButton btnYearFilter;
+    private FilterSpinner genreSpinner;
+    private FilterSpinner countrySpinner;
+    private FilterSpinner yearSpinner;
 
     private boolean isGridView = true;
     private boolean isSearchVisible = false;
@@ -87,6 +96,11 @@ public class MainActivity extends AppCompatActivity {
     private String currentCategory = "";
     private String currentSearchQuery = "";
     private boolean isLoading = false;
+    
+    // Filter variables
+    private String currentGenreFilter = null;
+    private String currentCountryFilter = null;
+    private String currentYearFilter = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
         setupBottomNavigation();
         setupViewSwitch();
         setupSearchToggle();
+        setupFilterSpinners();
 
         // Initialize repository
         dataRepository = new DataRepository(this);
@@ -134,6 +149,11 @@ public class MainActivity extends AppCompatActivity {
         paginationLayout = findViewById(R.id.pagination_layout);
         btnPrevious = findViewById(R.id.btn_previous);
         btnNext = findViewById(R.id.btn_next);
+        
+        // Initialize filter UI elements
+        btnGenreFilter = findViewById(R.id.btn_genre_filter);
+        btnCountryFilter = findViewById(R.id.btn_country_filter);
+        btnYearFilter = findViewById(R.id.btn_year_filter);
         
         // Set up pagination button listeners
         btnPrevious.setOnClickListener(v -> onPreviousPage());
@@ -280,11 +300,126 @@ public class MainActivity extends AppCompatActivity {
         loadPage();
     }
 
+    private void setupFilterSpinners() {
+        // Initialize empty spinners - will be populated when data loads
+        genreSpinner = new FilterSpinner(this, "Genre", new ArrayList<>(), currentGenreFilter);
+        countrySpinner = new FilterSpinner(this, "Country", new ArrayList<>(), currentCountryFilter);
+        yearSpinner = new FilterSpinner(this, "Year", new ArrayList<>(), currentYearFilter);
+        
+        // Set up filter listeners
+        FilterSpinner.OnFilterSelectedListener filterListener = new FilterSpinner.OnFilterSelectedListener() {
+            @Override
+            public void onFilterSelected(String filterType, String filterValue) {
+                switch (filterType) {
+                    case "Genre":
+                        currentGenreFilter = filterValue;
+                        btnGenreFilter.setText(filterValue != null ? filterValue : "Genre");
+                        break;
+                    case "Country":
+                        currentCountryFilter = filterValue;
+                        btnCountryFilter.setText(filterValue != null ? filterValue : "Country");
+                        break;
+                    case "Year":
+                        currentYearFilter = filterValue;
+                        btnYearFilter.setText(filterValue != null ? filterValue : "Year");
+                        break;
+                }
+                
+                // Reset pagination and apply filters
+                currentPage = 0;
+                currentSearchQuery = ""; // Clear search when filtering
+                currentCategory = ""; // Clear category when filtering
+                
+                // Hide search bar if visible
+                if (isSearchVisible) {
+                    hideSearchBar();
+                }
+                
+                loadPage(); // Use loadPage() which will automatically route to filtered data
+            }
+        };
+        
+        genreSpinner.setOnFilterSelectedListener(filterListener);
+        countrySpinner.setOnFilterSelectedListener(filterListener);
+        yearSpinner.setOnFilterSelectedListener(filterListener);
+        
+        // Set up button click listeners to show spinners
+        btnGenreFilter.setOnClickListener(v -> {
+            dismissAllSpinners();
+            genreSpinner.show(btnGenreFilter);
+        });
+        
+        btnCountryFilter.setOnClickListener(v -> {
+            dismissAllSpinners();
+            countrySpinner.show(btnCountryFilter);
+        });
+        
+        btnYearFilter.setOnClickListener(v -> {
+            dismissAllSpinners();
+            yearSpinner.show(btnYearFilter);
+        });
+    }
+    
+    private void dismissAllSpinners() {
+        if (genreSpinner != null && genreSpinner.isShowing()) {
+            genreSpinner.dismiss();
+        }
+        if (countrySpinner != null && countrySpinner.isShowing()) {
+            countrySpinner.dismiss();
+        }
+        if (yearSpinner != null && yearSpinner.isShowing()) {
+            yearSpinner.dismiss();
+        }
+    }
+    
+    private void populateFilterSpinners() {
+        // Get unique values from repository and populate spinners
+        List<String> genres = dataRepository.getUniqueGenres();
+        List<String> countries = dataRepository.getUniqueCountries();
+        List<String> years = dataRepository.getUniqueYears();
+        
+        if (genreSpinner != null) {
+            genreSpinner.updateFilterValues(genres);
+        }
+        if (countrySpinner != null) {
+            countrySpinner.updateFilterValues(countries);
+        }
+        if (yearSpinner != null) {
+            yearSpinner.updateFilterValues(years);
+        }
+        
+        Log.d("MainActivity", "Filter spinners populated: " + genres.size() + " genres, " + 
+              countries.size() + " countries, " + years.size() + " years");
+    }
+
     private void filterByCategory(String category) {
         currentCategory = category;
         currentPage = 0;
         currentSearchQuery = "";
+        clearAllFilters(); // Clear filters when switching categories
         loadPage();
+    }
+    
+    private void clearAllFilters() {
+        currentGenreFilter = null;
+        currentCountryFilter = null;
+        currentYearFilter = null;
+        
+        // Reset button texts
+        btnGenreFilter.setText("Genre");
+        btnCountryFilter.setText("Country");
+        btnYearFilter.setText("Year");
+        
+        // Update spinners
+        if (genreSpinner != null) {
+            genreSpinner.setCurrentFilter(null);
+        }
+        if (countrySpinner != null) {
+            countrySpinner.setCurrentFilter(null);
+        }
+        if (yearSpinner != null) {
+            yearSpinner.setCurrentFilter(null);
+        }
     }
 
     /**
@@ -301,6 +436,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("MainActivity", "Cache ready - loading ONLY first page");
                 loadFirstPageOnly();
                 setupCarouselFast();
+                populateFilterSpinners(); // Populate filter spinners with data from cache
             }
             
             @Override
@@ -351,6 +487,8 @@ public class MainActivity extends AppCompatActivity {
             loadSearchResults();
         } else if (!currentCategory.isEmpty()) {
             loadCategoryPage();
+        } else if (hasActiveFilters()) {
+            loadFilteredPage();
         } else {
             loadAllEntriesPage();
         }
@@ -397,6 +535,30 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.progress_bar).setVisibility(View.GONE);
                 updatePageData(entries, hasMorePages, totalCount);
                 Log.d("MainActivity", "Search '" + currentSearchQuery + "' page " + currentPage + ": " + entries.size() + " results");
+            }
+            
+            @Override
+            public void onError(String error) {
+                findViewById(R.id.progress_bar).setVisibility(View.GONE);
+                handlePageLoadError(error);
+            }
+        });
+    }
+    
+    private boolean hasActiveFilters() {
+        return currentGenreFilter != null || currentCountryFilter != null || currentYearFilter != null;
+    }
+    
+    private void loadFilteredPage() {
+        dataRepository.getPaginatedFilteredData(currentGenreFilter, currentCountryFilter, currentYearFilter, 
+                currentPage, pageSize, new DataRepository.PaginatedDataCallback() {
+            @Override
+            public void onSuccess(List<Entry> entries, boolean hasMorePages, int totalCount) {
+                findViewById(R.id.progress_bar).setVisibility(View.GONE);
+                updatePageData(entries, hasMorePages, totalCount);
+                Log.d("MainActivity", "Loaded filtered page " + currentPage + ": " + entries.size() + 
+                      " items (Genre: " + currentGenreFilter + ", Country: " + currentCountryFilter + 
+                      ", Year: " + currentYearFilter + ")");
             }
             
             @Override
@@ -503,7 +665,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         try {
-            if (isSearchVisible) {
+            // Check if any spinner is showing and dismiss it first
+            if ((genreSpinner != null && genreSpinner.isShowing()) ||
+                (countrySpinner != null && countrySpinner.isShowing()) ||
+                (yearSpinner != null && yearSpinner.isShowing())) {
+                dismissAllSpinners();
+            } else if (isSearchVisible) {
                 hideSearchBar();
             } else {
                 super.onBackPressed();
