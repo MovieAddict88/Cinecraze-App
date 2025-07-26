@@ -242,7 +242,14 @@ public class DetailsActivity extends AppCompatActivity {
         // Setup PiP button
         ImageButton pipButton = playerView.findViewById(R.id.exo_pip_button);
         if (pipButton != null) {
-            pipButton.setOnClickListener(v -> startPictureInPictureMode());
+            pipButton.setOnClickListener(v -> {
+                String videoUrl = getCurrentVideoUrl();
+                if (videoUrl != null && player != null) {
+                    long currentPosition = player.getCurrentPosition();
+                    boolean isPlaying = player.isPlaying();
+                    PiPActivity.start(this, videoUrl, currentPosition, isPlaying, currentServerIndex);
+                }
+            });
         }
 
         // Setup quality button
@@ -336,99 +343,6 @@ public class DetailsActivity extends AppCompatActivity {
         super.onPause();
         if (player != null) {
             player.pause();
-        }
-    }
-
-    // Picture-in-Picture methods
-    private void startPictureInPictureMode() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (getPackageManager().hasSystemFeature(android.content.pm.PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
-                // Get video dimensions for proper aspect ratio
-                Rational aspectRatio = new Rational(16, 9); // Default aspect ratio
-                
-                // Try to get actual video dimensions if available
-                if (player != null && player.getVideoFormat() != null) {
-                    int videoWidth = player.getVideoFormat().width;
-                    int videoHeight = player.getVideoFormat().height;
-                    if (videoWidth > 0 && videoHeight > 0) {
-                        aspectRatio = new Rational(videoWidth, videoHeight);
-                        
-                        // Ensure aspect ratio is within acceptable bounds for PiP
-                        float ratio = (float) videoWidth / videoHeight;
-                        if (ratio < 0.42f) { // Too tall
-                            aspectRatio = new Rational(42, 100);
-                        } else if (ratio > 2.39f) { // Too wide
-                            aspectRatio = new Rational(239, 100);
-                        }
-                    }
-                }
-                
-                PictureInPictureParams params = new PictureInPictureParams.Builder()
-                        .setAspectRatio(aspectRatio)
-                        .build();
-                        
-                // Configure player view for PiP before entering
-                if (playerView != null) {
-                    // Use FIT mode to maintain aspect ratio
-                    playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
-                }
-                
-                enterPictureInPictureMode(params);
-            }
-        }
-    }
-
-    @Override
-    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, Configuration newConfig) {
-        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
-        android.view.View appBarLayout = findViewById(R.id.app_bar);
-        androidx.core.widget.NestedScrollView nestedScrollView = findViewById(R.id.nested_scroll_view);
-        
-        if (isInPictureInPictureMode) {
-            // Configure player view for PiP mode
-            if (playerView != null) {
-                playerView.setUseController(false);
-                // Use FIT resize mode to maintain aspect ratio without cropping
-                playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
-            }
-
-            // Hide the AppBarLayout (toolbar)
-            if (appBarLayout != null) {
-                appBarLayout.setVisibility(android.view.View.GONE);
-            }
-
-            // Hide the nested scroll view content (everything below the video)
-            if (nestedScrollView != null) {
-                nestedScrollView.setVisibility(android.view.View.GONE);
-            }
-
-            // Set the activity to fullscreen mode
-            getWindow().getDecorView().setSystemUiVisibility(
-                android.view.View.SYSTEM_UI_FLAG_FULLSCREEN |
-                android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-            );
-
-        } else {
-            // Restore UI elements when exiting PiP mode
-            if (playerView != null) {
-                playerView.setUseController(true);
-                // Restore original resize mode
-                playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
-            }
-
-            // Show the AppBarLayout (toolbar)
-            if (appBarLayout != null) {
-                appBarLayout.setVisibility(android.view.View.VISIBLE);
-            }
-
-            // Show the nested scroll view content
-            if (nestedScrollView != null) {
-                nestedScrollView.setVisibility(android.view.View.VISIBLE);
-            }
-
-            // Restore normal system UI
-            getWindow().getDecorView().setSystemUiVisibility(android.view.View.SYSTEM_UI_FLAG_VISIBLE);
         }
     }
 

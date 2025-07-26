@@ -37,6 +37,11 @@
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.CineCraze.NoActionBar" />
+        <activity
+            android:name=".PiPActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
+            android:supportsPictureInPicture="true"
+            android:theme="@style/Theme.CineCraze.NoActionBar" />
     </application>
 
 </manifest>
