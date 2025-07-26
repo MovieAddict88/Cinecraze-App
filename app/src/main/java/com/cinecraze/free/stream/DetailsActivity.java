@@ -53,6 +53,10 @@ public class DetailsActivity extends AppCompatActivity {
     private List<Season> seasons;
     private Season currentSeason;
     private Episode currentEpisode;
+    
+    // Quality selection
+    private ImageButton qualityButton;
+    private int currentServerIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +73,9 @@ public class DetailsActivity extends AppCompatActivity {
         episodeSelectorContainer = findViewById(R.id.episode_selector_container);
         seasonRecyclerView = findViewById(R.id.season_recycler_view);
         episodeRecyclerView = findViewById(R.id.episode_recycler_view);
+        
+        // Initialize quality button
+        qualityButton = findViewById(R.id.exo_quality_button);
 
         String entryJson = getIntent().getStringExtra("entry");
         if (entryJson != null) {
@@ -122,6 +129,7 @@ public class DetailsActivity extends AppCompatActivity {
                 currentSeason = season;
                 if (season.getEpisodes() != null && !season.getEpisodes().isEmpty()) {
                     currentEpisode = season.getEpisodes().get(0); // Reset to first episode of new season
+                    currentServerIndex = 0; // Reset server index for new season
                     updateEpisodeList();
                     playCurrentEpisode();
                 }
@@ -145,6 +153,12 @@ public class DetailsActivity extends AppCompatActivity {
         
         // Initialize player with first episode
         initializePlayer();
+        
+        // Show quality button if first episode has multiple servers
+        if (currentEpisode != null && currentEpisode.getServers() != null && currentEpisode.getServers().size() > 1) {
+            qualityButton.setVisibility(View.VISIBLE);
+        }
+        
         playCurrentEpisode();
     }
     
@@ -156,14 +170,13 @@ public class DetailsActivity extends AppCompatActivity {
         // Initialize player for movie
         initializePlayer();
         
-        // Play the movie if it has servers
-        if (entry.getServers() != null && !entry.getServers().isEmpty()) {
-            String videoUrl = entry.getServers().get(0).getUrl();
-            MediaItem mediaItem = MediaItem.fromUri(videoUrl);
-            player.setMediaItem(mediaItem);
-            player.prepare();
-            player.play();
+        // Show quality button if multiple servers available
+        if (entry.getServers() != null && entry.getServers().size() > 1) {
+            qualityButton.setVisibility(View.VISIBLE);
         }
+        
+        // Play the movie
+        playCurrentVideo();
     }
     
     private void updateEpisodeList() {
@@ -179,11 +192,17 @@ public class DetailsActivity extends AppCompatActivity {
     
     private void playCurrentEpisode() {
         if (currentEpisode != null && currentEpisode.getServers() != null && !currentEpisode.getServers().isEmpty()) {
-            String videoUrl = currentEpisode.getServers().get(0).getUrl();
-            MediaItem mediaItem = MediaItem.fromUri(videoUrl);
-            player.setMediaItem(mediaItem);
-            player.prepare();
-            player.play();
+            // Show quality button if multiple servers available
+            if (currentEpisode.getServers().size() > 1) {
+                qualityButton.setVisibility(View.VISIBLE);
+            } else {
+                qualityButton.setVisibility(View.GONE);
+            }
+            
+            // Reset server index when changing episodes
+            currentServerIndex = 0;
+            
+            playCurrentVideo();
             
             // Update episode adapter selection
             if (episodeAdapter != null) {
@@ -203,19 +222,60 @@ public class DetailsActivity extends AppCompatActivity {
 
         ImageButton fullscreenButton = playerView.findViewById(R.id.exo_fullscreen_button);
         fullscreenButton.setOnClickListener(v -> {
-            String videoUrl = null;
-            if (currentEpisode != null && currentEpisode.getServers() != null && !currentEpisode.getServers().isEmpty()) {
-                videoUrl = currentEpisode.getServers().get(0).getUrl();
-            } else if (entry.getServers() != null && !entry.getServers().isEmpty()) {
-                videoUrl = entry.getServers().get(0).getUrl();
-            }
-            
+            String videoUrl = getCurrentVideoUrl();
             if (videoUrl != null && player != null) {
                 long currentPosition = player.getCurrentPosition();
                 boolean isPlaying = player.isPlaying();
                 FullScreenActivity.start(this, videoUrl, currentPosition, isPlaying);
             }
         });
+
+        // Setup quality button
+        setupQualityButton();
+    }
+    
+    private void setupQualityButton() {
+        qualityButton.setOnClickListener(v -> {
+            List<Server> servers = getCurrentServers();
+            if (servers != null && servers.size() > 1) {
+                QualitySelectorDialog dialog = QualitySelectorDialog.newInstance(servers, currentServerIndex);
+                dialog.setOnQualitySelectedListener(new QualitySelectorDialog.OnQualitySelectedListener() {
+                    @Override
+                    public void onQualitySelected(Server server, int position) {
+                        currentServerIndex = position;
+                        playCurrentVideo();
+                    }
+                });
+                dialog.show(getSupportFragmentManager(), "quality_selector");
+            }
+        });
+    }
+    
+    private List<Server> getCurrentServers() {
+        if (currentEpisode != null && currentEpisode.getServers() != null && !currentEpisode.getServers().isEmpty()) {
+            return currentEpisode.getServers();
+        } else if (entry.getServers() != null && !entry.getServers().isEmpty()) {
+            return entry.getServers();
+        }
+        return null;
+    }
+    
+    private String getCurrentVideoUrl() {
+        List<Server> servers = getCurrentServers();
+        if (servers != null && currentServerIndex < servers.size()) {
+            return servers.get(currentServerIndex).getUrl();
+        }
+        return null;
+    }
+    
+    private void playCurrentVideo() {
+        String videoUrl = getCurrentVideoUrl();
+        if (videoUrl != null) {
+            MediaItem mediaItem = MediaItem.fromUri(videoUrl);
+            player.setMediaItem(mediaItem);
+            player.prepare();
+            player.play();
+        }
     }
 
     private void setupRelatedContentRecyclerView() {

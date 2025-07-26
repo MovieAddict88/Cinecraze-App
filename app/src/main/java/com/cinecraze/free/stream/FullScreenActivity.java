@@ -16,7 +16,9 @@ public class FullScreenActivity extends AppCompatActivity {
     private ExoPlayer player;
     private ImageButton resizeModeButton;
     private ImageButton fullscreenButton;
+    private ImageButton qualityButton;
     private int currentResizeMode = 0;
+    private int currentServerIndex = 0;
     private static final int[] RESIZE_MODES = {
             AspectRatioFrameLayout.RESIZE_MODE_FIT,
             AspectRatioFrameLayout.RESIZE_MODE_FILL,
@@ -28,11 +30,12 @@ public class FullScreenActivity extends AppCompatActivity {
             R.drawable.ic_zoom
     };
 
-    public static void start(Context context, String videoUrl, long currentPosition, boolean wasPlaying) {
+    public static void start(Context context, String videoUrl, long currentPosition, boolean wasPlaying, int serverIndex) {
         Intent intent = new Intent(context, FullScreenActivity.class);
         intent.putExtra("video_url", videoUrl);
         intent.putExtra("current_position", currentPosition);
         intent.putExtra("was_playing", wasPlaying);
+        intent.putExtra("server_index", serverIndex);
         context.startActivity(intent);
     }
 
