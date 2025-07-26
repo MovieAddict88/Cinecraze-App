@@ -67,27 +67,37 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        recyclerView = findViewById(R.id.recycler_view);
-        carouselViewPager = findViewById(R.id.carousel_view_pager);
-        gridViewIcon = findViewById(R.id.grid_view_icon);
-        listViewIcon = findViewById(R.id.list_view_icon);
-        bottomNavigationView = findViewById(R.id.bottom_navigation);
-        
-        // Initialize search components
-        toolbar = findViewById(R.id.toolbar);
-        toolbarTitle = findViewById(R.id.toolbar_title);
-        searchLayout = findViewById(R.id.search_layout);
-        searchBar = findViewById(R.id.search_bar);
+        try {
+            recyclerView = findViewById(R.id.recycler_view);
+            carouselViewPager = findViewById(R.id.carousel_view_pager);
+            gridViewIcon = findViewById(R.id.grid_view_icon);
+            listViewIcon = findViewById(R.id.list_view_icon);
+            bottomNavigationView = findViewById(R.id.bottom_navigation);
+            
+            // Initialize search components
+            toolbar = findViewById(R.id.toolbar);
+            toolbarTitle = findViewById(R.id.toolbar_title);
+            searchLayout = findViewById(R.id.search_layout);
+            searchBar = findViewById(R.id.search_bar);
 
-        setupToolbar();
-        setupRecyclerView();
-        setupCarousel();
-        setupBottomNavigation();
-        setupViewSwitch();
+            if (toolbar != null && toolbarTitle != null && searchLayout != null && searchBar != null) {
+                setupToolbar();
+            } else {
+                Log.e("MainActivity", "Some search components are null");
+            }
+            
+            setupRecyclerView();
+            setupCarousel();
+            setupBottomNavigation();
+            setupViewSwitch();
 
-        // Only fetch data if we don't have it already
-        if (allEntries.isEmpty()) {
-            fetchPlaylist();
+            // Only fetch data if we don't have it already
+            if (allEntries.isEmpty()) {
+                fetchPlaylist();
+            }
+        } catch (Exception e) {
+            Log.e("MainActivity", "Error in onCreate: " + e.getMessage(), e);
+            Toast.makeText(this, "Error initializing app: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -281,39 +291,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupToolbar() {
+        if (toolbar == null) {
+            Log.e("MainActivity", "Toolbar is null");
+            return;
+        }
+        
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
         
-        // Setup search functionality
-        setupSearch();
-        
         // Setup close button in search layout
-        searchLayout.setEndIconOnClickListener(v -> hideSearch());
+        if (searchLayout != null) {
+            searchLayout.setEndIconOnClickListener(v -> hideSearch());
+        }
+        
+        // Setup basic search functionality (adapter will be set when data loads)
+        setupSearchBasic();
     }
 
-    private void setupSearch() {
-        List<String> titles = new ArrayList<>();
-        for (Entry entry : allEntries) {
-            if (entry != null && entry.getTitle() != null) {
-                titles.add(entry.getTitle());
-            }
+    private void setupSearchBasic() {
+        if (searchBar == null) {
+            Log.e("MainActivity", "Search bar is null");
+            return;
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, titles);
-        searchBar.setAdapter(adapter);
-
-        searchBar.setOnItemClickListener((parent, view, position, id) -> {
-            String selectedTitle = (String) parent.getItemAtPosition(position);
-            for (Entry entry : allEntries) {
-                if (entry != null && entry.getTitle() != null && entry.getTitle().equals(selectedTitle)) {
-                    Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
-                    intent.putExtra("entry", new Gson().toJson(entry));
-                    startActivity(intent);
-                    break;
-                }
-            }
-        });
         
         // Setup search action
         searchBar.setOnEditorActionListener((v, actionId, event) -> {
@@ -338,22 +339,56 @@ public class MainActivity extends AppCompatActivity {
             public void afterTextChanged(android.text.Editable s) {}
         });
     }
+
+    private void setupSearch() {
+        if (allEntries.isEmpty() || searchBar == null) {
+            return; // Don't setup search if no data or search bar is null
+        }
+        
+        List<String> titles = new ArrayList<>();
+        for (Entry entry : allEntries) {
+            if (entry != null && entry.getTitle() != null) {
+                titles.add(entry.getTitle());
+            }
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, titles);
+        searchBar.setAdapter(adapter);
+
+        searchBar.setOnItemClickListener((parent, view, position, id) -> {
+            String selectedTitle = (String) parent.getItemAtPosition(position);
+            for (Entry entry : allEntries) {
+                if (entry != null && entry.getTitle() != null && entry.getTitle().equals(selectedTitle)) {
+                    Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
+                    intent.putExtra("entry", new Gson().toJson(entry));
+                    startActivity(intent);
+                    break;
+                }
+            }
+        });
+    }
     
     private void showSearch() {
-        if (!isSearchVisible) {
+        if (!isSearchVisible && searchLayout != null && toolbarTitle != null) {
             isSearchVisible = true;
             toolbarTitle.setVisibility(View.GONE);
             searchLayout.setVisibility(View.VISIBLE);
             searchBar.requestFocus();
             
             // Animate the search layout
-            Animation slideIn = AnimationUtils.loadAnimation(this, R.anim.slide_in_right);
-            searchLayout.startAnimation(slideIn);
+            try {
+                Animation slideIn = AnimationUtils.loadAnimation(this, R.anim.slide_in_right);
+                if (slideIn != null) {
+                    searchLayout.startAnimation(slideIn);
+                }
+            } catch (Exception e) {
+                // Fallback if animation fails
+                Log.e("MainActivity", "Animation failed: " + e.getMessage());
+            }
         }
     }
     
     private void hideSearch() {
-        if (isSearchVisible) {
+        if (isSearchVisible && searchLayout != null && toolbarTitle != null) {
             isSearchVisible = false;
             searchBar.setText("");
             searchBar.clearFocus();
@@ -361,15 +396,28 @@ public class MainActivity extends AppCompatActivity {
             toolbarTitle.setVisibility(View.VISIBLE);
             
             // Restore original list
-            movieAdapter.updateEntries(entryList);
+            if (movieAdapter != null) {
+                movieAdapter.updateEntries(entryList);
+            }
             
             // Animate the title back
-            Animation slideOut = AnimationUtils.loadAnimation(this, R.anim.slide_out_left);
-            toolbarTitle.startAnimation(slideOut);
+            try {
+                Animation slideOut = AnimationUtils.loadAnimation(this, R.anim.slide_out_left);
+                if (slideOut != null) {
+                    toolbarTitle.startAnimation(slideOut);
+                }
+            } catch (Exception e) {
+                // Fallback if animation fails
+                Log.e("MainActivity", "Animation failed: " + e.getMessage());
+            }
         }
     }
     
     private void performSearch(String query) {
+        if (movieAdapter == null || allEntries == null) {
+            return;
+        }
+        
         if (query != null && !query.trim().isEmpty()) {
             // Filter entries based on search query
             List<Entry> filteredEntries = new ArrayList<>();
