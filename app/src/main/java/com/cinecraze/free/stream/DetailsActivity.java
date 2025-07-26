@@ -135,57 +135,61 @@ public class DetailsActivity extends AppCompatActivity {
                 setupMovie(); // Fallback to movie mode if no valid episode
                 return;
             }
-        
-        // Show season and episode selectors
-        seasonSelectorContainer.setVisibility(View.VISIBLE);
-        episodeSelectorContainer.setVisibility(View.VISIBLE);
-        
-        // Setup season adapter
-        seasonAdapter = new SeasonAdapter(this, seasons, new SeasonAdapter.OnSeasonClickListener() {
-            @Override
-            public void onSeasonClick(Season season, int position) {
-                try {
-                    if (season == null) return;
-                    currentSeason = season;
-                    if (season.getEpisodes() != null && !season.getEpisodes().isEmpty()) {
-                        currentEpisode = season.getEpisodes().get(0); // Reset to first episode of new season
-                        currentServerIndex = 0; // Reset server index for new season
-                        updateEpisodeList();
-                        playCurrentEpisode();
+            
+            // Show season and episode selectors
+            seasonSelectorContainer.setVisibility(View.VISIBLE);
+            episodeSelectorContainer.setVisibility(View.VISIBLE);
+            
+            // Setup season adapter
+            seasonAdapter = new SeasonAdapter(this, seasons, new SeasonAdapter.OnSeasonClickListener() {
+                @Override
+                public void onSeasonClick(Season season, int position) {
+                    try {
+                        if (season == null) return;
+                        currentSeason = season;
+                        if (season.getEpisodes() != null && !season.getEpisodes().isEmpty()) {
+                            currentEpisode = season.getEpisodes().get(0); // Reset to first episode of new season
+                            currentServerIndex = 0; // Reset server index for new season
+                            updateEpisodeList();
+                            playCurrentEpisode();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
-            }
-        });
-        
-        seasonRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        seasonRecyclerView.setAdapter(seasonAdapter);
-        
-        // Setup episode adapter
-        episodeAdapter = new EpisodeAdapter(this, currentSeason.getEpisodes(), new EpisodeAdapter.OnEpisodeClickListener() {
-            @Override
-            public void onEpisodeClick(Episode episode, int position) {
-                try {
-                    if (episode == null) return;
-                    currentEpisode = episode;
-                    playCurrentEpisode();
-                } catch (Exception e) {
-                    e.printStackTrace();
+            });
+            
+            seasonRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+            seasonRecyclerView.setAdapter(seasonAdapter);
+            
+            // Setup episode adapter
+            episodeAdapter = new EpisodeAdapter(this, currentSeason.getEpisodes(), new EpisodeAdapter.OnEpisodeClickListener() {
+                @Override
+                public void onEpisodeClick(Episode episode, int position) {
+                    try {
+                        if (episode == null) return;
+                        currentEpisode = episode;
+                        playCurrentEpisode();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-        });
-        
-        episodeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        episodeRecyclerView.setAdapter(episodeAdapter);
-        
-        // Initialize player with first episode
-        initializePlayer();
-        
-        // Setup quality buttons for first episode
-        setupQualityButtons(currentEpisode != null ? currentEpisode.getServers() : null);
-        
-        playCurrentEpisode();
+            });
+            
+            episodeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+            episodeRecyclerView.setAdapter(episodeAdapter);
+            
+            // Initialize player with first episode
+            initializePlayer();
+            
+            // Setup quality buttons for first episode
+            setupQualityButtons(currentEpisode != null ? currentEpisode.getServers() : null);
+            
+            playCurrentEpisode();
+        } catch (Exception e) {
+            e.printStackTrace();
+            setupMovie(); // Fallback to movie mode if there's an error
+        }
     }
     
     private void setupMovie() {
@@ -208,14 +212,27 @@ public class DetailsActivity extends AppCompatActivity {
     }
     
     private void updateEpisodeList() {
-        episodeAdapter = new EpisodeAdapter(this, currentSeason.getEpisodes(), new EpisodeAdapter.OnEpisodeClickListener() {
-            @Override
-            public void onEpisodeClick(Episode episode, int position) {
-                currentEpisode = episode;
-                playCurrentEpisode();
+        try {
+            if (currentSeason == null || currentSeason.getEpisodes() == null) {
+                return;
             }
-        });
-        episodeRecyclerView.setAdapter(episodeAdapter);
+            
+            episodeAdapter = new EpisodeAdapter(this, currentSeason.getEpisodes(), new EpisodeAdapter.OnEpisodeClickListener() {
+                @Override
+                public void onEpisodeClick(Episode episode, int position) {
+                    try {
+                        if (episode == null) return;
+                        currentEpisode = episode;
+                        playCurrentEpisode();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            episodeRecyclerView.setAdapter(episodeAdapter);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     private void playCurrentEpisode() {
