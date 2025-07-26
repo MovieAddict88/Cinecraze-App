@@ -387,12 +387,6 @@ public class DetailsActivity extends AppCompatActivity {
                 playerView.setUseController(false);
                 // Use FIT resize mode to maintain aspect ratio without cropping
                 playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
-                
-                // Expand playerView to fill parent in PiP mode
-                com.google.android.material.appbar.CollapsingToolbarLayout.LayoutParams params = 
-                    (com.google.android.material.appbar.CollapsingToolbarLayout.LayoutParams) playerView.getLayoutParams();
-                params.height = com.google.android.material.appbar.CollapsingToolbarLayout.LayoutParams.MATCH_PARENT;
-                playerView.setLayoutParams(params);
             }
             
             // Hide action bar/toolbar completely
@@ -412,6 +406,12 @@ public class DetailsActivity extends AppCompatActivity {
                 nestedScrollView.setVisibility(android.view.View.GONE);
             }
             
+            // Hide the app bar layout to remove the collapsing toolbar space
+            com.google.android.material.appbar.AppBarLayout appBarLayout = findViewById(R.id.app_bar);
+            if (appBarLayout != null) {
+                appBarLayout.setVisibility(android.view.View.GONE);
+            }
+            
             // Set the activity to fullscreen mode
             getWindow().getDecorView().setSystemUiVisibility(
                 android.view.View.SYSTEM_UI_FLAG_FULLSCREEN |
@@ -425,16 +425,6 @@ public class DetailsActivity extends AppCompatActivity {
                 playerView.setUseController(true);
                 // Restore original resize mode
                 playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
-                
-                // Restore playerView height to original size
-                com.google.android.material.appbar.CollapsingToolbarLayout.LayoutParams params = 
-                    (com.google.android.material.appbar.CollapsingToolbarLayout.LayoutParams) playerView.getLayoutParams();
-                params.height = (int) android.util.TypedValue.applyDimension(
-                    android.util.TypedValue.COMPLEX_UNIT_DIP, 
-                    250, 
-                    getResources().getDisplayMetrics()
-                );
-                playerView.setLayoutParams(params);
             }
             
             // Show action bar/toolbar
@@ -452,6 +442,12 @@ public class DetailsActivity extends AppCompatActivity {
             androidx.core.widget.NestedScrollView nestedScrollView = findViewById(R.id.nested_scroll_view);
             if (nestedScrollView != null) {
                 nestedScrollView.setVisibility(android.view.View.VISIBLE);
+            }
+            
+            // Show the app bar layout
+            com.google.android.material.appbar.AppBarLayout appBarLayout = findViewById(R.id.app_bar);
+            if (appBarLayout != null) {
+                appBarLayout.setVisibility(android.view.View.VISIBLE);
             }
             
             // Restore normal system UI
