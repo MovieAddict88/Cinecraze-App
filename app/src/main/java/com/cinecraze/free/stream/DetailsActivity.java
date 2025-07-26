@@ -95,35 +95,46 @@ public class DetailsActivity extends AppCompatActivity {
         }
 
         if (entry != null) {
-            title.setText(entry.getTitle());
-            description.setText(entry.getDescription());
-            
-            // Check if this is a TV series (has seasons)
-            if (entry.getSeasons() != null && !entry.getSeasons().isEmpty()) {
-                setupTVSeries();
-            } else {
-                // This is a movie or single video
+            try {
+                title.setText(entry.getTitle() != null ? entry.getTitle() : "");
+                description.setText(entry.getDescription() != null ? entry.getDescription() : "");
+                
+                // Check if this is a TV series (has seasons)
+                if (entry.getSeasons() != null && !entry.getSeasons().isEmpty()) {
+                    setupTVSeries();
+                } else {
+                    // This is a movie or single video
+                    setupMovie();
+                }
+                
+                setupRelatedContentRecyclerView();
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Fallback to movie mode if there's an error
                 setupMovie();
             }
-            
-            setupRelatedContentRecyclerView();
         }
     }
 
     private void setupTVSeries() {
-        seasons = entry.getSeasons();
-        if (seasons == null || seasons.isEmpty()) {
-            setupMovie(); // Fallback to movie mode if no seasons
-            return;
-        }
-        
-        currentSeason = seasons.get(0); // Start with first season
-        if (currentSeason.getEpisodes() == null || currentSeason.getEpisodes().isEmpty()) {
-            setupMovie(); // Fallback to movie mode if no episodes
-            return;
-        }
-        
-        currentEpisode = currentSeason.getEpisodes().get(0); // Start with first episode
+        try {
+            seasons = entry.getSeasons();
+            if (seasons == null || seasons.isEmpty()) {
+                setupMovie(); // Fallback to movie mode if no seasons
+                return;
+            }
+            
+            currentSeason = seasons.get(0); // Start with first season
+            if (currentSeason == null || currentSeason.getEpisodes() == null || currentSeason.getEpisodes().isEmpty()) {
+                setupMovie(); // Fallback to movie mode if no episodes
+                return;
+            }
+            
+            currentEpisode = currentSeason.getEpisodes().get(0); // Start with first episode
+            if (currentEpisode == null) {
+                setupMovie(); // Fallback to movie mode if no valid episode
+                return;
+            }
         
         // Show season and episode selectors
         seasonSelectorContainer.setVisibility(View.VISIBLE);
@@ -133,12 +144,17 @@ public class DetailsActivity extends AppCompatActivity {
         seasonAdapter = new SeasonAdapter(this, seasons, new SeasonAdapter.OnSeasonClickListener() {
             @Override
             public void onSeasonClick(Season season, int position) {
-                currentSeason = season;
-                if (season.getEpisodes() != null && !season.getEpisodes().isEmpty()) {
-                    currentEpisode = season.getEpisodes().get(0); // Reset to first episode of new season
-                    currentServerIndex = 0; // Reset server index for new season
-                    updateEpisodeList();
-                    playCurrentEpisode();
+                try {
+                    if (season == null) return;
+                    currentSeason = season;
+                    if (season.getEpisodes() != null && !season.getEpisodes().isEmpty()) {
+                        currentEpisode = season.getEpisodes().get(0); // Reset to first episode of new season
+                        currentServerIndex = 0; // Reset server index for new season
+                        updateEpisodeList();
+                        playCurrentEpisode();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         });
@@ -150,8 +166,13 @@ public class DetailsActivity extends AppCompatActivity {
         episodeAdapter = new EpisodeAdapter(this, currentSeason.getEpisodes(), new EpisodeAdapter.OnEpisodeClickListener() {
             @Override
             public void onEpisodeClick(Episode episode, int position) {
-                currentEpisode = episode;
-                playCurrentEpisode();
+                try {
+                    if (episode == null) return;
+                    currentEpisode = episode;
+                    playCurrentEpisode();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
         
@@ -168,18 +189,22 @@ public class DetailsActivity extends AppCompatActivity {
     }
     
     private void setupMovie() {
-        // Hide season and episode selectors for movies
-        seasonSelectorContainer.setVisibility(View.GONE);
-        episodeSelectorContainer.setVisibility(View.GONE);
-        
-        // Initialize player for movie
-        initializePlayer();
-        
-        // Setup quality buttons
-        setupQualityButtons(entry.getServers());
-        
-        // Play the movie
-        playCurrentVideo();
+        try {
+            // Hide season and episode selectors for movies
+            seasonSelectorContainer.setVisibility(View.GONE);
+            episodeSelectorContainer.setVisibility(View.GONE);
+            
+            // Initialize player for movie
+            initializePlayer();
+            
+            // Setup quality buttons
+            setupQualityButtons(entry != null ? entry.getServers() : null);
+            
+            // Play the movie
+            playCurrentVideo();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     private void updateEpisodeList() {
@@ -194,22 +219,28 @@ public class DetailsActivity extends AppCompatActivity {
     }
     
     private void playCurrentEpisode() {
-        if (currentEpisode != null && currentEpisode.getServers() != null && !currentEpisode.getServers().isEmpty()) {
-            // Setup quality buttons for current episode
-            setupQualityButtons(currentEpisode.getServers());
+        try {
+            if (currentEpisode == null) return;
             
-            // Reset server index when changing episodes
-            currentServerIndex = 0;
-            
-            playCurrentVideo();
-            
-            // Update episode adapter selection
-            if (episodeAdapter != null) {
-                int episodeIndex = currentSeason.getEpisodes().indexOf(currentEpisode);
-                if (episodeIndex >= 0) {
-                    episodeAdapter.setSelectedEpisode(episodeIndex);
+            if (currentEpisode.getServers() != null && !currentEpisode.getServers().isEmpty()) {
+                // Setup quality buttons for current episode
+                setupQualityButtons(currentEpisode.getServers());
+                
+                // Reset server index when changing episodes
+                currentServerIndex = 0;
+                
+                playCurrentVideo();
+                
+                // Update episode adapter selection
+                if (episodeAdapter != null && currentSeason != null && currentSeason.getEpisodes() != null) {
+                    int episodeIndex = currentSeason.getEpisodes().indexOf(currentEpisode);
+                    if (episodeIndex >= 0) {
+                        episodeAdapter.setSelectedEpisode(episodeIndex);
+                    }
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
     
@@ -292,10 +323,14 @@ public class DetailsActivity extends AppCompatActivity {
     }
     
     private List<Server> getCurrentServers() {
-        if (currentEpisode != null && currentEpisode.getServers() != null && !currentEpisode.getServers().isEmpty()) {
-            return currentEpisode.getServers();
-        } else if (entry.getServers() != null && !entry.getServers().isEmpty()) {
-            return entry.getServers();
+        try {
+            if (currentEpisode != null && currentEpisode.getServers() != null && !currentEpisode.getServers().isEmpty()) {
+                return currentEpisode.getServers();
+            } else if (entry != null && entry.getServers() != null && !entry.getServers().isEmpty()) {
+                return entry.getServers();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }
