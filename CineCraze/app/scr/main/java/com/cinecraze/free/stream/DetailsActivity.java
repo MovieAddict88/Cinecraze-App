@@ -301,8 +301,9 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void setupEpisodeNavigationButtons() {
-        ImageButton nextButton = playerView.findViewById(R.id.exo_next);
-        ImageButton prevButton = playerView.findViewById(R.id.exo_prev);
+        // Find next and previous episode buttons from the player control view
+        ImageButton nextButton = playerView.findViewById(R.id.exo_next_episode);
+        ImageButton prevButton = playerView.findViewById(R.id.exo_prev_episode);
         
         if (nextButton != null && prevButton != null) {
             // Only show navigation buttons for TV series
