@@ -381,6 +381,7 @@ public class DetailsActivity extends AppCompatActivity {
     @Override
     public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, Configuration newConfig) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
+        android.view.View appBarLayout = findViewById(R.id.app_bar);
         if (isInPictureInPictureMode) {
             // Configure player view for PiP mode
             if (playerView != null) {
@@ -388,31 +389,25 @@ public class DetailsActivity extends AppCompatActivity {
                 // Use FIT resize mode to maintain aspect ratio without cropping
                 playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
             }
-            
-            // Hide action bar/toolbar completely
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().hide();
+
+            // Hide the entire AppBarLayout (toolbar + video container)
+            if (appBarLayout != null) {
+                appBarLayout.setVisibility(android.view.View.GONE);
             }
-            
-            // Hide the toolbar within the collapsing toolbar layout
-            androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
-            if (toolbar != null) {
-                toolbar.setVisibility(android.view.View.GONE);
-            }
-            
+
             // Hide the nested scroll view content (everything below the video)
             androidx.core.widget.NestedScrollView nestedScrollView = findViewById(R.id.nested_scroll_view);
             if (nestedScrollView != null) {
                 nestedScrollView.setVisibility(android.view.View.GONE);
             }
-            
+
             // Set the activity to fullscreen mode
             getWindow().getDecorView().setSystemUiVisibility(
                 android.view.View.SYSTEM_UI_FLAG_FULLSCREEN |
                 android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
                 android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
             );
-            
+
         } else {
             // Restore UI elements when exiting PiP mode
             if (playerView != null) {
@@ -420,24 +415,18 @@ public class DetailsActivity extends AppCompatActivity {
                 // Restore original resize mode
                 playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
             }
-            
-            // Show action bar/toolbar
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().show();
+
+            // Show the entire AppBarLayout (toolbar + video container)
+            if (appBarLayout != null) {
+                appBarLayout.setVisibility(android.view.View.VISIBLE);
             }
-            
-            // Show the toolbar
-            androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
-            if (toolbar != null) {
-                toolbar.setVisibility(android.view.View.VISIBLE);
-            }
-            
+
             // Show the nested scroll view content
             androidx.core.widget.NestedScrollView nestedScrollView = findViewById(R.id.nested_scroll_view);
             if (nestedScrollView != null) {
                 nestedScrollView.setVisibility(android.view.View.VISIBLE);
             }
-            
+
             // Restore normal system UI
             getWindow().getDecorView().setSystemUiVisibility(android.view.View.SYSTEM_UI_FLAG_VISIBLE);
         }
