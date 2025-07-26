@@ -1,103 +1,215 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="bottom"
-    android:background="#80000000"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
+    <!-- Center Play/Pause Controls -->
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:gravity="center"
-        android:orientation="horizontal"
-        android:paddingTop="4dp">
-
-        <ImageButton
-            android:id="@+id/exo_prev_episode"
-            style="@style/ExoMediaButton.Previous" />
-
-        <ImageButton
-            android:id="@id/exo_rew"
-            style="@style/ExoMediaButton.Rewind" />
-
-        <ImageButton
-            android:id="@id/exo_play"
-            style="@style/ExoMediaButton.Play" />
-
-        <ImageButton
-            android:id="@id/exo_pause"
-            style="@style/ExoMediaButton.Pause" />
-
-        <ImageButton
-            android:id="@id/exo_ffwd"
-            style="@style/ExoMediaButton.FastForward" />
-
-        <ImageButton
-            android:id="@+id/exo_next_episode"
-            style="@style/ExoMediaButton.Next" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <TextView
-            android:id="@id/exo_position"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:includeFontPadding="false"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:textColor="#FFBEBEBE"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
-        <com.google.android.exoplayer2.ui.DefaultTimeBar
-            android:id="@id/exo_progress"
-            android:layout_width="0dp"
-            android:layout_height="26dp"
-            android:layout_weight="1" />
-
-        <TextView
-            android:id="@id/exo_duration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:includeFontPadding="false"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:textColor="#FFBEBEBE"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
+        <!-- Previous Episode Button -->
         <ImageButton
-            android:id="@+id/exo_fullscreen_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_fullscreen" />
+            android:id="@+id/exo_prev_episode"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="24dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/previous_episode"
+            android:src="@drawable/ic_arrow_back"
+            android:visibility="gone"
+            app:tint="@color/netflix_white" />
 
-
-
+        <!-- Rewind Button -->
         <ImageButton
-            android:id="@+id/exo_quality_button"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="4dp"
-            android:src="@drawable/ic_settings"
-            android:background="@drawable/quality_button_background"
-            android:scaleType="fitCenter"
-            android:visibility="gone" />
+            android:id="@id/exo_rew"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="24dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Rewind"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="@color/netflix_white" />
 
+        <!-- Play/Pause Button -->
+        <FrameLayout
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:background="@color/netflix_card_overlay">
+
+            <ImageButton
+                android:id="@id/exo_play"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/play"
+                android:src="@drawable/ic_play_arrow"
+                app:tint="@color/netflix_white" />
+
+            <ImageButton
+                android:id="@id/exo_pause"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/pause"
+                android:src="@drawable/ic_pause"
+                app:tint="@color/netflix_white" />
+        </FrameLayout>
+
+        <!-- Fast Forward Button -->
         <ImageButton
-            android:id="@+id/exo_resize_mode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_fit" />
+            android:id="@id/exo_ffwd"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="24dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Fast Forward"
+            android:src="@drawable/ic_arrow_forward"
+            app:tint="@color/netflix_white" />
+
+        <!-- Next Episode Button -->
+        <ImageButton
+            android:id="@+id/exo_next_episode"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="24dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/next_episode"
+            android:src="@drawable/ic_arrow_forward"
+            android:visibility="gone"
+            app:tint="@color/netflix_white" />
 
     </LinearLayout>
-</LinearLayout>
+
+    <!-- Bottom Controls Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@drawable/gradient_overlay"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Progress Bar with Time -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@id/exo_position"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:includeFontPadding="false"
+                android:text="0:00"
+                android:textColor="@color/netflix_white"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <com.google.android.exoplayer2.ui.DefaultTimeBar
+                android:id="@id/exo_progress"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:bar_height="3dp"
+                app:buffered_color="@color/netflix_text_gray"
+                app:played_color="@color/netflix_red"
+                app:scrubber_color="@color/netflix_red"
+                app:unplayed_color="@color/netflix_light_gray" />
+
+            <TextView
+                android:id="@id/exo_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:includeFontPadding="false"
+                android:text="0:00"
+                android:textColor="@color/netflix_white"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <!-- Control Buttons Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <!-- Title/Episode Info -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/exo_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/netflix_white"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/exo_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/netflix_text_gray"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <!-- Quality Button -->
+            <ImageButton
+                android:id="@+id/exo_quality_button"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/quality"
+                android:padding="6dp"
+                android:src="@drawable/ic_settings"
+                android:visibility="gone"
+                app:tint="@color/netflix_white" />
+
+            <!-- Resize Mode Button -->
+            <ImageButton
+                android:id="@+id/exo_resize_mode"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Resize Mode"
+                android:padding="6dp"
+                android:src="@drawable/ic_fit"
+                app:tint="@color/netflix_white" />
+
+            <!-- Fullscreen Button -->
+            <ImageButton
+                android:id="@+id/exo_fullscreen_button"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/fullscreen"
+                android:padding="6dp"
+                android:src="@drawable/ic_fullscreen"
+                app:tint="@color/netflix_white" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</FrameLayout>

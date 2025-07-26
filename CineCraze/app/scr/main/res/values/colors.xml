@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Netflix-inspired color scheme -->
+    <color name="netflix_red">#E50914</color>
+    <color name="netflix_dark_red">#B7020B</color>
+    <color name="netflix_black">#000000</color>
+    <color name="netflix_dark_gray">#141414</color>
+    <color name="netflix_gray">#1F1F1F</color>
+    <color name="netflix_light_gray">#333333</color>
+    <color name="netflix_text_gray">#B3B3B3</color>
+    <color name="netflix_white">#FFFFFF</color>
+    
+    <!-- Legacy colors for backward compatibility -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -8,4 +19,11 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="gold">#FFD700</color>
+    
+    <!-- Additional Netflix colors -->
+    <color name="netflix_blue">#0071EB</color>
+    <color name="netflix_green">#46D369</color>
+    <color name="netflix_card_overlay">#80000000</color>
+    <color name="netflix_text_secondary">#999999</color>
+    <color name="netflix_divider">#2F2F2F</color>
 </resources>

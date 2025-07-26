@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Netflix-inspired dark theme -->
+    <!-- Netflix-inspired dark theme for night mode -->
     <style name="Theme.CineCraze" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color (Netflix Red) -->
         <item name="colorPrimary">@color/netflix_red</item>

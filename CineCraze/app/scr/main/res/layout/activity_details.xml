@@ -5,87 +5,294 @@
     android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/netflix_black"
     tools:context=".DetailsActivity">
 
+    <!-- Main content with parallax scrolling -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/netflix_black"
         android:theme="@style/Theme.CineCraze.AppBarOverlay">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:contentScrim="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            app:contentScrim="@color/netflix_black"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+            app:statusBarScrim="@color/netflix_black"
+            app:titleEnabled="false">
 
-            <com.google.android.exoplayer2.ui.PlayerView
-                android:id="@+id/player_view"
+            <!-- Hero Video Player Section -->
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
-                app:controller_layout_id="@layout/custom_exo_player_control_view"
+                android:layout_height="320dp"
                 app:layout_collapseMode="parallax"
-                app:resize_mode="fit"
-                app:surface_type="texture_view" />
+                app:layout_collapseParallaxMultiplier="0.7">
 
+                <!-- Video Player -->
+                <com.google.android.exoplayer2.ui.PlayerView
+                    android:id="@+id/player_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:controller_layout_id="@layout/custom_exo_player_control_view"
+                    app:resize_mode="fit"
+                    app:surface_type="texture_view"
+                    app:use_controller="true" />
+
+                <!-- Video Overlay Gradient -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/gradient_overlay" />
+
+                <!-- Video Controls Overlay -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <!-- Title -->
+                    <TextView
+                        android:id="@+id/title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:maxLines="2"
+                        android:textColor="@color/netflix_white"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        tools:text="Movie Title" />
+
+                    <!-- Action Buttons Row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <!-- Play Button -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/play_button"
+                            style="@style/NetflixPrimaryButton"
+                            android:layout_width="0dp"
+                            android:layout_height="48dp"
+                            android:layout_marginEnd="12dp"
+                            android:layout_weight="1"
+                            android:text="@string/play"
+                            app:icon="@drawable/ic_play_arrow"
+                            app:iconGravity="textStart"
+                            app:iconPadding="8dp" />
+
+                        <!-- My List Button -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/add_to_list_button"
+                            style="@style/NetflixSecondaryButton"
+                            android:layout_width="0dp"
+                            android:layout_height="48dp"
+                            android:layout_weight="1"
+                            android:text="@string/add_to_list"
+                            app:iconGravity="textStart"
+                            app:iconPadding="8dp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </FrameLayout>
+
+            <!-- Collapsing Toolbar -->
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
+                app:navigationIcon="@drawable/ic_arrow_back"
                 app:popupTheme="@style/Theme.CineCraze.PopupOverlay" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
+    <!-- Sticky Mini Player -->
+    <FrameLayout
+        android:id="@+id/mini_player_container"
+        android:layout_width="200dp"
+        android:layout_height="112dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="16dp"
+        android:background="@color/netflix_black"
+        android:elevation="8dp"
+        android:visibility="gone">
+
+        <com.google.android.exoplayer2.ui.PlayerView
+            android:id="@+id/mini_player_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:resize_mode="fit"
+            app:surface_type="texture_view"
+            app:use_controller="false" />
+
+        <!-- Mini player close button -->
+        <ImageView
+            android:id="@+id/close_mini_player"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="top|end"
+            android:layout_margin="4dp"
+            android:background="@color/netflix_card_overlay"
+            android:padding="4dp"
+            android:src="@drawable/ic_close"
+            app:tint="@color/netflix_white" />
+    </FrameLayout>
+
+    <!-- Scrollable Content -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nested_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/netflix_black"
+        android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="20dp">
 
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="wrap_content"
+            <!-- Movie Metadata Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceHeadline5" />
+                android:layout_marginBottom="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
+                <RatingBar
+                    android:id="@+id/rating"
+                    style="?android:attr/ratingBarStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:isIndicator="true"
+                    android:theme="@style/RatingBar"
+                    tools:rating="4.5" />
+
+                <View
+                    android:layout_width="4dp"
+                    android:layout_height="4dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@color/netflix_text_gray" />
+
+                <TextView
+                    android:id="@+id/year"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/netflix_text_gray"
+                    android:textSize="14sp"
+                    tools:text="2023" />
+
+                <View
+                    android:layout_width="4dp"
+                    android:layout_height="4dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@color/netflix_text_gray" />
+
+                <TextView
+                    android:id="@+id/duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/netflix_text_gray"
+                    android:textSize="14sp"
+                    tools:text="2h 30m" />
+
+                <View
+                    android:layout_width="4dp"
+                    android:layout_height="4dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@color/netflix_text_gray" />
+
+                <TextView
+                    android:id="@+id/quality_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/netflix_red"
+                    android:paddingStart="6dp"
+                    android:paddingTop="2dp"
+                    android:paddingEnd="6dp"
+                    android:paddingBottom="2dp"
+                    android:text="HD"
+                    android:textColor="@color/netflix_white"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Description -->
             <TextView
                 android:id="@+id/description"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:textAppearance="?attr/textAppearanceBody1" />
+                android:layout_marginBottom="24dp"
+                android:lineSpacingExtra="4dp"
+                android:textColor="@color/netflix_text_gray"
+                android:textSize="16sp"
+                tools:text="A gripping story that will keep you on the edge of your seat..." />
+
+            <!-- Genres -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/genres"
+                    android:textColor="@color/netflix_white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/genres"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/netflix_text_gray"
+                    android:textSize="14sp"
+                    tools:text="Action, Adventure, Sci-Fi" />
+            </LinearLayout>
 
             <!-- Season Selector for TV Series -->
             <LinearLayout
                 android:id="@+id/season_selector_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
                 android:orientation="vertical"
-                android:layout_marginTop="16dp"
                 android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Seasons"
-                    android:textAppearance="?attr/textAppearanceHeadline6" />
+                    android:layout_marginBottom="12dp"
+                    android:text="@string/season"
+                    android:textColor="@color/netflix_white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/season_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:orientation="horizontal" />
-
+                    android:clipToPadding="false"
+                    android:orientation="horizontal"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="16dp" />
             </LinearLayout>
 
             <!-- Episode Selector for TV Series -->
@@ -93,36 +300,53 @@
                 android:id="@+id/episode_selector_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
                 android:orientation="vertical"
-                android:layout_marginTop="16dp"
                 android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Episodes"
-                    android:textAppearance="?attr/textAppearanceHeadline6" />
+                    android:layout_marginBottom="12dp"
+                    android:text="@string/episodes"
+                    android:textColor="@color/netflix_white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/episode_recycler_view"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp" />
-
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Related Content"
-                android:textAppearance="?attr/textAppearanceHeadline6" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/related_content_recycler_view"
+            <!-- Related Content Section -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:text="More Like This"
+                    android:textColor="@color/netflix_white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/related_content_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="16dp" />
+            </LinearLayout>
+
+            <!-- Spacer for bottom -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="32dp" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
