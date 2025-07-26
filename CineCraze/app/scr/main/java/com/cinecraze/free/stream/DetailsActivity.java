@@ -369,8 +369,8 @@ public class DetailsActivity extends AppCompatActivity {
                         
                 // Configure player view for PiP before entering
                 if (playerView != null) {
-                    // Use ZOOM mode to fill the PiP window completely
-                    playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_ZOOM);
+                    // Use FIT mode to maintain aspect ratio
+                    playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
                 }
                 
                 enterPictureInPictureMode(params);
@@ -385,24 +385,61 @@ public class DetailsActivity extends AppCompatActivity {
             // Configure player view for PiP mode
             if (playerView != null) {
                 playerView.setUseController(false);
-                // Use ZOOM resize mode to fill the PiP window and avoid black bars
-                playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_ZOOM);
-                // Hide system UI
-                playerView.setSystemUiVisibility(
-                    android.view.View.SYSTEM_UI_FLAG_FULLSCREEN |
-                    android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                    android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                );
+                // Use FIT resize mode to maintain aspect ratio without cropping
+                playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
             }
+            
+            // Hide action bar/toolbar completely
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().hide();
+            }
+            
+            // Hide the toolbar within the collapsing toolbar layout
+            androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+            if (toolbar != null) {
+                toolbar.setVisibility(android.view.View.GONE);
+            }
+            
+            // Hide the nested scroll view content (everything below the video)
+            androidx.core.widget.NestedScrollView nestedScrollView = findViewById(R.id.nested_scroll_view);
+            if (nestedScrollView != null) {
+                nestedScrollView.setVisibility(android.view.View.GONE);
+            }
+            
+            // Set the activity to fullscreen mode
+            getWindow().getDecorView().setSystemUiVisibility(
+                android.view.View.SYSTEM_UI_FLAG_FULLSCREEN |
+                android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            );
+            
         } else {
             // Restore UI elements when exiting PiP mode
             if (playerView != null) {
                 playerView.setUseController(true);
                 // Restore original resize mode
                 playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
-                // Restore system UI
-                playerView.setSystemUiVisibility(android.view.View.SYSTEM_UI_FLAG_VISIBLE);
             }
+            
+            // Show action bar/toolbar
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().show();
+            }
+            
+            // Show the toolbar
+            androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+            if (toolbar != null) {
+                toolbar.setVisibility(android.view.View.VISIBLE);
+            }
+            
+            // Show the nested scroll view content
+            androidx.core.widget.NestedScrollView nestedScrollView = findViewById(R.id.nested_scroll_view);
+            if (nestedScrollView != null) {
+                nestedScrollView.setVisibility(android.view.View.VISIBLE);
+            }
+            
+            // Restore normal system UI
+            getWindow().getDecorView().setSystemUiVisibility(android.view.View.SYSTEM_UI_FLAG_VISIBLE);
         }
     }
 
