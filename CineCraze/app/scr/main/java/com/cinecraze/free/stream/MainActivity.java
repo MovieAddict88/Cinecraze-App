@@ -72,8 +72,8 @@ public class MainActivity extends AppCompatActivity {
     
     // Pagination UI elements
     private LinearLayout paginationLayout;
-    private com.google.android.material.button.MaterialButton btnPrevious;
-    private com.google.android.material.button.MaterialButton btnNext;
+    private android.widget.Button btnPrevious;
+    private android.widget.Button btnNext;
 
     private boolean isGridView = true;
     private boolean isSearchVisible = false;
@@ -91,43 +91,65 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
         
-        Log.d("MainActivity", "Starting TRUE pagination implementation");
-        
-        // Netflix-style custom header - no traditional toolbar needed
-        // The custom header is implemented directly in the layout
+        try {
+            setContentView(R.layout.activity_main);
+            
+            Log.d("MainActivity", "Starting CineCraze with Netflix-style UI");
+            
+            // Netflix-style custom header - no traditional toolbar needed
+            // The custom header is implemented directly in the layout
 
-        initializeViews();
-        setupRecyclerView();
-        setupCarousel();
-        setupBottomNavigation();
-        setupViewSwitch();
-        setupSearchToggle();
+            initializeViews();
+            setupRecyclerView();
+            setupCarousel();
+            setupBottomNavigation();
+            setupViewSwitch();
+            setupSearchToggle();
 
-        // Initialize repository
-        dataRepository = new DataRepository(this);
+            // Initialize repository
+            dataRepository = new DataRepository(this);
 
-        // Load ONLY first page - this is the key difference!
-        loadInitialDataFast();
+            // Load ONLY first page - this is the key difference!
+            loadInitialDataFast();
+            
+        } catch (Exception e) {
+            Log.e("MainActivity", "Error in onCreate: " + e.getMessage(), e);
+            // Show user-friendly error message
+            Toast.makeText(this, "Error starting app. Please try again.", Toast.LENGTH_LONG).show();
+            finish();
+        }
     }
 
     private void initializeViews() {
-        recyclerView = findViewById(R.id.recycler_view);
-        carouselViewPager = findViewById(R.id.carousel_view_pager);
-        gridViewIcon = findViewById(R.id.grid_view_icon);
-        listViewIcon = findViewById(R.id.list_view_icon);
-        bottomNavigationView = findViewById(R.id.bottom_navigation);
-        searchIcon = findViewById(R.id.search_icon);
-        closeSearchIcon = findViewById(R.id.close_search_icon);
-        titleLayout = findViewById(R.id.title_layout);
-        searchLayout = findViewById(R.id.search_layout);
-        searchBar = findViewById(R.id.search_bar);
-        
-        // Initialize pagination UI elements
-        paginationLayout = findViewById(R.id.pagination_layout);
-        btnPrevious = findViewById(R.id.btn_previous);
-        btnNext = findViewById(R.id.btn_next);
+        try {
+            recyclerView = findViewById(R.id.recycler_view);
+            carouselViewPager = findViewById(R.id.carousel_view_pager);
+            gridViewIcon = findViewById(R.id.grid_view_icon);
+            listViewIcon = findViewById(R.id.list_view_icon);
+            bottomNavigationView = findViewById(R.id.bottom_navigation);
+            searchIcon = findViewById(R.id.search_icon);
+            closeSearchIcon = findViewById(R.id.close_search_icon);
+            titleLayout = findViewById(R.id.title_layout);
+            searchLayout = findViewById(R.id.search_layout);
+            searchBar = findViewById(R.id.search_bar);
+            
+            // Initialize pagination UI elements
+            paginationLayout = findViewById(R.id.pagination_layout);
+            btnPrevious = findViewById(R.id.btn_previous);
+            btnNext = findViewById(R.id.btn_next);
+            
+            // Verify critical views are found
+            if (recyclerView == null || carouselViewPager == null || bottomNavigationView == null) {
+                throw new RuntimeException("Critical views not found in layout");
+            }
+            
+            Log.d("MainActivity", "All views initialized successfully");
+            
+        } catch (Exception e) {
+            Log.e("MainActivity", "Error initializing views: " + e.getMessage(), e);
+            throw e; // Re-throw to be handled by onCreate
+        }
         
         // Set up pagination button listeners
         btnPrevious.setOnClickListener(v -> onPreviousPage());

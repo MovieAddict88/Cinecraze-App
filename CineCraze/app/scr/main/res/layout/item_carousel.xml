@@ -88,7 +88,7 @@
             android:layout_marginBottom="@dimen/spacing_xl">
 
             <!-- Play Button -->
-            <com.google.android.material.button.MaterialButton
+            <android.widget.Button
                 android:id="@+id/btn_play"
                 style="@style/NetflixButton"
                 android:layout_width="0dp"
@@ -102,9 +102,9 @@
                 app:iconSize="20dp" />
 
             <!-- Info Button -->
-            <com.google.android.material.button.MaterialButton
+            <android.widget.Button
                 android:id="@+id/btn_info"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="@style/NetflixButton"
                 android:layout_width="0dp"
                 android:layout_height="40dp"
                 android:layout_weight="1"

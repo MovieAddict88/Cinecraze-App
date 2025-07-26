@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.cinecraze.free.stream.models.Entry;
-import com.google.android.material.button.MaterialButton;
+import android.widget.Button;
 
 import java.util.List;
 
@@ -83,8 +83,8 @@ public class CarouselAdapter extends RecyclerView.Adapter<CarouselAdapter.ViewHo
         TextView title;
         TextView description;
         TextView ratingText;
-        MaterialButton playButton;
-        MaterialButton infoButton;
+        Button playButton;
+        Button infoButton;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
