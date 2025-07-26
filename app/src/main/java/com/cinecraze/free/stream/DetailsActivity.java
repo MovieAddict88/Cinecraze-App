@@ -157,7 +157,7 @@ public class DetailsActivity extends AppCompatActivity {
         initializePlayer();
         
         // Show quality button if first episode has multiple servers
-        if (currentEpisode != null && currentEpisode.getServers() != null && currentEpisode.getServers().size() > 1) {
+        if (qualityButton != null && currentEpisode != null && currentEpisode.getServers() != null && currentEpisode.getServers().size() > 1) {
             qualityButton.setVisibility(View.VISIBLE);
         }
         
@@ -173,7 +173,7 @@ public class DetailsActivity extends AppCompatActivity {
         initializePlayer();
         
         // Show quality button if multiple servers available
-        if (entry.getServers() != null && entry.getServers().size() > 1) {
+        if (qualityButton != null && entry.getServers() != null && entry.getServers().size() > 1) {
             qualityButton.setVisibility(View.VISIBLE);
         }
         
@@ -195,10 +195,12 @@ public class DetailsActivity extends AppCompatActivity {
     private void playCurrentEpisode() {
         if (currentEpisode != null && currentEpisode.getServers() != null && !currentEpisode.getServers().isEmpty()) {
             // Show quality button if multiple servers available
-            if (currentEpisode.getServers().size() > 1) {
-                qualityButton.setVisibility(View.VISIBLE);
-            } else {
-                qualityButton.setVisibility(View.GONE);
+            if (qualityButton != null) {
+                if (currentEpisode.getServers().size() > 1) {
+                    qualityButton.setVisibility(View.VISIBLE);
+                } else {
+                    qualityButton.setVisibility(View.GONE);
+                }
             }
             
             // Reset server index when changing episodes
@@ -237,6 +239,8 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void setupQualityButton() {
+        if (qualityButton == null) return;
+        
         qualityButton.setOnClickListener(v -> {
             List<Server> servers = getCurrentServers();
             if (servers != null && servers.size() > 1) {
