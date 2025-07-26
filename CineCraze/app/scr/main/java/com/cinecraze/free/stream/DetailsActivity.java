@@ -389,9 +389,9 @@ public class DetailsActivity extends AppCompatActivity {
                 playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
                 
                 // Expand playerView to fill parent in PiP mode
-                androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams params = 
-                    (androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams) playerView.getLayoutParams();
-                params.height = androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams.MATCH_PARENT;
+                com.google.android.material.appbar.CollapsingToolbarLayout.LayoutParams params = 
+                    (com.google.android.material.appbar.CollapsingToolbarLayout.LayoutParams) playerView.getLayoutParams();
+                params.height = com.google.android.material.appbar.CollapsingToolbarLayout.LayoutParams.MATCH_PARENT;
                 playerView.setLayoutParams(params);
             }
             
@@ -427,8 +427,8 @@ public class DetailsActivity extends AppCompatActivity {
                 playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
                 
                 // Restore playerView height to original size
-                androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams params = 
-                    (androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams) playerView.getLayoutParams();
+                com.google.android.material.appbar.CollapsingToolbarLayout.LayoutParams params = 
+                    (com.google.android.material.appbar.CollapsingToolbarLayout.LayoutParams) playerView.getLayoutParams();
                 params.height = (int) android.util.TypedValue.applyDimension(
                     android.util.TypedValue.COMPLEX_UNIT_DIP, 
                     250, 
