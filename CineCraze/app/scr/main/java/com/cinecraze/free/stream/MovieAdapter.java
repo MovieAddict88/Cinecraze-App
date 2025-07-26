@@ -75,9 +75,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             holder.duration.setText(entry.getDuration());
         }
         
-        // Set category badge
+        // Set category badge (on poster)
         if (holder.categoryBadge != null) {
             setCategoryBadge(holder.categoryBadge, entry.getSubCategory());
+        }
+        
+        // Set type badge (below title)
+        if (holder.typeBadge != null) {
+            setTypeBadge(holder.typeBadge, entry.getSubCategory());
         }
 
         holder.itemView.setOnClickListener(v -> {
@@ -129,6 +134,42 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         background.setCornerRadius(4 * context.getResources().getDisplayMetrics().density);
         badge.setBackground(background);
     }
+    
+    private void setTypeBadge(TextView badge, String category) {
+        String badgeText;
+        int badgeColor;
+        
+        if (category == null || category.trim().isEmpty()) {
+            category = "Other";
+        }
+        
+        // Determine badge text and color based on category
+        if (category.toLowerCase().contains("movie") || category.toLowerCase().contains("film")) {
+            badgeText = "MOVIE";
+            badgeColor = ContextCompat.getColor(context, R.color.type_badge_movies);
+        } else if (category.toLowerCase().contains("series") || category.toLowerCase().contains("tv")) {
+            badgeText = "SERIES";
+            badgeColor = ContextCompat.getColor(context, R.color.type_badge_series);
+        } else if (category.toLowerCase().contains("live")) {
+            badgeText = "LIVE";
+            badgeColor = ContextCompat.getColor(context, R.color.type_badge_live);
+        } else {
+            badgeText = category.toUpperCase();
+            if (badgeText.length() > 6) {
+                badgeText = badgeText.substring(0, 6);
+            }
+            badgeColor = ContextCompat.getColor(context, R.color.type_badge_default);
+        }
+        
+        badge.setText(badgeText);
+        
+        // Create colored background
+        GradientDrawable background = new GradientDrawable();
+        background.setShape(GradientDrawable.RECTANGLE);
+        background.setColor(badgeColor);
+        background.setCornerRadius(3 * context.getResources().getDisplayMetrics().density);
+        badge.setBackground(background);
+    }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView poster;
@@ -139,6 +180,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         TextView country;
         TextView duration;
         TextView categoryBadge;
+        TextView typeBadge;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -150,6 +192,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             country = itemView.findViewById(R.id.country);
             duration = itemView.findViewById(R.id.duration);
             categoryBadge = itemView.findViewById(R.id.category_badge);
+            typeBadge = itemView.findViewById(R.id.type_badge);
         }
     }
 }

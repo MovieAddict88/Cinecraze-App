@@ -9,10 +9,16 @@
     <color name="netflix_white">#FFFFFF</color>
     
     <!-- Category Badge Colors -->
-    <color name="badge_movies">#1E88E5</color>      <!-- Netflix Blue -->
-    <color name="badge_series">#43A047</color>       <!-- Netflix Green -->
-    <color name="badge_live_tv">#E53935</color>      <!-- Netflix Red variant -->
+    <color name="badge_movies">#26C6DA</color>       <!-- Teal/Light Blue -->
+    <color name="badge_series">#4CAF50</color>       <!-- Green -->
+    <color name="badge_live_tv">#F44336</color>      <!-- Red -->
     <color name="badge_default">#FFA726</color>      <!-- Netflix Orange -->
+    
+    <!-- Type Badge Colors (for badges below title) -->
+    <color name="type_badge_movies">#26C6DA</color>  <!-- Teal/Light Blue -->
+    <color name="type_badge_series">#4CAF50</color>  <!-- Green -->
+    <color name="type_badge_live">#F44336</color>    <!-- Red -->
+    <color name="type_badge_default">#FFA726</color> <!-- Orange -->
     
     <!-- Legacy colors for compatibility -->
     <color name="purple_200">#FFBB86FC</color>

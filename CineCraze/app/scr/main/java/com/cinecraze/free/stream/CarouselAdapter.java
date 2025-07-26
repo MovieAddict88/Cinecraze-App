@@ -51,8 +51,11 @@ public class CarouselAdapter extends RecyclerView.Adapter<CarouselAdapter.ViewHo
         holder.duration.setText(entry.getDuration());
         Glide.with(context).load(entry.getPoster()).into(holder.poster);
         
-        // Set category badge
+        // Set category badge (on poster)
         setCategoryBadge(holder.categoryBadge, entry.getSubCategory());
+        
+        // Set type badge (below info)
+        setTypeBadge(holder.typeBadge, entry.getSubCategory());
 
         holder.playButton.setOnClickListener(v -> {
             DetailsActivity.start(context, entry, allEntries);
@@ -99,6 +102,42 @@ public class CarouselAdapter extends RecyclerView.Adapter<CarouselAdapter.ViewHo
         background.setCornerRadius(6 * context.getResources().getDisplayMetrics().density);
         badge.setBackground(background);
     }
+    
+    private void setTypeBadge(TextView badge, String category) {
+        String badgeText;
+        int badgeColor;
+        
+        if (category == null || category.trim().isEmpty()) {
+            category = "Other";
+        }
+        
+        // Determine badge text and color based on category
+        if (category.toLowerCase().contains("movie") || category.toLowerCase().contains("film")) {
+            badgeText = "MOVIE";
+            badgeColor = ContextCompat.getColor(context, R.color.type_badge_movies);
+        } else if (category.toLowerCase().contains("series") || category.toLowerCase().contains("tv")) {
+            badgeText = "SERIES";
+            badgeColor = ContextCompat.getColor(context, R.color.type_badge_series);
+        } else if (category.toLowerCase().contains("live")) {
+            badgeText = "LIVE";
+            badgeColor = ContextCompat.getColor(context, R.color.type_badge_live);
+        } else {
+            badgeText = category.toUpperCase();
+            if (badgeText.length() > 6) {
+                badgeText = badgeText.substring(0, 6);
+            }
+            badgeColor = ContextCompat.getColor(context, R.color.type_badge_default);
+        }
+        
+        badge.setText(badgeText);
+        
+        // Create colored background
+        GradientDrawable background = new GradientDrawable();
+        background.setShape(GradientDrawable.RECTANGLE);
+        background.setColor(badgeColor);
+        background.setCornerRadius(4 * context.getResources().getDisplayMetrics().density);
+        badge.setBackground(background);
+    }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView poster;
@@ -107,6 +146,7 @@ public class CarouselAdapter extends RecyclerView.Adapter<CarouselAdapter.ViewHo
         TextView year;
         TextView duration;
         TextView categoryBadge;
+        TextView typeBadge;
         FloatingActionButton playButton;
 
         public ViewHolder(@NonNull View itemView) {
@@ -117,6 +157,7 @@ public class CarouselAdapter extends RecyclerView.Adapter<CarouselAdapter.ViewHo
             year = itemView.findViewById(R.id.year);
             duration = itemView.findViewById(R.id.duration);
             categoryBadge = itemView.findViewById(R.id.category_badge);
+            typeBadge = itemView.findViewById(R.id.type_badge);
             playButton = itemView.findViewById(R.id.play_button);
         }
     }
