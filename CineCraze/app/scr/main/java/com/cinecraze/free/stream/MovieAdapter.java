@@ -75,14 +75,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             holder.duration.setText(entry.getDuration());
         }
         
-        // Set category badge (on poster)
+        // Set category badge (on poster) - Genre badge
         if (holder.categoryBadge != null) {
             setCategoryBadge(holder.categoryBadge, entry.getSubCategory());
         }
         
-        // Set type badge (below title)
+        // Set type badge (below title) - Content type badge
         if (holder.typeBadge != null) {
-            setTypeBadge(holder.typeBadge, entry.getSubCategory());
+            setTypeBadge(holder.typeBadge, entry.getMainCategory());
         }
 
         holder.itemView.setOnClickListener(v -> {
@@ -107,22 +107,25 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             category = "Other";
         }
         
-        // Determine badge text and color based on category
-        if (category.toLowerCase().contains("movie") || category.toLowerCase().contains("film")) {
-            badgeText = "MOVIE";
-            badgeColor = ContextCompat.getColor(context, R.color.badge_movies);
-        } else if (category.toLowerCase().contains("series") || category.toLowerCase().contains("tv")) {
-            badgeText = "SERIES";
-            badgeColor = ContextCompat.getColor(context, R.color.badge_series);
-        } else if (category.toLowerCase().contains("live") || category.toLowerCase().contains("tv")) {
-            badgeText = "LIVE TV";
-            badgeColor = ContextCompat.getColor(context, R.color.badge_live_tv);
+        // For genre badge, use the category as-is and apply genre-specific colors
+        badgeText = category.toUpperCase();
+        if (badgeText.length() > 8) {
+            badgeText = badgeText.substring(0, 8);
+        }
+        
+        // Apply genre-specific colors
+        if (category.toLowerCase().contains("action")) {
+            badgeColor = ContextCompat.getColor(context, R.color.badge_live_tv); // Red for action
+        } else if (category.toLowerCase().contains("drama")) {
+            badgeColor = ContextCompat.getColor(context, R.color.badge_series); // Green for drama
+        } else if (category.toLowerCase().contains("comedy")) {
+            badgeColor = ContextCompat.getColor(context, R.color.badge_movies); // Light blue for comedy
+        } else if (category.toLowerCase().contains("horror")) {
+            badgeColor = ContextCompat.getColor(context, R.color.badge_live_tv); // Red for horror
+        } else if (category.toLowerCase().contains("romance")) {
+            badgeColor = ContextCompat.getColor(context, R.color.badge_series); // Green for romance
         } else {
-            badgeText = category.toUpperCase();
-            if (badgeText.length() > 8) {
-                badgeText = badgeText.substring(0, 8);
-            }
-            badgeColor = ContextCompat.getColor(context, R.color.badge_default);
+            badgeColor = ContextCompat.getColor(context, R.color.badge_default); // Default orange
         }
         
         badge.setText(badgeText);
@@ -143,22 +146,22 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             category = "Other";
         }
         
-        // Determine badge text and color based on category
+        // Determine badge text and color based on content type
         if (category.toLowerCase().contains("movie") || category.toLowerCase().contains("film")) {
             badgeText = "MOVIE";
-            badgeColor = ContextCompat.getColor(context, R.color.type_badge_movies);
+            badgeColor = ContextCompat.getColor(context, R.color.type_badge_movies); // Light blue
         } else if (category.toLowerCase().contains("series") || category.toLowerCase().contains("tv")) {
             badgeText = "SERIES";
-            badgeColor = ContextCompat.getColor(context, R.color.type_badge_series);
+            badgeColor = ContextCompat.getColor(context, R.color.type_badge_series); // Green
         } else if (category.toLowerCase().contains("live")) {
             badgeText = "LIVE";
-            badgeColor = ContextCompat.getColor(context, R.color.type_badge_live);
+            badgeColor = ContextCompat.getColor(context, R.color.type_badge_live); // Red
         } else {
             badgeText = category.toUpperCase();
             if (badgeText.length() > 6) {
                 badgeText = badgeText.substring(0, 6);
             }
-            badgeColor = ContextCompat.getColor(context, R.color.type_badge_default);
+            badgeColor = ContextCompat.getColor(context, R.color.type_badge_default); // Orange
         }
         
         badge.setText(badgeText);
