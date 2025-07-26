@@ -57,6 +57,7 @@ public class DetailsActivity extends AppCompatActivity {
     // Quality selection
     private ImageButton qualityButton;
     private int currentServerIndex = 0;
+    private QualityDropdownMenu qualityDropdownMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -226,7 +227,7 @@ public class DetailsActivity extends AppCompatActivity {
             if (videoUrl != null && player != null) {
                 long currentPosition = player.getCurrentPosition();
                 boolean isPlaying = player.isPlaying();
-                FullScreenActivity.start(this, videoUrl, currentPosition, isPlaying);
+                FullScreenActivity.start(this, videoUrl, currentPosition, isPlaying, currentServerIndex);
             }
         });
 
@@ -238,15 +239,30 @@ public class DetailsActivity extends AppCompatActivity {
         qualityButton.setOnClickListener(v -> {
             List<Server> servers = getCurrentServers();
             if (servers != null && servers.size() > 1) {
-                QualitySelectorDialog dialog = QualitySelectorDialog.newInstance(servers, currentServerIndex);
-                dialog.setOnQualitySelectedListener(new QualitySelectorDialog.OnQualitySelectedListener() {
-                    @Override
-                    public void onQualitySelected(Server server, int position) {
-                        currentServerIndex = position;
-                        playCurrentVideo();
-                    }
-                });
-                dialog.show(getSupportFragmentManager(), "quality_selector");
+                // Create or update dropdown menu
+                if (qualityDropdownMenu == null) {
+                    qualityDropdownMenu = new QualityDropdownMenu(this, servers, currentServerIndex);
+                    qualityDropdownMenu.setOnQualitySelectedListener(new QualityDropdownMenu.OnQualitySelectedListener() {
+                        @Override
+                        public void onQualitySelected(Server server, int position) {
+                            currentServerIndex = position;
+                            playCurrentVideo();
+                        }
+                    });
+                } else {
+                    // Update existing dropdown with new servers and current index
+                    qualityDropdownMenu = new QualityDropdownMenu(this, servers, currentServerIndex);
+                    qualityDropdownMenu.setOnQualitySelectedListener(new QualityDropdownMenu.OnQualitySelectedListener() {
+                        @Override
+                        public void onQualitySelected(Server server, int position) {
+                            currentServerIndex = position;
+                            playCurrentVideo();
+                        }
+                    });
+                }
+                
+                // Show dropdown
+                qualityDropdownMenu.show(qualityButton);
             }
         });
     }

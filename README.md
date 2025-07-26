@@ -15,6 +15,7 @@
 9. **Data Type Parsing**: Fixed JSON parsing issues with mixed data types (Rating and Year fields)
 10. **TV Series Player**: Fixed player handling for TV series with season and episode selectors
 11. **Fullscreen Player**: Fixed fullscreen functionality with proper exit handling and player state preservation
+12. **Quality Selector**: Added gear button for quality/server selection with dropdown menu
 
 ### Key Improvements:
 
@@ -30,6 +31,7 @@
 - **Data Type Handling**: Fixed parsing of mixed data types (Rating can be float/int/string, Year can be int/string)
 - **TV Series Support**: Added season and episode selectors for TV series with proper player handling
 - **Fullscreen Improvements**: Fixed fullscreen exit handling using existing fullscreen button
+- **Quality Selection**: Added gear button with dropdown menu for quality/server selection
 
 ### API Endpoint:
 - **Base URL**: `https://raw.githubusercontent.com/MovieAddict88/Movie-Source/main/`
@@ -69,9 +71,10 @@ The API endpoint has been tested and is returning valid JSON data with movie/str
 - ✅ Fallback to movie mode for entries without seasons/episodes
 
 ### Player Functionality:
-- **Movies**: Direct playback from server URLs
-- **TV Series**: Season and episode selection with automatic playback
+- **Movies**: Direct playback from server URLs with quality selection
+- **TV Series**: Season and episode selection with automatic playback and quality options
 - **Fullscreen**: Support for both movies and TV series episodes with toggle functionality
+- **Quality Selection**: Gear button shows dropdown with available quality options (720p, 480p, HD, SD, etc.)
 - **Error Handling**: Graceful fallbacks for missing data
 - **Player State**: Preserves playing state when entering/exiting fullscreen
 

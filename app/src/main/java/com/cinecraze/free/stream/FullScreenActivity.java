@@ -49,10 +49,12 @@ public class FullScreenActivity extends AppCompatActivity {
         playerView = findViewById(R.id.player_view_fullscreen);
         resizeModeButton = findViewById(R.id.exo_resize_mode);
         fullscreenButton = findViewById(R.id.exo_fullscreen_button);
+        qualityButton = findViewById(R.id.exo_quality_button);
 
         String videoUrl = getIntent().getStringExtra("video_url");
         long currentPosition = getIntent().getLongExtra("current_position", 0);
         boolean wasPlaying = getIntent().getBooleanExtra("was_playing", true);
+        currentServerIndex = getIntent().getIntExtra("server_index", 0);
 
         if (videoUrl != null) {
             initializePlayer(videoUrl, currentPosition, wasPlaying);
@@ -67,6 +69,9 @@ public class FullScreenActivity extends AppCompatActivity {
             playerView.setResizeMode(RESIZE_MODES[currentResizeMode]);
             resizeModeButton.setImageResource(RESIZE_MODE_ICONS[currentResizeMode]);
         });
+
+        // Setup quality button (hide it in fullscreen for now)
+        qualityButton.setVisibility(View.GONE);
     }
 
     private void hideSystemUI() {
