@@ -63,6 +63,35 @@ public class DataRepository {
     }
     
     /**
+     * Check if data is available in cache and initialize if needed
+     * This method only loads data if cache is empty, otherwise just confirms cache exists
+     */
+    public void ensureDataAvailable(DataCallback callback) {
+        CacheMetadataEntity metadata = database.cacheMetadataDao().getMetadata(CACHE_KEY_PLAYLIST);
+        
+        if (metadata != null && isCacheValid(metadata.getLastUpdated())) {
+            // Cache exists and is valid - just return success without loading all data
+            Log.d(TAG, "Cache is available and valid - ready for pagination");
+            callback.onSuccess(new ArrayList<>()); // Empty list, pagination will load actual data
+        } else {
+            // No valid cache - need to fetch all data once to populate cache
+            Log.d(TAG, "No valid cache - fetching data to populate cache");
+            fetchFromApi(new DataCallback() {
+                @Override
+                public void onSuccess(List<Entry> entries) {
+                    Log.d(TAG, "Data cached successfully - ready for pagination");
+                    callback.onSuccess(new ArrayList<>()); // Empty list, pagination will load actual data
+                }
+                
+                @Override
+                public void onError(String error) {
+                    callback.onError(error);
+                }
+            });
+        }
+    }
+    
+    /**
      * Get paginated data from cache
      */
     public void getPaginatedData(int page, int pageSize, PaginatedDataCallback callback) {
