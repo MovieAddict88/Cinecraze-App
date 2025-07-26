@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.widget.ImageButton;
-import android.view.View;
-import android.widget.ImageView;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
@@ -17,7 +15,7 @@ public class FullScreenActivity extends AppCompatActivity {
     private PlayerView playerView;
     private ExoPlayer player;
     private ImageButton resizeModeButton;
-    private ImageView exitButton;
+    private ImageButton fullscreenButton;
     private int currentResizeMode = 0;
     private static final int[] RESIZE_MODES = {
             AspectRatioFrameLayout.RESIZE_MODE_FIT,
@@ -47,7 +45,7 @@ public class FullScreenActivity extends AppCompatActivity {
 
         playerView = findViewById(R.id.player_view_fullscreen);
         resizeModeButton = findViewById(R.id.exo_resize_mode);
-        exitButton = findViewById(R.id.exit_fullscreen_button);
+        fullscreenButton = findViewById(R.id.exo_fullscreen_button);
 
         String videoUrl = getIntent().getStringExtra("video_url");
         long currentPosition = getIntent().getLongExtra("current_position", 0);
@@ -57,23 +55,14 @@ public class FullScreenActivity extends AppCompatActivity {
             initializePlayer(videoUrl, currentPosition, wasPlaying);
         }
 
-        // Setup exit button
-        exitButton.setOnClickListener(v -> finish());
+        // Setup fullscreen button to exit fullscreen
+        fullscreenButton.setOnClickListener(v -> finish());
 
         // Setup resize mode button
         resizeModeButton.setOnClickListener(v -> {
             currentResizeMode = (currentResizeMode + 1) % RESIZE_MODES.length;
             playerView.setResizeMode(RESIZE_MODES[currentResizeMode]);
             resizeModeButton.setImageResource(RESIZE_MODE_ICONS[currentResizeMode]);
-        });
-
-        // Setup player view click listener to toggle exit button visibility
-        playerView.setOnClickListener(v -> {
-            if (exitButton.getVisibility() == View.VISIBLE) {
-                exitButton.setVisibility(View.GONE);
-            } else {
-                exitButton.setVisibility(View.VISIBLE);
-            }
         });
     }
 
@@ -93,12 +82,7 @@ public class FullScreenActivity extends AppCompatActivity {
                 | android.view.View.SYSTEM_UI_FLAG_FULLSCREEN);
     }
 
-    private void showSystemUI() {
-        getWindow().getDecorView().setSystemUiVisibility(
-                android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | android.view.View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-    }
+
 
     private void initializePlayer(String videoUrl, long currentPosition, boolean wasPlaying) {
         player = new ExoPlayer.Builder(this).build();

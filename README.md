@@ -29,7 +29,7 @@
 - **Timeout Increase**: Extended timeouts to 60 seconds for better reliability
 - **Data Type Handling**: Fixed parsing of mixed data types (Rating can be float/int/string, Year can be int/string)
 - **TV Series Support**: Added season and episode selectors for TV series with proper player handling
-- **Fullscreen Improvements**: Fixed fullscreen exit handling and player state preservation
+- **Fullscreen Improvements**: Fixed fullscreen exit handling using existing fullscreen button
 
 ### API Endpoint:
 - **Base URL**: `https://raw.githubusercontent.com/MovieAddict88/Movie-Source/main/`
@@ -71,7 +71,7 @@ The API endpoint has been tested and is returning valid JSON data with movie/str
 ### Player Functionality:
 - **Movies**: Direct playback from server URLs
 - **TV Series**: Season and episode selection with automatic playback
-- **Fullscreen**: Support for both movies and TV series episodes with proper exit handling
+- **Fullscreen**: Support for both movies and TV series episodes with toggle functionality
 - **Error Handling**: Graceful fallbacks for missing data
 - **Player State**: Preserves playing state when entering/exiting fullscreen
 
