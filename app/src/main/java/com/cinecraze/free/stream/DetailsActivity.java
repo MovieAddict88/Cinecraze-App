@@ -16,6 +16,7 @@ import com.cinecraze.free.stream.models.Server;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import android.widget.ImageButton;
+import android.widget.Button;
 import com.google.android.exoplayer2.ui.PlayerView;
 import android.content.pm.ActivityInfo;
 
@@ -58,6 +59,8 @@ public class DetailsActivity extends AppCompatActivity {
     // Quality selection
     private ImageButton qualityButton;
     private int currentServerIndex = 0;
+    private LinearLayout qualityButtonsContainer;
+    private LinearLayout qualityButtonsLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,8 +78,10 @@ public class DetailsActivity extends AppCompatActivity {
         seasonRecyclerView = findViewById(R.id.season_recycler_view);
         episodeRecyclerView = findViewById(R.id.episode_recycler_view);
         
-        // Initialize quality button
+        // Initialize quality components
         qualityButton = findViewById(R.id.exo_quality_button);
+        qualityButtonsContainer = findViewById(R.id.quality_buttons_container);
+        qualityButtonsLayout = findViewById(R.id.quality_buttons_layout);
 
         String entryJson = getIntent().getStringExtra("entry");
         if (entryJson != null) {
@@ -156,6 +161,9 @@ public class DetailsActivity extends AppCompatActivity {
         initializePlayer();
         
         playCurrentEpisode();
+        
+        // Setup quality buttons
+        setupQualityButtons(currentEpisode.getServers());
     }
     
     private void setupMovie() {
@@ -168,6 +176,9 @@ public class DetailsActivity extends AppCompatActivity {
         
         // Play the movie
         playCurrentVideo();
+        
+        // Setup quality buttons
+        setupQualityButtons(entry.getServers());
     }
     
     private void updateEpisodeList() {
@@ -213,6 +224,32 @@ public class DetailsActivity extends AppCompatActivity {
                 FullScreenActivity.start(this, videoUrl, currentPosition, isPlaying, currentServerIndex);
             }
         });
+    }
+
+    private void setupQualityButtons(List<Server> servers) {
+        if (servers == null || servers.size() <= 1) {
+            qualityButtonsContainer.setVisibility(View.GONE);
+            return;
+        }
+
+        qualityButtonsContainer.setVisibility(View.VISIBLE);
+        qualityButtonsLayout.removeAllViews();
+
+        for (int i = 0; i < servers.size(); i++) {
+            Server server = servers.get(i);
+            Button button = new Button(this);
+            button.setText(server.getName());
+            button.setTextSize(10);
+            button.setPadding(8, 4, 8, 4);
+            
+            final int position = i;
+            button.setOnClickListener(v -> {
+                currentServerIndex = position;
+                playCurrentVideo();
+            });
+            
+            qualityButtonsLayout.addView(button);
+        }
     }
     
 
