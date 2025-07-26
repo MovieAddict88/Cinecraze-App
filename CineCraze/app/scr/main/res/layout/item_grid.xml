@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    android:layout_margin="@dimen/card_margin"
+    app:cardCornerRadius="@dimen/card_corner_radius"
+    app:cardElevation="@dimen/card_elevation">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,15 +15,19 @@
         <ImageView
             android:id="@+id/poster"
             android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:scaleType="centerCrop" />
+            android:layout_height="@dimen/poster_height_grid"
+            android:scaleType="centerInside"
+            android:adjustViewBounds="true"
+            android:background="@android:color/darker_gray" />
 
         <TextView
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:textAppearance="?attr/textAppearanceBody2" />
+            android:padding="@dimen/text_margin_medium"
+            android:textAppearance="?attr/textAppearanceBody2"
+            android:maxLines="2"
+            android:ellipsize="end" />
 
         <RatingBar
             android:id="@+id/rating"
@@ -31,7 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:padding="8dp"
+            android:padding="@dimen/text_margin_medium"
             android:theme="@style/RatingBar" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

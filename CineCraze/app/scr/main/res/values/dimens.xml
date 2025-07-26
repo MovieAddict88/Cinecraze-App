@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Image dimensions for consistent sizing -->
+    <dimen name="poster_width_grid">160dp</dimen>
+    <dimen name="poster_height_grid">240dp</dimen>
+    
+    <dimen name="poster_width_list">120dp</dimen>
+    <dimen name="poster_height_list">180dp</dimen>
+    
+    <dimen name="episode_thumbnail_width">80dp</dimen>
+    <dimen name="episode_thumbnail_height">60dp</dimen>
+    
+    <dimen name="season_poster_width">120dp</dimen>
+    <dimen name="season_poster_height">120dp</dimen>
+    
+    <!-- Card margins and paddings -->
+    <dimen name="card_margin">8dp</dimen>
+    <dimen name="card_corner_radius">8dp</dimen>
+    <dimen name="card_elevation">4dp</dimen>
+    
+    <!-- Text margins -->
+    <dimen name="text_margin_small">4dp</dimen>
+    <dimen name="text_margin_medium">8dp</dimen>
+    <dimen name="text_margin_large">16dp</dimen>
+</resources>

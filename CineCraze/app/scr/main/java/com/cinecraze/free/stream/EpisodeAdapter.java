@@ -48,7 +48,7 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ViewHold
         holder.episodeDuration.setText(episode.getDuration());
         
         if (episode.getThumbnail() != null && !episode.getThumbnail().isEmpty()) {
-            Glide.with(context).load(episode.getThumbnail()).into(holder.episodeThumbnail);
+            ImageUtils.loadThumbnailImage(context, episode.getThumbnail(), holder.episodeThumbnail);
         }
         
         // Highlight selected episode

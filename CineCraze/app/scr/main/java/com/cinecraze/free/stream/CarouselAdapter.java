@@ -47,7 +47,7 @@ public class CarouselAdapter extends RecyclerView.Adapter<CarouselAdapter.ViewHo
         holder.country.setText(entry.getCountry());
         holder.year.setText(String.valueOf(entry.getYear()));
         holder.duration.setText(entry.getDuration());
-        Glide.with(context).load(entry.getPoster()).into(holder.poster);
+        ImageUtils.loadBannerImage(context, entry.getPoster(), holder.poster);
 
         holder.playButton.setOnClickListener(v -> {
             DetailsActivity.start(context, entry, allEntries);

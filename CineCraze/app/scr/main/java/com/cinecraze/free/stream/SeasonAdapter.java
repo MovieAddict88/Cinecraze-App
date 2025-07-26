@@ -46,7 +46,7 @@ public class SeasonAdapter extends RecyclerView.Adapter<SeasonAdapter.ViewHolder
         holder.seasonNumber.setText("Season " + season.getSeason());
         
         if (season.getSeasonPoster() != null && !season.getSeasonPoster().isEmpty()) {
-            Glide.with(context).load(season.getSeasonPoster()).into(holder.seasonPoster);
+            ImageUtils.loadThumbnailImage(context, season.getSeasonPoster(), holder.seasonPoster);
         }
         
         // Highlight selected season

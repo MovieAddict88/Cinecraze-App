@@ -10,8 +10,9 @@
     <ImageView
         android:id="@+id/season_poster"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:scaleType="centerCrop"
+        android:layout_height="@dimen/season_poster_height"
+        android:scaleType="centerInside"
+        android:adjustViewBounds="true"
         android:background="@android:color/darker_gray" />
 
     <TextView

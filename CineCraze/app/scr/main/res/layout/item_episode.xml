@@ -9,9 +9,10 @@
 
     <ImageView
         android:id="@+id/episode_thumbnail"
-        android:layout_width="60dp"
-        android:layout_height="40dp"
-        android:scaleType="centerCrop"
+        android:layout_width="@dimen/episode_thumbnail_width"
+        android:layout_height="@dimen/episode_thumbnail_height"
+        android:scaleType="centerInside"
+        android:adjustViewBounds="true"
         android:background="@android:color/darker_gray" />
 
     <LinearLayout
