@@ -76,9 +76,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, DetailsActivity.class);
             intent.putExtra("entry", new Gson().toJson(entry));
-            if (context instanceof MainActivity) {
-                intent.putExtra("allEntries", new Gson().toJson(((MainActivity) context).allEntries));
-            }
+            // For backward compatibility - pass the current entry list
+            intent.putExtra("allEntries", new Gson().toJson(entryList));
             context.startActivity(intent);
         });
     }

@@ -37,11 +37,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements PaginatedMovieAdapter.PaginationListener {
+public class MainActivityOld extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private PaginatedMovieAdapter movieAdapter;
-    private List<Entry> currentPageEntries = new ArrayList<>();
+    private MovieAdapter movieAdapter;
+    private List<Entry> entryList = new ArrayList<>();
+    public List<Entry> allEntries = new ArrayList<>();
     private ViewPager2 carouselViewPager;
     private CarouselAdapter carouselAdapter;
     private ImageView gridViewIcon;
