@@ -23,6 +23,12 @@ import android.content.Context;
 import android.content.Intent;
 import com.google.gson.Gson;
 
+// PiP imports
+import android.app.PictureInPictureParams;
+import android.content.res.Configuration;
+import android.os.Build;
+import android.util.Rational;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -232,6 +238,12 @@ public class DetailsActivity extends AppCompatActivity {
             }
         });
 
+        // Setup PiP button
+        ImageButton pipButton = playerView.findViewById(R.id.exo_pip_button);
+        if (pipButton != null) {
+            pipButton.setOnClickListener(v -> enterPictureInPictureMode());
+        }
+
         // Setup quality button
         setupQualityButton();
     }
@@ -323,6 +335,34 @@ public class DetailsActivity extends AppCompatActivity {
         super.onPause();
         if (player != null) {
             player.pause();
+        }
+    }
+
+    // Picture-in-Picture methods
+    private void enterPictureInPictureMode() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (getPackageManager().hasSystemFeature(android.content.pm.PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
+                PictureInPictureParams params = new PictureInPictureParams.Builder()
+                        .setAspectRatio(new Rational(16, 9))
+                        .build();
+                enterPictureInPictureMode(params);
+            }
+        }
+    }
+
+    @Override
+    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, Configuration newConfig) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
+        if (isInPictureInPictureMode) {
+            // Hide UI elements when entering PiP mode
+            if (playerView != null) {
+                playerView.setUseController(false);
+            }
+        } else {
+            // Show UI elements when exiting PiP mode
+            if (playerView != null) {
+                playerView.setUseController(true);
+            }
         }
     }
 

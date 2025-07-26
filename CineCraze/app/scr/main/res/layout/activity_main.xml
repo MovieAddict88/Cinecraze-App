@@ -132,82 +132,39 @@
                 android:id="@+id/pagination_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:padding="16dp"
                 android:background="@android:color/white"
                 android:elevation="4dp"
+                android:gravity="center"
                 android:visibility="gone">
 
-                <!-- Page Information -->
-                <TextView
-                    android:id="@+id/tv_pagination_info"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Showing 1-20 of 100 items"
-                    android:textSize="14sp"
-                    android:textColor="@android:color/black"
-                    android:gravity="center"
-                    android:layout_marginBottom="8dp" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_previous"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="16dp"
+                    android:backgroundTint="@color/design_default_color_primary"
+                    android:drawableStart="@drawable/ic_arrow_back"
+                    android:enabled="false"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    style="@style/Widget.Material3.Button.Icon" />
 
-                <TextView
-                    android:id="@+id/tv_page_info"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Page 1"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/black"
-                    android:gravity="center"
-                    android:layout_marginBottom="16dp" />
-
-                <!-- Navigation Buttons -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_previous"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="8dp"
-                        android:text="Previous"
-                        android:textSize="16sp"
-                        android:textColor="@android:color/white"
-                        android:backgroundTint="@color/design_default_color_primary"
-                        android:drawableStart="@drawable/ic_arrow_back"
-                        android:drawablePadding="8dp"
-                        android:padding="12dp"
-                        android:enabled="false"
-                        style="@style/Widget.Material3.Button" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_next"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="8dp"
-                        android:text="Next"
-                        android:textSize="16sp"
-                        android:textColor="@android:color/white"
-                        android:backgroundTint="@color/design_default_color_primary"
-                        android:drawableEnd="@drawable/ic_arrow_forward"
-                        android:drawablePadding="8dp"
-                        android:padding="12dp"
-                        style="@style/Widget.Material3.Button" />
-
-                </LinearLayout>
-
-                <!-- Loading Indicator -->
-                <ProgressBar
-                    android:id="@+id/pagination_loading"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="16dp"
-                    android:visibility="gone" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_next"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="16dp"
+                    android:backgroundTint="@color/design_default_color_primary"
+                    android:drawableEnd="@drawable/ic_arrow_forward"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    app:iconGravity="textEnd"
+                    app:iconPadding="0dp"
+                    style="@style/Widget.Material3.Button.Icon" />
 
             </LinearLayout>
         </LinearLayout>

@@ -129,15 +129,6 @@ public class PaginatedMovieAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         } else if (holder instanceof PaginationViewHolder) {
             PaginationViewHolder paginationHolder = (PaginationViewHolder) holder;
             
-            // Update pagination info
-            int startItem = (currentPage * 20) + 1;
-            int endItem = Math.min(startItem + entryList.size() - 1, totalCount);
-            String paginationText = "Showing " + startItem + "-" + endItem + " of " + totalCount + " items";
-            paginationHolder.paginationInfo.setText(paginationText);
-            
-            // Update page info
-            paginationHolder.pageInfo.setText("Page " + (currentPage + 1));
-            
             // Handle Previous button
             paginationHolder.previousButton.setEnabled(currentPage > 0 && !isLoading);
             paginationHolder.previousButton.setOnClickListener(v -> {
@@ -153,15 +144,6 @@ public class PaginatedMovieAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                     paginationListener.onNextPage();
                 }
             });
-            
-            // Show/hide loading indicator
-            if (isLoading) {
-                paginationHolder.loadingIndicator.setVisibility(View.VISIBLE);
-                paginationHolder.previousButton.setEnabled(false);
-                paginationHolder.nextButton.setEnabled(false);
-            } else {
-                paginationHolder.loadingIndicator.setVisibility(View.GONE);
-            }
         }
     }
 
@@ -194,17 +176,11 @@ public class PaginatedMovieAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     public class PaginationViewHolder extends RecyclerView.ViewHolder {
         Button previousButton;
         Button nextButton;
-        TextView paginationInfo;
-        TextView pageInfo;
-        View loadingIndicator;
 
         public PaginationViewHolder(@NonNull View itemView) {
             super(itemView);
             previousButton = itemView.findViewById(R.id.btn_previous);
             nextButton = itemView.findViewById(R.id.btn_next);
-            paginationInfo = itemView.findViewById(R.id.tv_pagination_info);
-            pageInfo = itemView.findViewById(R.id.tv_page_info);
-            loadingIndicator = itemView.findViewById(R.id.loading_indicator);
         }
     }
 }

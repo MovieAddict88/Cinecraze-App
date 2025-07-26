@@ -81,6 +81,15 @@
             android:src="@drawable/ic_fullscreen" />
 
         <ImageButton
+            android:id="@+id/exo_pip_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:src="@drawable/ic_pip"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Picture in Picture" />
+
+        <ImageButton
             android:id="@+id/exo_quality_button"
             android:layout_width="24dp"
             android:layout_height="24dp"

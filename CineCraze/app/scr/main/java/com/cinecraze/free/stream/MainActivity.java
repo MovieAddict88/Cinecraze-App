@@ -72,11 +72,8 @@ public class MainActivity extends AppCompatActivity {
     
     // Pagination UI elements
     private LinearLayout paginationLayout;
-    private TextView paginationInfoText;
-    private TextView pageInfoText;
     private com.google.android.material.button.MaterialButton btnPrevious;
     private com.google.android.material.button.MaterialButton btnNext;
-    private ProgressBar paginationLoading;
 
     private boolean isGridView = true;
     private boolean isSearchVisible = false;
@@ -135,11 +132,8 @@ public class MainActivity extends AppCompatActivity {
         
         // Initialize pagination UI elements
         paginationLayout = findViewById(R.id.pagination_layout);
-        paginationInfoText = findViewById(R.id.tv_pagination_info);
-        pageInfoText = findViewById(R.id.tv_page_info);
         btnPrevious = findViewById(R.id.btn_previous);
         btnNext = findViewById(R.id.btn_next);
-        paginationLoading = findViewById(R.id.pagination_loading);
         
         // Set up pagination button listeners
         btnPrevious.setOnClickListener(v -> onPreviousPage());
@@ -459,17 +453,6 @@ public class MainActivity extends AppCompatActivity {
         if (totalCount > pageSize) {
             paginationLayout.setVisibility(View.VISIBLE);
             
-            // Update pagination info
-            int startItem = (currentPage * pageSize) + 1;
-            int endItem = Math.min((currentPage + 1) * pageSize, totalCount);
-            String paginationInfo = "Showing " + startItem + "-" + endItem + " of " + totalCount + " items";
-            paginationInfoText.setText(paginationInfo);
-            
-            // Update page info
-            int totalPages = (int) Math.ceil((double) totalCount / pageSize);
-            String pageInfo = "Page " + (currentPage + 1) + " of " + totalPages;
-            pageInfoText.setText(pageInfo);
-            
             // Update button states
             btnPrevious.setEnabled(currentPage > 0);
             btnNext.setEnabled(hasMorePages);
@@ -481,9 +464,6 @@ public class MainActivity extends AppCompatActivity {
     
     private void setPaginationLoading(boolean loading) {
         isLoading = loading;
-        if (paginationLoading != null) {
-            paginationLoading.setVisibility(loading ? View.VISIBLE : View.GONE);
-        }
         if (btnPrevious != null) {
             btnPrevious.setEnabled(!loading && currentPage > 0);
         }
