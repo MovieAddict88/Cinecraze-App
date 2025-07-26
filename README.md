@@ -35,8 +35,20 @@ The API endpoint has been tested and is returning valid JSON data with movie/str
 
 ### Build and Run:
 1. Open the project in Android Studio
-2. Sync Gradle files
+2. Sync Gradle files (the project now includes proper Gradle configuration)
 3. Build and run the app
 4. The app will automatically fetch data on startup
+
+### Project Structure:
+- `settings.gradle` - Project configuration
+- `build.gradle` - Root build configuration
+- `app/build.gradle` - App-specific dependencies and configuration
+- `app/src/main/res/xml/` - XML configuration files (network security, backup rules, data extraction)
+
+### Fixed Build Issues:
+- ✅ Created missing `data_extraction_rules.xml`
+- ✅ Created missing `backup_rules.xml`
+- ✅ Added proper Gradle configuration files
+- ✅ All resource references now resolve correctly
 
 The app should now properly fetch and display streaming content with improved reliability and user experience.
