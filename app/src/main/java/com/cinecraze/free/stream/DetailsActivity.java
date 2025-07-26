@@ -231,6 +231,10 @@ public class DetailsActivity extends AppCompatActivity {
     }
     
     private void setupQualityButtons(List<Server> servers) {
+        if (qualityButtonsContainer == null || qualityButtonsLayout == null) {
+            return; // Views not initialized yet
+        }
+        
         if (servers == null || servers.size() <= 1) {
             qualityButtonsContainer.setVisibility(View.GONE);
             return;
@@ -241,6 +245,10 @@ public class DetailsActivity extends AppCompatActivity {
 
         for (int i = 0; i < servers.size(); i++) {
             Server server = servers.get(i);
+            if (server == null || server.getName() == null) {
+                continue; // Skip null servers
+            }
+            
             Button qualityButton = new Button(this);
             
             // Set small button size
@@ -271,6 +279,10 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void updateQualityButtonsSelection() {
+        if (qualityButtonsLayout == null) {
+            return;
+        }
+        
         for (int i = 0; i < qualityButtonsLayout.getChildCount(); i++) {
             View child = qualityButtonsLayout.getChildAt(i);
             if (child instanceof Button) {
@@ -297,6 +309,10 @@ public class DetailsActivity extends AppCompatActivity {
     }
     
     private void playCurrentVideo() {
+        if (player == null) {
+            return;
+        }
+        
         String videoUrl = getCurrentVideoUrl();
         if (videoUrl != null) {
             MediaItem mediaItem = MediaItem.fromUri(videoUrl);
