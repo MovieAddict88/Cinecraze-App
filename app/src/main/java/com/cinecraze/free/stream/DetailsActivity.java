@@ -161,10 +161,10 @@ public class DetailsActivity extends AppCompatActivity {
         // Initialize player with first episode
         initializePlayer();
         
+        playCurrentEpisode();
+        
         // Setup quality buttons for first episode
         setupQualityButtons(currentEpisode.getServers());
-        
-        playCurrentEpisode();
     }
     
     private void setupMovie() {
@@ -175,11 +175,11 @@ public class DetailsActivity extends AppCompatActivity {
         // Initialize player for movie
         initializePlayer();
         
-        // Setup quality buttons
-        setupQualityButtons(entry.getServers());
-        
         // Play the movie
         playCurrentVideo();
+        
+        // Setup quality buttons
+        setupQualityButtons(entry.getServers());
     }
     
     private void updateEpisodeList() {
@@ -309,6 +309,8 @@ public class DetailsActivity extends AppCompatActivity {
     }
     
     private void playCurrentVideo() {
+        if (player == null) return;
+        
         String videoUrl = getCurrentVideoUrl();
         if (videoUrl != null) {
             MediaItem mediaItem = MediaItem.fromUri(videoUrl);
