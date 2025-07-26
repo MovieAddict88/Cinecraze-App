@@ -171,11 +171,11 @@ public class MainActivity extends AppCompatActivity {
                 if (item.getItemId() == R.id.nav_movies) {
                     category = "Movies";
                 } else if (item.getItemId() == R.id.nav_series) {
-                    category = "TV Shows";
+                    category = "TV Series";
                 } else if (item.getItemId() == R.id.nav_home) {
                     category = "";
                 } else if (item.getItemId() == R.id.nav_live) {
-                    category = "Live";
+                    category = "Live TV";
                 }
                 
                 filterByCategory(category);
@@ -349,7 +349,7 @@ public class MainActivity extends AppCompatActivity {
         if (isLoading) return;
         
         isLoading = true;
-        movieAdapter.setLoading(true);
+        setPaginationLoading(true);
         
         Log.d("MainActivity", "Loading page " + currentPage + " with " + pageSize + " items");
         
@@ -421,8 +421,8 @@ public class MainActivity extends AppCompatActivity {
         currentPageEntries.clear();
         currentPageEntries.addAll(entries);
         
-        movieAdapter.setEntryList(currentPageEntries);
-        movieAdapter.updatePaginationState(currentPage, hasMorePages, totalCount);
+                    movieAdapter.setEntryList(currentPageEntries);
+            updatePaginationUI();
         
         // Scroll to top of the list
         recyclerView.scrollToPosition(0);
@@ -432,7 +432,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void handlePageLoadError(String error) {
         isLoading = false;
-        movieAdapter.setLoading(false);
+        setPaginationLoading(false);
         Log.e("MainActivity", "Error loading page: " + error);
         Toast.makeText(this, "Failed to load page: " + error, Toast.LENGTH_SHORT).show();
     }
@@ -451,6 +451,44 @@ public class MainActivity extends AppCompatActivity {
             currentPage++;
             loadPage();
             Log.d("MainActivity", "Next page: " + currentPage);
+        }
+    }
+    
+    private void updatePaginationUI() {
+        // Show pagination layout only if there are more than pageSize items
+        if (totalCount > pageSize) {
+            paginationLayout.setVisibility(View.VISIBLE);
+            
+            // Update pagination info
+            int startItem = (currentPage * pageSize) + 1;
+            int endItem = Math.min((currentPage + 1) * pageSize, totalCount);
+            String paginationInfo = "Showing " + startItem + "-" + endItem + " of " + totalCount + " items";
+            paginationInfoText.setText(paginationInfo);
+            
+            // Update page info
+            int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+            String pageInfo = "Page " + (currentPage + 1) + " of " + totalPages;
+            pageInfoText.setText(pageInfo);
+            
+            // Update button states
+            btnPrevious.setEnabled(currentPage > 0);
+            btnNext.setEnabled(hasMorePages);
+        } else {
+            // Hide pagination if not needed
+            paginationLayout.setVisibility(View.GONE);
+        }
+    }
+    
+    private void setPaginationLoading(boolean loading) {
+        isLoading = loading;
+        if (paginationLoading != null) {
+            paginationLoading.setVisibility(loading ? View.VISIBLE : View.GONE);
+        }
+        if (btnPrevious != null) {
+            btnPrevious.setEnabled(!loading && currentPage > 0);
+        }
+        if (btnNext != null) {
+            btnNext.setEnabled(!loading && hasMorePages);
         }
     }
 
