@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.util.Log;
 
@@ -45,8 +46,14 @@ public class MainActivity extends AppCompatActivity {
     private ImageView gridViewIcon;
     private ImageView listViewIcon;
     private BottomNavigationView bottomNavigationView;
+    private ImageView searchIcon;
+    private ImageView closeSearchIcon;
+    private LinearLayout titleLayout;
+    private LinearLayout searchLayout;
+    private AutoCompleteTextView searchBar;
 
     private boolean isGridView = true;
+    private boolean isSearchVisible = false;
     private int retryCount = 0;
     private static final int MAX_RETRY_COUNT = 3;
 
@@ -60,11 +67,17 @@ public class MainActivity extends AppCompatActivity {
         gridViewIcon = findViewById(R.id.grid_view_icon);
         listViewIcon = findViewById(R.id.list_view_icon);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
+        searchIcon = findViewById(R.id.search_icon);
+        closeSearchIcon = findViewById(R.id.close_search_icon);
+        titleLayout = findViewById(R.id.title_layout);
+        searchLayout = findViewById(R.id.search_layout);
+        searchBar = findViewById(R.id.search_bar);
 
         setupRecyclerView();
         setupCarousel();
         setupBottomNavigation();
         setupViewSwitch();
+        setupSearchToggle();
 
         // Only fetch data if we don't have it already
         if (allEntries.isEmpty()) {
@@ -89,14 +102,23 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupBottomNavigation() {
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.nav_home) {
-                filterEntries("");
-            } else if (item.getItemId() == R.id.nav_movies) {
-                filterEntries("Movies");
-            } else if (item.getItemId() == R.id.nav_series) {
-                filterEntries("TV Series");
-            } else if (item.getItemId() == R.id.nav_live) {
-                filterEntries("Live TV");
+            try {
+                // Hide search bar when navigating
+                if (isSearchVisible) {
+                    hideSearchBar();
+                }
+                
+                if (item.getItemId() == R.id.nav_home) {
+                    filterEntries("");
+                } else if (item.getItemId() == R.id.nav_movies) {
+                    filterEntries("Movies");
+                } else if (item.getItemId() == R.id.nav_series) {
+                    filterEntries("TV Series");
+                } else if (item.getItemId() == R.id.nav_live) {
+                    filterEntries("Live TV");
+                }
+            } catch (Exception e) {
+                Log.e("MainActivity", "Error handling navigation: " + e.getMessage(), e);
             }
             return true;
         });
@@ -116,6 +138,115 @@ public class MainActivity extends AppCompatActivity {
             listViewIcon.setVisibility(View.GONE);
             gridViewIcon.setVisibility(View.VISIBLE);
         });
+    }
+
+    private void setupSearchToggle() {
+        try {
+            // Show search bar when search icon is clicked
+            searchIcon.setOnClickListener(v -> {
+                showSearchBar();
+            });
+
+            // Hide search bar when close icon is clicked
+            closeSearchIcon.setOnClickListener(v -> {
+                hideSearchBar();
+            });
+
+            // Handle search text changes and item selection
+            if (searchBar != null) {
+                searchBar.setOnEditorActionListener((v, actionId, event) -> {
+                    if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH) {
+                        performSearch(searchBar.getText().toString());
+                        return true;
+                    }
+                    return false;
+                });
+            }
+        } catch (Exception e) {
+            Log.e("MainActivity", "Error setting up search toggle: " + e.getMessage(), e);
+        }
+    }
+
+    private void showSearchBar() {
+        try {
+            if (!isSearchVisible && titleLayout != null && searchLayout != null) {
+                titleLayout.setVisibility(View.GONE);
+                searchLayout.setVisibility(View.VISIBLE);
+                isSearchVisible = true;
+                
+                // Focus on search bar and show keyboard
+                if (searchBar != null) {
+                    searchBar.requestFocus();
+                    android.view.inputmethod.InputMethodManager imm = 
+                        (android.view.inputmethod.InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                    if (imm != null) {
+                        imm.showSoftInput(searchBar, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.e("MainActivity", "Error showing search bar: " + e.getMessage(), e);
+        }
+    }
+
+    private void hideSearchBar() {
+        try {
+            if (isSearchVisible && titleLayout != null && searchLayout != null) {
+                searchLayout.setVisibility(View.GONE);
+                titleLayout.setVisibility(View.VISIBLE);
+                isSearchVisible = false;
+                
+                // Clear search text and hide keyboard
+                if (searchBar != null) {
+                    searchBar.setText("");
+                    searchBar.clearFocus();
+                    android.view.inputmethod.InputMethodManager imm = 
+                        (android.view.inputmethod.InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                    if (imm != null) {
+                        imm.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
+                    }
+                }
+                
+                // Reset to show all entries
+                filterEntries("");
+            }
+        } catch (Exception e) {
+            Log.e("MainActivity", "Error hiding search bar: " + e.getMessage(), e);
+        }
+    }
+
+    private void performSearch(String query) {
+        try {
+            if (query == null || query.trim().isEmpty()) {
+                filterEntries("");
+                return;
+            }
+
+            String searchQuery = query.trim().toLowerCase();
+            List<Entry> searchResults = new ArrayList<>();
+            
+            if (allEntries != null) {
+                for (Entry entry : allEntries) {
+                    if (entry != null && entry.getTitle() != null && 
+                        entry.getTitle().toLowerCase().contains(searchQuery)) {
+                        searchResults.add(entry);
+                    }
+                }
+            }
+            
+            entryList.clear();
+            entryList.addAll(searchResults);
+            if (movieAdapter != null) {
+                movieAdapter.notifyDataSetChanged();
+            }
+            
+            if (searchResults.isEmpty()) {
+                Toast.makeText(this, "No results found for: " + query, Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            Log.e("MainActivity", "Error performing search: " + e.getMessage(), e);
+            Toast.makeText(this, "Error performing search", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void filterEntries(String category) {
@@ -261,27 +392,65 @@ public class MainActivity extends AppCompatActivity {
         fetchPlaylist();
     }
 
-    private void setupSearch() {
-        AutoCompleteTextView searchBar = findViewById(R.id.search_bar);
-        List<String> titles = new ArrayList<>();
-        for (Entry entry : allEntries) {
-            if (entry != null && entry.getTitle() != null) {
-                titles.add(entry.getTitle());
+    @Override
+    public void onBackPressed() {
+        try {
+            // If search is visible, hide it instead of closing the app
+            if (isSearchVisible) {
+                hideSearchBar();
+            } else {
+                super.onBackPressed();
             }
+        } catch (Exception e) {
+            Log.e("MainActivity", "Error handling back press: " + e.getMessage(), e);
+            super.onBackPressed();
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, titles);
-        searchBar.setAdapter(adapter);
+    }
 
-        searchBar.setOnItemClickListener((parent, view, position, id) -> {
-            String selectedTitle = (String) parent.getItemAtPosition(position);
-            for (Entry entry : allEntries) {
-                if (entry != null && entry.getTitle() != null && entry.getTitle().equals(selectedTitle)) {
-                    Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
-                    intent.putExtra("entry", new Gson().toJson(entry));
-                    startActivity(intent);
-                    break;
+    private void setupSearch() {
+        try {
+            if (searchBar == null) {
+                Log.e("MainActivity", "SearchBar is null, cannot setup search");
+                return;
+            }
+
+            List<String> titles = new ArrayList<>();
+            if (allEntries != null) {
+                for (Entry entry : allEntries) {
+                    if (entry != null && entry.getTitle() != null && !entry.getTitle().trim().isEmpty()) {
+                        titles.add(entry.getTitle());
+                    }
                 }
             }
-        });
+            
+            if (!titles.isEmpty()) {
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, titles);
+                searchBar.setAdapter(adapter);
+
+                searchBar.setOnItemClickListener((parent, view, position, id) -> {
+                    try {
+                        String selectedTitle = (String) parent.getItemAtPosition(position);
+                        if (selectedTitle != null && allEntries != null) {
+                            for (Entry entry : allEntries) {
+                                if (entry != null && entry.getTitle() != null && entry.getTitle().equals(selectedTitle)) {
+                                    Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
+                                    intent.putExtra("entry", new Gson().toJson(entry));
+                                    startActivity(intent);
+                                    hideSearchBar(); // Hide search bar after selection
+                                    break;
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.e("MainActivity", "Error handling search item click: " + e.getMessage(), e);
+                        Toast.makeText(MainActivity.this, "Error opening selected item", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else {
+                Log.w("MainActivity", "No titles available for search autocomplete");
+            }
+        } catch (Exception e) {
+            Log.e("MainActivity", "Error setting up search: " + e.getMessage(), e);
+        }
     }
 }
