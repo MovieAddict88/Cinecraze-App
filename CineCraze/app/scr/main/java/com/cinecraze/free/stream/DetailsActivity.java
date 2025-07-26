@@ -381,7 +381,9 @@ public class DetailsActivity extends AppCompatActivity {
     @Override
     public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, Configuration newConfig) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
-        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        android.view.View appBarLayout = findViewById(R.id.app_bar);
+        androidx.core.widget.NestedScrollView nestedScrollView = findViewById(R.id.nested_scroll_view);
+        
         if (isInPictureInPictureMode) {
             // Configure player view for PiP mode
             if (playerView != null) {
@@ -390,13 +392,12 @@ public class DetailsActivity extends AppCompatActivity {
                 playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
             }
 
-            // Hide the toolbar within the collapsing toolbar layout
-            if (toolbar != null) {
-                toolbar.setVisibility(android.view.View.GONE);
+            // Hide the AppBarLayout (toolbar)
+            if (appBarLayout != null) {
+                appBarLayout.setVisibility(android.view.View.GONE);
             }
 
             // Hide the nested scroll view content (everything below the video)
-            androidx.core.widget.NestedScrollView nestedScrollView = findViewById(R.id.nested_scroll_view);
             if (nestedScrollView != null) {
                 nestedScrollView.setVisibility(android.view.View.GONE);
             }
@@ -416,13 +417,12 @@ public class DetailsActivity extends AppCompatActivity {
                 playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
             }
 
-            // Show the toolbar
-            if (toolbar != null) {
-                toolbar.setVisibility(android.view.View.VISIBLE);
+            // Show the AppBarLayout (toolbar)
+            if (appBarLayout != null) {
+                appBarLayout.setVisibility(android.view.View.VISIBLE);
             }
 
             // Show the nested scroll view content
-            androidx.core.widget.NestedScrollView nestedScrollView = findViewById(R.id.nested_scroll_view);
             if (nestedScrollView != null) {
                 nestedScrollView.setVisibility(android.view.View.VISIBLE);
             }

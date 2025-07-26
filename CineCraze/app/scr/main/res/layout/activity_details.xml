@@ -7,27 +7,28 @@
     android:layout_height="match_parent"
     tools:context=".DetailsActivity">
 
+    <!-- PlayerView moved outside AppBarLayout for independent PiP control -->
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/player_view"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        app:controller_layout_id="@layout/custom_exo_player_control_view"
+        app:resize_mode="fit"
+        app:surface_type="texture_view" />
+
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="250dp"
         android:theme="@style/Theme.CineCraze.AppBarOverlay">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
-
-            <com.google.android.exoplayer2.ui.PlayerView
-                android:id="@+id/player_view"
-                android:layout_width="match_parent"
-                android:layout_height="250dp"
-                app:controller_layout_id="@layout/custom_exo_player_control_view"
-                app:layout_collapseMode="parallax"
-                app:resize_mode="fit"
-                app:surface_type="texture_view" />
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -43,6 +44,7 @@
         android:id="@+id/nested_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="250dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
