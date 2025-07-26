@@ -10,10 +10,11 @@ import com.bumptech.glide.request.RequestOptions;
 public class ImageUtils {
     
     /**
-     * Load image with uniform scaling for poster/movie images
+     * Load image with uniform scaling for poster/movie images (square format)
      */
     public static void loadPosterImage(Context context, String imageUrl, ImageView imageView) {
         RequestOptions requestOptions = new RequestOptions()
+                .centerCrop()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .placeholder(R.drawable.image_placeholder)
                 .error(R.drawable.image_placeholder)
@@ -43,11 +44,11 @@ public class ImageUtils {
     }
     
     /**
-     * Load thumbnail images for episodes/seasons with center inside scaling
+     * Load thumbnail images for episodes/seasons with center crop scaling (square format)
      */
     public static void loadThumbnailImage(Context context, String imageUrl, ImageView imageView) {
         RequestOptions requestOptions = new RequestOptions()
-                .centerInside()
+                .centerCrop()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .placeholder(R.drawable.image_placeholder)
                 .error(R.drawable.image_placeholder)

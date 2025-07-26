@@ -14,10 +14,10 @@
 
         <ImageView
             android:id="@+id/poster"
-            android:layout_width="match_parent"
+            android:layout_width="@dimen/poster_width_grid"
             android:layout_height="@dimen/poster_height_grid"
-            android:scaleType="centerInside"
-            android:adjustViewBounds="true"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"
             android:background="@android:color/darker_gray" />
 
         <TextView
