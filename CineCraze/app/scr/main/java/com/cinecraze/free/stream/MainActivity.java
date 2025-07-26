@@ -6,18 +6,23 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
+import com.google.android.material.textfield.TextInputLayout;
 
 import com.cinecraze.free.stream.models.Category;
 import com.cinecraze.free.stream.models.Entry;
@@ -45,6 +50,13 @@ public class MainActivity extends AppCompatActivity {
     private ImageView gridViewIcon;
     private ImageView listViewIcon;
     private BottomNavigationView bottomNavigationView;
+    
+    // Search components
+    private Toolbar toolbar;
+    private TextView toolbarTitle;
+    private TextInputLayout searchLayout;
+    private AutoCompleteTextView searchBar;
+    private boolean isSearchVisible = false;
 
     private boolean isGridView = true;
     private int retryCount = 0;
@@ -60,7 +72,14 @@ public class MainActivity extends AppCompatActivity {
         gridViewIcon = findViewById(R.id.grid_view_icon);
         listViewIcon = findViewById(R.id.list_view_icon);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
+        
+        // Initialize search components
+        toolbar = findViewById(R.id.toolbar);
+        toolbarTitle = findViewById(R.id.toolbar_title);
+        searchLayout = findViewById(R.id.search_layout);
+        searchBar = findViewById(R.id.search_bar);
 
+        setupToolbar();
         setupRecyclerView();
         setupCarousel();
         setupBottomNavigation();
@@ -261,8 +280,20 @@ public class MainActivity extends AppCompatActivity {
         fetchPlaylist();
     }
 
+    private void setupToolbar() {
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+        
+        // Setup search functionality
+        setupSearch();
+        
+        // Setup close button in search layout
+        searchLayout.setEndIconOnClickListener(v -> hideSearch());
+    }
+
     private void setupSearch() {
-        AutoCompleteTextView searchBar = findViewById(R.id.search_bar);
         List<String> titles = new ArrayList<>();
         for (Entry entry : allEntries) {
             if (entry != null && entry.getTitle() != null) {
@@ -283,5 +314,94 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        
+        // Setup search action
+        searchBar.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH) {
+                performSearch(searchBar.getText().toString());
+                return true;
+            }
+            return false;
+        });
+        
+        // Setup real-time search
+        searchBar.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                performSearch(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) {}
+        });
+    }
+    
+    private void showSearch() {
+        if (!isSearchVisible) {
+            isSearchVisible = true;
+            toolbarTitle.setVisibility(View.GONE);
+            searchLayout.setVisibility(View.VISIBLE);
+            searchBar.requestFocus();
+            
+            // Animate the search layout
+            Animation slideIn = AnimationUtils.loadAnimation(this, R.anim.slide_in_right);
+            searchLayout.startAnimation(slideIn);
+        }
+    }
+    
+    private void hideSearch() {
+        if (isSearchVisible) {
+            isSearchVisible = false;
+            searchBar.setText("");
+            searchBar.clearFocus();
+            searchLayout.setVisibility(View.GONE);
+            toolbarTitle.setVisibility(View.VISIBLE);
+            
+            // Restore original list
+            movieAdapter.updateEntries(entryList);
+            
+            // Animate the title back
+            Animation slideOut = AnimationUtils.loadAnimation(this, R.anim.slide_out_left);
+            toolbarTitle.startAnimation(slideOut);
+        }
+    }
+    
+    private void performSearch(String query) {
+        if (query != null && !query.trim().isEmpty()) {
+            // Filter entries based on search query
+            List<Entry> filteredEntries = new ArrayList<>();
+            String searchQuery = query.toLowerCase().trim();
+            
+            for (Entry entry : allEntries) {
+                if (entry != null && entry.getTitle() != null && 
+                    entry.getTitle().toLowerCase().contains(searchQuery)) {
+                    filteredEntries.add(entry);
+                }
+            }
+            
+            // Update the recycler view with filtered results
+            movieAdapter.updateEntries(filteredEntries);
+        } else {
+            // If search is empty, show all entries
+            movieAdapter.updateEntries(entryList);
+        }
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(android.view.Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_search) {
+            showSearch();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

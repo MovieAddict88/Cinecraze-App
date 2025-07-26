@@ -39,6 +39,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         this.entryList = entryList;
         notifyDataSetChanged();
     }
+    
+    public void updateEntries(List<Entry> newEntries) {
+        this.entryList = newEntries;
+        notifyDataSetChanged();
+    }
 
     @NonNull
     @Override
