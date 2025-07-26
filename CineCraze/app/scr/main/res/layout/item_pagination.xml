@@ -4,29 +4,36 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="16dp"
-    android:background="@android:color/white"
-    android:elevation="4dp"
+    android:layout_marginTop="16dp"
+    android:layout_marginBottom="16dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
     android:gravity="center">
 
     <!-- Navigation Buttons -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_previous"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginEnd="16dp"
-        android:background="@color/design_default_color_primary"
-        android:drawableStart="@drawable/ic_arrow_back"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginEnd="24dp"
+        android:backgroundTint="@color/design_default_color_primary"
+        app:icon="@drawable/ic_arrow_back"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:iconSize="24dp"
         android:enabled="false"
-        style="@style/Widget.AppCompat.Button.Colored" />
+        style="@style/Widget.Material3.Button.Icon" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_next"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="16dp"
-        android:background="@color/design_default_color_primary"
-        android:drawableEnd="@drawable/ic_arrow_forward"
-        style="@style/Widget.AppCompat.Button.Colored" />
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="24dp"
+        android:backgroundTint="@color/design_default_color_primary"
+        app:icon="@drawable/ic_arrow_forward"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:iconSize="24dp"
+        style="@style/Widget.Material3.Button.Icon" />
 
 </LinearLayout>

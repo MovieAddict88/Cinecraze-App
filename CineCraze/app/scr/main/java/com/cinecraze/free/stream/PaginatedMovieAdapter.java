@@ -176,8 +176,8 @@ public class PaginatedMovieAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     }
     
     public class PaginationViewHolder extends RecyclerView.ViewHolder {
-        Button previousButton;
-        Button nextButton;
+        com.google.android.material.button.MaterialButton previousButton;
+        com.google.android.material.button.MaterialButton nextButton;
 
         public PaginationViewHolder(@NonNull View itemView) {
             super(itemView);
