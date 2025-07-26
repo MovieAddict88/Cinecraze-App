@@ -28,6 +28,7 @@ import android.app.PictureInPictureParams;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.util.Rational;
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -342,9 +343,36 @@ public class DetailsActivity extends AppCompatActivity {
     private void startPictureInPictureMode() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (getPackageManager().hasSystemFeature(android.content.pm.PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
+                // Get video dimensions for proper aspect ratio
+                Rational aspectRatio = new Rational(16, 9); // Default aspect ratio
+                
+                // Try to get actual video dimensions if available
+                if (player != null && player.getVideoFormat() != null) {
+                    int videoWidth = player.getVideoFormat().width;
+                    int videoHeight = player.getVideoFormat().height;
+                    if (videoWidth > 0 && videoHeight > 0) {
+                        aspectRatio = new Rational(videoWidth, videoHeight);
+                        
+                        // Ensure aspect ratio is within acceptable bounds for PiP
+                        float ratio = (float) videoWidth / videoHeight;
+                        if (ratio < 0.42f) { // Too tall
+                            aspectRatio = new Rational(42, 100);
+                        } else if (ratio > 2.39f) { // Too wide
+                            aspectRatio = new Rational(239, 100);
+                        }
+                    }
+                }
+                
                 PictureInPictureParams params = new PictureInPictureParams.Builder()
-                        .setAspectRatio(new Rational(16, 9))
+                        .setAspectRatio(aspectRatio)
                         .build();
+                        
+                // Configure player view for PiP before entering
+                if (playerView != null) {
+                    // Use ZOOM mode to fill the PiP window completely
+                    playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_ZOOM);
+                }
+                
                 enterPictureInPictureMode(params);
             }
         }
@@ -354,14 +382,26 @@ public class DetailsActivity extends AppCompatActivity {
     public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, Configuration newConfig) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
         if (isInPictureInPictureMode) {
-            // Hide UI elements when entering PiP mode
+            // Configure player view for PiP mode
             if (playerView != null) {
                 playerView.setUseController(false);
+                // Use ZOOM resize mode to fill the PiP window and avoid black bars
+                playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_ZOOM);
+                // Hide system UI
+                playerView.setSystemUiVisibility(
+                    android.view.View.SYSTEM_UI_FLAG_FULLSCREEN |
+                    android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                    android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                );
             }
         } else {
-            // Show UI elements when exiting PiP mode
+            // Restore UI elements when exiting PiP mode
             if (playerView != null) {
                 playerView.setUseController(true);
+                // Restore original resize mode
+                playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
+                // Restore system UI
+                playerView.setSystemUiVisibility(android.view.View.SYSTEM_UI_FLAG_VISIBLE);
             }
         }
     }
