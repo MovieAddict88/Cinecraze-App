@@ -146,11 +146,14 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        Log.d("MainActivity", "Fetching playlist data...");
+        Log.d("MainActivity", "Fetching playlist data from: " + "https://raw.githubusercontent.com/MovieAddict88/Movie-Source/main/playlist.json");
         findViewById(R.id.progress_bar).setVisibility(View.VISIBLE);
-        ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
-        Call<Playlist> call = apiService.getPlaylist();
-        call.enqueue(new Callback<Playlist>() {
+        
+        // Add a small delay to ensure network is ready
+        new android.os.Handler().postDelayed(() -> {
+            ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
+            Call<Playlist> call = apiService.getPlaylist();
+            call.enqueue(new Callback<Playlist>() {
             @Override
             public void onResponse(Call<Playlist> call, Response<Playlist> response) {
                 findViewById(R.id.progress_bar).setVisibility(View.GONE);
@@ -197,27 +200,44 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.progress_bar).setVisibility(View.GONE);
                 Log.e("MainActivity", "Network failure: " + t.getMessage(), t);
                 
+                String errorMessage = "Network error";
+                if (t.getMessage() != null) {
+                    if (t.getMessage().contains("timeout")) {
+                        errorMessage = "Connection timeout";
+                    } else if (t.getMessage().contains("Unable to resolve host")) {
+                        errorMessage = "No internet connection";
+                    } else if (t.getMessage().contains("SSL")) {
+                        errorMessage = "SSL connection error";
+                    } else {
+                        errorMessage = "Network error: " + t.getMessage();
+                    }
+                }
+                
                 if (retryCount < MAX_RETRY_COUNT) {
                     retryCount++;
                     Log.d("MainActivity", "Retrying... Attempt " + retryCount + "/" + MAX_RETRY_COUNT);
-                    Toast.makeText(MainActivity.this, "Retrying... Attempt " + retryCount + "/" + MAX_RETRY_COUNT, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, errorMessage + " - Retrying... Attempt " + retryCount + "/" + MAX_RETRY_COUNT, Toast.LENGTH_SHORT).show();
                     // Retry after a short delay
                     new android.os.Handler().postDelayed(() -> fetchPlaylist(), 2000);
                 } else {
                     Log.e("MainActivity", "Failed to load data after " + MAX_RETRY_COUNT + " attempts");
-                    Toast.makeText(MainActivity.this, "Failed to load data after " + MAX_RETRY_COUNT + " attempts", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "Failed to load data after " + MAX_RETRY_COUNT + " attempts. " + errorMessage, Toast.LENGTH_LONG).show();
                     retryCount = 0; // Reset for next manual retry
                 }
             }
         });
+        }, 500); // 500ms delay
     }
 
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         if (connectivityManager != null) {
             NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-            return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+            boolean isConnected = activeNetworkInfo != null && activeNetworkInfo.isConnected();
+            Log.d("MainActivity", "Network available: " + isConnected);
+            return isConnected;
         }
+        Log.d("MainActivity", "ConnectivityManager is null");
         return false;
     }
 
@@ -228,6 +248,12 @@ public class MainActivity extends AppCompatActivity {
         if (allEntries.isEmpty() && isNetworkAvailable()) {
             fetchPlaylist();
         }
+    }
+
+    // Method to manually refresh data (can be called from UI)
+    public void refreshData() {
+        retryCount = 0; // Reset retry count
+        fetchPlaylist();
     }
 
     private void setupSearch() {

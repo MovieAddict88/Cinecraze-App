@@ -21,11 +21,15 @@
 - **Error Recovery**: Automatic retry mechanism with user feedback
 - **Data Validation**: Null checks and empty data handling
 - **User Experience**: Better progress indicators and success/error messages
+- **API URL Fix**: Updated to use direct raw.githubusercontent.com URL
+- **Enhanced Logging**: Added detailed network logging for debugging
+- **Timeout Increase**: Extended timeouts to 60 seconds for better reliability
 
 ### API Endpoint:
-- **Base URL**: `https://github.com/MovieAddict88/Movie-Source/raw/main/`
+- **Base URL**: `https://raw.githubusercontent.com/MovieAddict88/Movie-Source/main/`
 - **Endpoint**: `playlist.json`
 - **Status**: ✅ Working and accessible
+- **Fixed**: Updated URL to use direct raw.githubusercontent.com instead of redirecting
 
 ### Dependencies Added:
 - `com.squareup.okhttp3:logging-interceptor:4.9.0` for network logging
