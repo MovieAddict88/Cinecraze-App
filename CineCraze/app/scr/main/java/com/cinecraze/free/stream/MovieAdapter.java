@@ -147,15 +147,17 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         }
         
         // Determine badge text and color based on content type from mainCategory
-        if (category.toLowerCase().contains("movie") || category.toLowerCase().contains("film")) {
-            badgeText = "MOVIE";
-            badgeColor = ContextCompat.getColor(context, R.color.type_badge_movies); // Light blue
-        } else if (category.toLowerCase().contains("series") || category.toLowerCase().contains("tv")) {
-            badgeText = "SERIES";
-            badgeColor = ContextCompat.getColor(context, R.color.type_badge_series); // Green
-        } else if (category.toLowerCase().contains("live")) {
+        String lowerCategory = category.toLowerCase();
+        
+        if (lowerCategory.contains("live")) {
             badgeText = "LIVE";
             badgeColor = ContextCompat.getColor(context, R.color.type_badge_live); // Red
+        } else if (lowerCategory.contains("movie") || lowerCategory.contains("film")) {
+            badgeText = "MOVIE";
+            badgeColor = ContextCompat.getColor(context, R.color.type_badge_movies); // Light blue
+        } else if (lowerCategory.contains("series") || lowerCategory.contains("tv")) {
+            badgeText = "SERIES";
+            badgeColor = ContextCompat.getColor(context, R.color.type_badge_series); // Green
         } else {
             badgeText = category.toUpperCase();
             if (badgeText.length() > 6) {
