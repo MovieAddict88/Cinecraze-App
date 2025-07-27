@@ -82,7 +82,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         
         // Set type badge (below title) - Content type badge
         if (holder.typeBadge != null) {
-            setTypeBadge(holder.typeBadge, entry.getMainCategory());
+            setTypeBadge(holder.typeBadge, entry.getSubCategory());
         }
 
         holder.itemView.setOnClickListener(v -> {
@@ -146,7 +146,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             category = "Other";
         }
         
-        // Determine badge text and color based on content type
+        // Determine badge text and color based on content type from subCategory
         if (category.toLowerCase().contains("movie") || category.toLowerCase().contains("film")) {
             badgeText = "MOVIE";
             badgeColor = ContextCompat.getColor(context, R.color.type_badge_movies); // Light blue
@@ -157,11 +157,21 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             badgeText = "LIVE";
             badgeColor = ContextCompat.getColor(context, R.color.type_badge_live); // Red
         } else {
-            badgeText = category.toUpperCase();
-            if (badgeText.length() > 6) {
-                badgeText = badgeText.substring(0, 6);
+            // If no specific content type found, try to infer from the category
+            String lowerCategory = category.toLowerCase();
+            if (lowerCategory.contains("action") || lowerCategory.contains("drama") || 
+                lowerCategory.contains("comedy") || lowerCategory.contains("horror") ||
+                lowerCategory.contains("romance") || lowerCategory.contains("thriller")) {
+                // This looks like a movie genre, so it's likely a movie
+                badgeText = "MOVIE";
+                badgeColor = ContextCompat.getColor(context, R.color.type_badge_movies);
+            } else {
+                badgeText = category.toUpperCase();
+                if (badgeText.length() > 6) {
+                    badgeText = badgeText.substring(0, 6);
+                }
+                badgeColor = ContextCompat.getColor(context, R.color.type_badge_default); // Orange
             }
-            badgeColor = ContextCompat.getColor(context, R.color.type_badge_default); // Orange
         }
         
         badge.setText(badgeText);
