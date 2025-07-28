@@ -20,6 +20,9 @@ public class Entry {
     @SerializedName("SubCategory")
     private String subCategory;
 
+    @SerializedName("MainCategory")
+    private String mainCategory;
+
     @SerializedName("Country")
     private String country;
 
@@ -56,6 +59,10 @@ public class Entry {
 
     public String getSubCategory() {
         return subCategory;
+    }
+
+    public String getMainCategory() {
+        return mainCategory;
     }
 
     public String getCountry() {
