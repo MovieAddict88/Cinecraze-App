@@ -50,6 +50,7 @@ public class DatabaseUtils {
         try {
             setPrivateField(entry, "title", entity.getTitle());
             setPrivateField(entry, "subCategory", entity.getSubCategory());
+            setPrivateField(entry, "mainCategory", entity.getMainCategory());
             setPrivateField(entry, "country", entity.getCountry());
             setPrivateField(entry, "description", entity.getDescription());
             setPrivateField(entry, "poster", entity.getPoster());
