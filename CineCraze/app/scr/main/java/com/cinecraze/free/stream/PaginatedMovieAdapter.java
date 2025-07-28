@@ -2,6 +2,7 @@ package com.cinecraze.free.stream;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -121,6 +123,16 @@ public class PaginatedMovieAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 movieHolder.duration.setText(entry.getDuration());
             }
 
+            // Set category badge (on poster) - Genre badge
+            if (movieHolder.categoryBadge != null) {
+                setCategoryBadge(movieHolder.categoryBadge, entry.getSubCategory());
+            }
+            
+            // Set type badge (below title) - Content type badge
+            if (movieHolder.typeBadge != null) {
+                setTypeBadge(movieHolder.typeBadge, entry.getMainCategory());
+            }
+
             movieHolder.itemView.setOnClickListener(v -> {
                 Intent intent = new Intent(context, DetailsActivity.class);
                 intent.putExtra("entry", new Gson().toJson(entry));
@@ -162,6 +174,8 @@ public class PaginatedMovieAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         TextView year;
         TextView country;
         TextView duration;
+        TextView categoryBadge; // Added for category badge
+        TextView typeBadge; // Added for type badge
 
         public MovieViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -172,6 +186,8 @@ public class PaginatedMovieAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             year = itemView.findViewById(R.id.year);
             country = itemView.findViewById(R.id.country);
             duration = itemView.findViewById(R.id.duration);
+            categoryBadge = itemView.findViewById(R.id.category_badge); // Initialize categoryBadge
+            typeBadge = itemView.findViewById(R.id.type_badge); // Initialize typeBadge
         }
     }
     
@@ -184,5 +200,84 @@ public class PaginatedMovieAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             previousButton = itemView.findViewById(R.id.btn_previous);
             nextButton = itemView.findViewById(R.id.btn_next);
         }
+    }
+
+    // Helper method to set category badge (genre badge)
+    private void setCategoryBadge(TextView badge, String category) {
+        String badgeText;
+        int badgeColor;
+        
+        if (category == null || category.trim().isEmpty()) {
+            category = "Other";
+        }
+        
+        // For genre badge, use the category as-is and apply genre-specific colors
+        badgeText = category.toUpperCase();
+        if (badgeText.length() > 8) {
+            badgeText = badgeText.substring(0, 8);
+        }
+        
+        // Apply genre-specific colors
+        if (category.toLowerCase().contains("action")) {
+            badgeColor = ContextCompat.getColor(context, R.color.badge_live_tv); // Red for action
+        } else if (category.toLowerCase().contains("drama")) {
+            badgeColor = ContextCompat.getColor(context, R.color.badge_series); // Green for drama
+        } else if (category.toLowerCase().contains("comedy")) {
+            badgeColor = ContextCompat.getColor(context, R.color.badge_movies); // Light blue for comedy
+        } else if (category.toLowerCase().contains("horror")) {
+            badgeColor = ContextCompat.getColor(context, R.color.badge_live_tv); // Red for horror
+        } else if (category.toLowerCase().contains("romance")) {
+            badgeColor = ContextCompat.getColor(context, R.color.badge_series); // Green for romance
+        } else {
+            badgeColor = ContextCompat.getColor(context, R.color.badge_default); // Default orange
+        }
+        
+        badge.setText(badgeText);
+        
+        // Create colored background
+        GradientDrawable background = new GradientDrawable();
+        background.setShape(GradientDrawable.RECTANGLE);
+        background.setColor(badgeColor);
+        background.setCornerRadius(4 * context.getResources().getDisplayMetrics().density);
+        badge.setBackground(background);
+    }
+
+    // Helper method to set type badge (content type badge)
+    private void setTypeBadge(TextView badge, String category) {
+        String badgeText;
+        int badgeColor;
+        
+        if (category == null || category.trim().isEmpty()) {
+            category = "Other";
+        }
+        
+        // Determine badge text and color based on content type from mainCategory
+        String lowerCategory = category.toLowerCase();
+        
+        if (lowerCategory.contains("live")) {
+            badgeText = "LIVE";
+            badgeColor = ContextCompat.getColor(context, R.color.type_badge_live); // Red
+        } else if (lowerCategory.contains("movie") || lowerCategory.contains("film")) {
+            badgeText = "MOVIE";
+            badgeColor = ContextCompat.getColor(context, R.color.type_badge_movies); // Light blue
+        } else if (lowerCategory.contains("series") || lowerCategory.contains("tv")) {
+            badgeText = "SERIES";
+            badgeColor = ContextCompat.getColor(context, R.color.type_badge_series); // Green
+        } else {
+            badgeText = category.toUpperCase();
+            if (badgeText.length() > 6) {
+                badgeText = badgeText.substring(0, 6);
+            }
+            badgeColor = ContextCompat.getColor(context, R.color.type_badge_default); // Orange
+        }
+        
+        badge.setText(badgeText);
+        
+        // Create colored background
+        GradientDrawable background = new GradientDrawable();
+        background.setShape(GradientDrawable.RECTANGLE);
+        background.setColor(badgeColor);
+        background.setCornerRadius(3 * context.getResources().getDisplayMetrics().density);
+        badge.setBackground(background);
     }
 }

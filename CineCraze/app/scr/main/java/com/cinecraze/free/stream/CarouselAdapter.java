@@ -1,6 +1,7 @@
 package com.cinecraze.free.stream;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -48,6 +50,12 @@ public class CarouselAdapter extends RecyclerView.Adapter<CarouselAdapter.ViewHo
         holder.year.setText(String.valueOf(entry.getYear()));
         holder.duration.setText(entry.getDuration());
         Glide.with(context).load(entry.getPoster()).into(holder.poster);
+        
+        // Set category badge (on poster) - Genre badge
+        setCategoryBadge(holder.categoryBadge, entry.getSubCategory());
+        
+        // Set type badge (below info) - Content type badge
+        setTypeBadge(holder.typeBadge, entry.getMainCategory());
 
         holder.playButton.setOnClickListener(v -> {
             DetailsActivity.start(context, entry, allEntries);
@@ -58,6 +66,83 @@ public class CarouselAdapter extends RecyclerView.Adapter<CarouselAdapter.ViewHo
     public int getItemCount() {
         return entryList.size();
     }
+    
+    private void setCategoryBadge(TextView badge, String category) {
+        String badgeText;
+        int badgeColor;
+        
+        if (category == null || category.trim().isEmpty()) {
+            category = "Other";
+        }
+        
+        // For genre badge, use the category as-is and apply genre-specific colors
+        badgeText = category.toUpperCase();
+        if (badgeText.length() > 8) {
+            badgeText = badgeText.substring(0, 8);
+        }
+        
+        // Apply genre-specific colors
+        if (category.toLowerCase().contains("action")) {
+            badgeColor = ContextCompat.getColor(context, R.color.badge_live_tv); // Red for action
+        } else if (category.toLowerCase().contains("drama")) {
+            badgeColor = ContextCompat.getColor(context, R.color.badge_series); // Green for drama
+        } else if (category.toLowerCase().contains("comedy")) {
+            badgeColor = ContextCompat.getColor(context, R.color.badge_movies); // Light blue for comedy
+        } else if (category.toLowerCase().contains("horror")) {
+            badgeColor = ContextCompat.getColor(context, R.color.badge_live_tv); // Red for horror
+        } else if (category.toLowerCase().contains("romance")) {
+            badgeColor = ContextCompat.getColor(context, R.color.badge_series); // Green for romance
+        } else {
+            badgeColor = ContextCompat.getColor(context, R.color.badge_default); // Default orange
+        }
+        
+        badge.setText(badgeText);
+        
+        // Create colored background
+        GradientDrawable background = new GradientDrawable();
+        background.setShape(GradientDrawable.RECTANGLE);
+        background.setColor(badgeColor);
+        background.setCornerRadius(6 * context.getResources().getDisplayMetrics().density);
+        badge.setBackground(background);
+    }
+    
+    private void setTypeBadge(TextView badge, String category) {
+        String badgeText;
+        int badgeColor;
+        
+        if (category == null || category.trim().isEmpty()) {
+            category = "Other";
+        }
+        
+        // Determine badge text and color based on content type from mainCategory
+        String lowerCategory = category.toLowerCase();
+        
+        if (lowerCategory.contains("live")) {
+            badgeText = "LIVE";
+            badgeColor = ContextCompat.getColor(context, R.color.type_badge_live); // Red
+        } else if (lowerCategory.contains("movie") || lowerCategory.contains("film")) {
+            badgeText = "MOVIE";
+            badgeColor = ContextCompat.getColor(context, R.color.type_badge_movies); // Light blue
+        } else if (lowerCategory.contains("series") || lowerCategory.contains("tv")) {
+            badgeText = "SERIES";
+            badgeColor = ContextCompat.getColor(context, R.color.type_badge_series); // Green
+        } else {
+            badgeText = category.toUpperCase();
+            if (badgeText.length() > 6) {
+                badgeText = badgeText.substring(0, 6);
+            }
+            badgeColor = ContextCompat.getColor(context, R.color.type_badge_default); // Orange
+        }
+        
+        badge.setText(badgeText);
+        
+        // Create colored background
+        GradientDrawable background = new GradientDrawable();
+        background.setShape(GradientDrawable.RECTANGLE);
+        background.setColor(badgeColor);
+        background.setCornerRadius(4 * context.getResources().getDisplayMetrics().density);
+        badge.setBackground(background);
+    }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView poster;
@@ -65,6 +150,8 @@ public class CarouselAdapter extends RecyclerView.Adapter<CarouselAdapter.ViewHo
         TextView country;
         TextView year;
         TextView duration;
+        TextView categoryBadge;
+        TextView typeBadge;
         FloatingActionButton playButton;
 
         public ViewHolder(@NonNull View itemView) {
@@ -74,6 +161,8 @@ public class CarouselAdapter extends RecyclerView.Adapter<CarouselAdapter.ViewHo
             country = itemView.findViewById(R.id.country);
             year = itemView.findViewById(R.id.year);
             duration = itemView.findViewById(R.id.duration);
+            categoryBadge = itemView.findViewById(R.id.category_badge);
+            typeBadge = itemView.findViewById(R.id.type_badge);
             playButton = itemView.findViewById(R.id.play_button);
         }
     }
