@@ -290,8 +290,22 @@ public class MainActivity extends AppCompatActivity {
 
     private void performSearch(String query) {
         currentSearchQuery = query.trim();
-        currentPage = 0;
-        loadSearchResults();
+        
+        if (currentSearchQuery.length() > 2) {
+            // For detailed search, launch SearchActivity
+            launchSearchActivity(currentSearchQuery);
+        } else {
+            currentPage = 0;
+            loadSearchResults();
+        }
+    }
+    
+    private void launchSearchActivity(String query) {
+        Intent intent = new Intent(this, SearchActivity.class);
+        intent.putExtra("query", query);
+        startActivity(intent);
+        // Clear search bar after launching search activity
+        hideSearchBar();
     }
 
     private void clearSearch() {

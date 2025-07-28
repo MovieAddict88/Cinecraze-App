@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/netflix_black"
+    tools:context=".MainActivity">
+
+    <!-- Main Content ViewPager -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/main_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <!-- Custom Toolbar with Search -->
+    <LinearLayout
+        android:layout_gravity="top"
+        android:background="@drawable/bg_gradient_toolbar"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_scrollFlags="scroll|enterAlways|snap">
+
+        <FrameLayout
+            android:id="@+id/toolbar_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- Standard Toolbar -->
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_marginTop="25dp"
+                android:background="@android:color/transparent"
+                android:theme="@style/Theme.CineCraze.AppBarOverlay">
+
+                <!-- Title and Search Icon Layout -->
+                <LinearLayout
+                    android:id="@+id/title_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/toolbar_title"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="CineCraze"
+                        android:textColor="@android:color/white"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/netflix_sans_bold" />
+
+                    <ImageView
+                        android:id="@+id/search_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_search"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:padding="12dp"
+                        android:tint="@android:color/white"
+                        android:contentDescription="Search" />
+                </LinearLayout>
+
+                <!-- Search Bar Layout (Initially Hidden) -->
+                <LinearLayout
+                    android:id="@+id/search_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:visibility="gone">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        app:hintEnabled="false"
+                        app:boxBackgroundColor="@color/search_background"
+                        app:boxStrokeColor="@color/primary">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/search_bar"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Search movies and series..."
+                            android:imeOptions="actionSearch"
+                            android:inputType="text"
+                            android:maxLines="1"
+                            android:textColor="@android:color/white"
+                            android:textColorHint="@color/white_60" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <ImageView
+                        android:id="@+id/close_search_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_close"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:padding="12dp"
+                        android:tint="@android:color/white"
+                        android:contentDescription="Close Search" />
+                </LinearLayout>
+            </androidx.appcompat.widget.Toolbar>
+
+            <!-- Enhanced Search Overlay -->
+            <RelativeLayout
+                android:id="@+id/search_overlay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/netflix_black"
+                android:visibility="gone"
+                android:focusable="true"
+                android:clickable="true">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:padding="5dp">
+
+                    <EditText
+                        android:id="@+id/enhanced_search_bar"
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="55dp"
+                        android:layout_marginRight="55dp"
+                        android:background="@drawable/bg_search_enhanced"
+                        android:hint="Search for movies, series, actors..."
+                        android:imeOptions="actionSearch"
+                        android:inputType="text"
+                        android:lines="1"
+                        android:maxLines="1"
+                        android:paddingLeft="15dp"
+                        android:paddingRight="15dp"
+                        android:textColor="@android:color/white"
+                        android:textColorHint="@color/white_60"
+                        android:textSize="16sp" />
+
+                    <!-- Back Button -->
+                    <RelativeLayout
+                        android:id="@+id/search_back_container"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="7dp"
+                        android:background="@drawable/bg_search_enhanced">
+
+                        <ImageView
+                            android:id="@+id/search_back_icon"
+                            android:layout_width="45dp"
+                            android:layout_height="45dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:padding="12dp"
+                            android:src="@drawable/ic_arrow_back"
+                            android:tint="@android:color/white" />
+                    </RelativeLayout>
+
+                    <!-- Search Button -->
+                    <RelativeLayout
+                        android:id="@+id/search_action_container"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="7dp"
+                        android:background="@drawable/bg_search_enhanced">
+
+                        <ImageView
+                            android:id="@+id/search_action_icon"
+                            android:layout_width="45dp"
+                            android:layout_height="45dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:padding="12dp"
+                            android:src="@drawable/ic_search"
+                            android:tint="@android:color/white" />
+                    </RelativeLayout>
+                </RelativeLayout>
+            </RelativeLayout>
+        </FrameLayout>
+    </LinearLayout>
+
+    <!-- Bubble Navigation Bottom Bar -->
+    <LinearLayout
+        android:layout_gravity="bottom"
+        android:background="@color/netflix_dark_gray"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Separator Line -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/gray" />
+
+        <com.gauravk.bubblenavigation.BubbleNavigationConstraintView
+            android:id="@+id/bubble_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/netflix_dark_gray"
+            android:elevation="8dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            app:bnc_mode="inside">
+
+            <com.gauravk.bubblenavigation.BubbleToggleView
+                android:id="@+id/nav_home"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:bt_icon="@drawable/ic_home"
+                app:bt_iconHeight="24dp"
+                app:bt_iconWidth="24dp"
+                app:bt_colorInactive="@color/primary"
+                app:bt_colorActive="@color/primary"
+                app:bt_shape="@drawable/bg_bubble_primary"
+                app:bt_title="Home" />
+
+            <com.gauravk.bubblenavigation.BubbleToggleView
+                android:id="@+id/nav_movies"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:bt_iconHeight="24dp"
+                app:bt_iconWidth="24dp"
+                app:bt_colorActive="@color/netflix_red"
+                app:bt_colorInactive="@color/netflix_red"
+                app:bt_shape="@drawable/bg_bubble_red"
+                app:bt_icon="@drawable/ic_movie"
+                app:bt_title="Movies" />
+
+            <com.gauravk.bubblenavigation.BubbleToggleView
+                android:id="@+id/nav_series"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:bt_iconHeight="24dp"
+                app:bt_iconWidth="24dp"
+                app:bt_colorInactive="@color/green"
+                app:bt_colorActive="@color/green"
+                app:bt_shape="@drawable/bg_bubble_green"
+                app:bt_icon="@drawable/ic_tv_show"
+                app:bt_title="Series" />
+
+            <com.gauravk.bubblenavigation.BubbleToggleView
+                android:id="@+id/nav_favorites"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:bt_iconHeight="24dp"
+                app:bt_iconWidth="24dp"
+                app:bt_colorInactive="@color/orange"
+                app:bt_colorActive="@color/orange"
+                app:bt_shape="@drawable/bg_bubble_orange"
+                app:bt_icon="@drawable/ic_favorite"
+                app:bt_title="Favorites" />
+        </com.gauravk.bubblenavigation.BubbleNavigationConstraintView>
+    </LinearLayout>
+
+    <!-- Floating Action Button for Quick Search -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:layout_marginBottom="80dp"
+        android:src="@drawable/ic_search"
+        android:visibility="gone"
+        app:backgroundTint="@color/primary"
+        app:tint="@android:color/white" />
+
+    <!-- Loading Indicator -->
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

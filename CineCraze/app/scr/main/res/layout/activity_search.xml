@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/netflix_black"
+    android:fitsSystemWindows="true"
+    tools:context=".SearchActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- App Bar with Toolbar -->
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:elevation="4dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                app:layout_scrollFlags="scroll|enterAlways">
+
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="@color/netflix_black"
+                    android:theme="@style/Theme.CineCraze.AppBarOverlay"
+                    app:elevation="4dp"
+                    app:layout_scrollFlags="scroll|enterAlways"
+                    app:popupTheme="@style/Theme.CineCraze.PopupOverlay" />
+            </RelativeLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <!-- Main Content -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/appBarLayout">
+
+            <RelativeLayout
+                android:id="@+id/content_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <!-- Swipe Refresh Layout -->
+                <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                    android:id="@+id/swipe_refresh_layout_search"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <!-- Loading State -->
+                        <LinearLayout
+                            android:id="@+id/linear_layout_loading"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <ProgressBar
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Searching..."
+                                android:textColor="@color/white"
+                                android:textSize="16sp" />
+                        </LinearLayout>
+
+                        <!-- Error State -->
+                        <LinearLayout
+                            android:id="@+id/linear_layout_error"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:padding="32dp"
+                            android:visibility="gone">
+
+                            <ImageView
+                                android:layout_width="96dp"
+                                android:layout_height="96dp"
+                                android:layout_marginBottom="16dp"
+                                android:alpha="0.6"
+                                android:src="@drawable/ic_error_outline"
+                                android:tint="@color/white" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:text="Search Failed"
+                                android:textColor="@color/white"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                android:gravity="center"
+                                android:text="Unable to search at this time.\nPlease try again later."
+                                android:textColor="@color/white"
+                                android:textSize="14sp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/button_try_again"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:backgroundTint="@color/primary"
+                                android:text="Try Again"
+                                android:textColor="@color/white" />
+                        </LinearLayout>
+
+                        <!-- Results RecyclerView -->
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recycler_view_search"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:clipChildren="false"
+                            android:clipToPadding="false"
+                            android:padding="8dp"
+                            android:visibility="gone" />
+
+                        <!-- Empty State -->
+                        <ImageView
+                            android:id="@+id/image_view_empty"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:alpha="0.6"
+                            android:padding="100dp"
+                            android:src="@drawable/ic_search"
+                            android:tint="@color/white"
+                            android:visibility="gone" />
+                    </LinearLayout>
+                </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+                <!-- Load More Progress Bar -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center">
+
+                    <ProgressBar
+                        android:id="@+id/progress_bar_load_more"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/bg_loading_more"
+                        android:elevation="4dp"
+                        android:visibility="gone" />
+                </RelativeLayout>
+            </RelativeLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+</RelativeLayout>
