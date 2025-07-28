@@ -14,8 +14,11 @@ import android.widget.Toast;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,7 +32,10 @@ import com.cinecraze.free.stream.net.RetrofitClient;
 import com.cinecraze.free.stream.repository.DataRepository;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
+import com.gauravk.bubblenavigation.BubbleNavigationConstraintView;
+import com.gauravk.bubblenavigation.listener.BubbleNavigationChangeListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +61,7 @@ import retrofit2.Response;
  * - Low memory: ~5MB vs 50MB for large datasets
  * - Scalable: Can handle 1000+ items efficiently
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private RecyclerView recyclerView;
     private MovieAdapter movieAdapter;
@@ -64,12 +70,18 @@ public class MainActivity extends AppCompatActivity {
     private CarouselAdapter carouselAdapter;
     private ImageView gridViewIcon;
     private ImageView listViewIcon;
-    private BottomNavigationView bottomNavigationView;
     private ImageView searchIcon;
     private ImageView closeSearchIcon;
     private LinearLayout titleLayout;
     private LinearLayout searchLayout;
     private AutoCompleteTextView searchBar;
+    
+    // Navigation Drawer
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    
+    // Bubble Navigation
+    private BubbleNavigationConstraintView bubbleNavigationView;
     
     // Pagination UI elements
     private LinearLayout paginationLayout;
@@ -119,9 +131,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         initializeViews();
+        setupNavigationDrawer();
+        setupBubbleNavigation();
         setupRecyclerView();
         setupCarousel();
-        setupBottomNavigation();
         setupViewSwitch();
         setupSearchToggle();
         setupFilterSpinners();
@@ -132,18 +145,63 @@ public class MainActivity extends AppCompatActivity {
         // Load ONLY first page - this is the key difference!
         loadInitialDataFast();
     }
+    
+    private void setupNavigationDrawer() {
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawerLayout, (Toolbar) findViewById(R.id.toolbar),
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+        
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+    
+    private void setupBubbleNavigation() {
+        bubbleNavigationView.setNavigationChangeListener(new BubbleNavigationChangeListener() {
+            @Override
+            public void onNavigationChanged(View view, int position) {
+                // Handle bubble navigation changes
+                String category = "";
+                switch (position) {
+                    case 0: // Home
+                        category = "";
+                        break;
+                    case 1: // Movies
+                        category = "Movies";
+                        break;
+                    case 2: // Series
+                        category = "TV Series";
+                        break;
+                    case 3: // LiveTV
+                        category = "Live TV";
+                        break;
+                    case 4: // Downloads
+                        // Handle downloads navigation
+                        break;
+                }
+                
+                if (position != 4) { // Don't filter for downloads
+                    filterByCategory(category);
+                }
+            }
+        });
+    }
 
     private void initializeViews() {
         recyclerView = findViewById(R.id.recycler_view);
         carouselViewPager = findViewById(R.id.carousel_view_pager);
         gridViewIcon = findViewById(R.id.grid_view_icon);
         listViewIcon = findViewById(R.id.list_view_icon);
-        bottomNavigationView = findViewById(R.id.bottom_navigation);
         searchIcon = findViewById(R.id.search_icon);
         closeSearchIcon = findViewById(R.id.close_search_icon);
         titleLayout = findViewById(R.id.title_layout);
         searchLayout = findViewById(R.id.search_layout);
         searchBar = findViewById(R.id.search_bar);
+        
+        // Initialize navigation components
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
+        bubbleNavigationView = findViewById(R.id.top_navigation_constraint);
         
         // Initialize pagination UI elements
         paginationLayout = findViewById(R.id.pagination_layout);
@@ -177,26 +235,7 @@ public class MainActivity extends AppCompatActivity {
         carouselViewPager.setAdapter(carouselAdapter);
     }
 
-    private void setupBottomNavigation() {
-        bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                String category = "";
-                if (item.getItemId() == R.id.nav_movies) {
-                    category = "Movies";
-                } else if (item.getItemId() == R.id.nav_series) {
-                    category = "TV Series";
-                } else if (item.getItemId() == R.id.nav_home) {
-                    category = "";
-                } else if (item.getItemId() == R.id.nav_live) {
-                    category = "Live TV";
-                }
-                
-                filterByCategory(category);
-                return true;
-            }
-        });
-    }
+
 
     private void setupViewSwitch() {
         gridViewIcon.setOnClickListener(v -> {
@@ -663,10 +702,49 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+        
+        if (id == R.id.nav_home) {
+            // Handle home action
+        } else if (id == R.id.my_profile) {
+            // Handle profile action
+        } else if (id == R.id.my_password) {
+            // Handle password change action
+        } else if (id == R.id.login) {
+            // Handle login action
+        } else if (id == R.id.my_list) {
+            // Handle my list action
+        } else if (id == R.id.logout) {
+            // Handle logout action
+        } else if (id == R.id.nav_settings) {
+            // Handle settings action
+        } else if (id == R.id.buy_now) {
+            // Handle subscribe action
+        } else if (id == R.id.nav_rate) {
+            // Handle rate app action
+        } else if (id == R.id.nav_share) {
+            // Handle share app action
+        } else if (id == R.id.nav_help) {
+            // Handle help action
+        } else if (id == R.id.nav_policy) {
+            // Handle privacy policy action
+        } else if (id == R.id.nav_exit) {
+            // Handle exit action
+            finish();
+        }
+        
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+    
+    @Override
     public void onBackPressed() {
         try {
-            // Check if any spinner is showing and dismiss it first
-            if ((genreSpinner != null && genreSpinner.isShowing()) ||
+            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START);
+            } else if ((genreSpinner != null && genreSpinner.isShowing()) ||
                 (countrySpinner != null && countrySpinner.isShowing()) ||
                 (yearSpinner != null && yearSpinner.isShowing())) {
                 dismissAllSpinners();

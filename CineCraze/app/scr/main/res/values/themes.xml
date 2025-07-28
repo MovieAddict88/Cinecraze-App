@@ -31,4 +31,12 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+    
+    <style name="NavigationView" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="android:background">@color/dark_gray</item>
+    </style>
+    
+    <style name="CustomActionBar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:background">@color/transparent</item>
+    </style>
 </resources>

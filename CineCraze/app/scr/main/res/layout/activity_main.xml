@@ -1,245 +1,364 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:layoutDirection="ltr"
+    tools:openDrawer="start">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/Theme.CineCraze.AppBarOverlay">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.CineCraze.PopupOverlay">
-
-            <!-- Title and Search Icon Layout -->
-            <LinearLayout
-                android:id="@+id/title_layout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:id="@+id/toolbar_title"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="CineCraze"
-                    android:textColor="@android:color/white"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <ImageView
-                    android:id="@+id/search_icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_search"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:padding="12dp"
-                    android:contentDescription="Search" />
-            </LinearLayout>
-
-            <!-- Search Bar Layout (Initially Hidden) -->
-            <LinearLayout
-                android:id="@+id/search_layout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:visibility="gone">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
-                    app:hintEnabled="false">
-
-                    <AutoCompleteTextView
-                        android:id="@+id/search_bar"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Search..."
-                        android:imeOptions="actionSearch"
-                        android:inputType="text"
-                        android:maxLines="1" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <ImageView
-                    android:id="@+id/close_search_icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_close"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:padding="12dp"
-                    android:contentDescription="Close Search" />
-            </LinearLayout>
-        </androidx.appcompat.widget.Toolbar>
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <androidx.core.widget.NestedScrollView
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        tools:context=".MainActivity">
 
-        <LinearLayout
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:theme="@style/Theme.CineCraze.AppBarOverlay">
+
+            <FrameLayout
+                android:id="@+id/toolbar_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="@drawable/bg_gradient"
+                    app:popupTheme="@style/Theme.CineCraze.PopupOverlay">
+
+                    <!-- Title and Search Icon Layout -->
+                    <LinearLayout
+                        android:id="@+id/title_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:id="@+id/toolbar_title"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="CineCraze"
+                            android:textColor="@android:color/white"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <ImageView
+                            android:id="@+id/search_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_search"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:padding="12dp"
+                            android:contentDescription="Search" />
+                    </LinearLayout>
+
+                    <!-- Search Bar Layout (Initially Hidden) -->
+                    <LinearLayout
+                        android:id="@+id/search_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:visibility="gone">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="8dp"
+                            app:hintEnabled="false">
+
+                            <AutoCompleteTextView
+                                android:id="@+id/search_bar"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Search..."
+                                android:imeOptions="actionSearch"
+                                android:inputType="text"
+                                android:maxLines="1" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <ImageView
+                            android:id="@+id/close_search_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_close"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:padding="12dp"
+                            android:contentDescription="Close Search" />
+                    </LinearLayout>
+                </androidx.appcompat.widget.Toolbar>
+            </FrameLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="16dp">
+
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/carousel_view_pager"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp" />
+
+                <!-- Filter Spinners Section -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:gravity="center"
+                    android:background="@color/netflix_dark_gray">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_genre_filter"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        android:text="Genre"
+                        android:textSize="12sp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        app:strokeColor="@color/primary"
+                        app:strokeWidth="1dp"
+                        app:cornerRadius="8dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_country_filter"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"
+                        android:text="Country"
+                        android:textSize="12sp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        app:strokeColor="@color/primary"
+                        app:strokeWidth="1dp"
+                        app:cornerRadius="8dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_year_filter"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:text="Year"
+                        android:textSize="12sp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        app:strokeColor="@color/primary"
+                        app:strokeWidth="1dp"
+                        app:cornerRadius="8dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:orientation="horizontal"
+                    android:padding="8dp">
+
+                    <ImageView
+                        android:id="@+id/grid_view_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/ic_grid_view" />
+
+                    <ImageView
+                        android:id="@+id/list_view_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_list_view"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Pagination Controls -->
+                <LinearLayout
+                    android:id="@+id/pagination_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:gravity="center"
+                    android:visibility="gone">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_previous"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_marginEnd="24dp"
+                        android:backgroundTint="@color/primary"
+                        app:icon="@drawable/ic_arrow_back"
+                        app:iconGravity="textStart"
+                        app:iconPadding="0dp"
+                        app:iconSize="24dp"
+                        android:enabled="false"
+                        style="@style/Widget.Material3.Button.Icon" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_next"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_marginStart="24dp"
+                        android:backgroundTint="@color/primary"
+                        app:icon="@drawable/ic_arrow_forward"
+                        app:iconGravity="textStart"
+                        app:iconPadding="0dp"
+                        app:iconSize="24dp"
+                        style="@style/Widget.Material3.Button.Icon" />
+
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <!-- Modern Bottom Navigation -->
+        <LinearLayout
+            android:layout_gravity="bottom"
+            app:layout_behavior=".ui.views.BottomNavigationBehavior"
+            android:visibility="visible"
             android:orientation="vertical"
-            android:paddingBottom="16dp">
-
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/carousel_view_pager"
-                android:layout_width="match_parent"
-                android:layout_height="200dp" />
-
-            <!-- Filter Spinners Section -->
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            
             <LinearLayout
+                android:orientation="vertical"
+                android:background="@color/dark_gray"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="16dp"
-                android:gravity="center"
-                android:background="@color/netflix_dark_gray">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_genre_filter"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
-                    android:text="Genre"
-                    android:textSize="12sp"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    app:strokeColor="@color/primary"
-                    app:strokeWidth="1dp"
-                    app:cornerRadius="8dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_country_filter"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginEnd="4dp"
-                    android:text="Country"
-                    android:textSize="12sp"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    app:strokeColor="@color/primary"
-                    app:strokeWidth="1dp"
-                    app:cornerRadius="8dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_year_filter"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    android:text="Year"
-                    android:textSize="12sp"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    app:strokeColor="@color/primary"
-                    app:strokeWidth="1dp"
-                    app:cornerRadius="8dp" />
-
+                android:layout_height="wrap_content">
+                
+                <RelativeLayout
+                    android:background="@color/gray"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"/>
             </LinearLayout>
-
-            <LinearLayout
+            
+            <com.gauravk.bubblenavigation.BubbleNavigationConstraintView
+                android:id="@+id/top_navigation_constraint"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="end"
-                android:orientation="horizontal"
-                android:padding="8dp">
+                android:background="@color/dark_gray"
+                android:elevation="0dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                app:bnc_mode="inside"
+                app:hideOnScroll="true">
 
-                <ImageView
-                    android:id="@+id/grid_view_icon"
+                <com.gauravk.bubblenavigation.BubbleToggleView
+                    android:id="@+id/l_item_home"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:src="@drawable/ic_grid_view" />
+                    app:bt_icon="@drawable/ic_home"
+                    app:bt_iconHeight="20dp"
+                    app:bt_iconWidth="20dp"
+                    app:bt_colorInactive="@color/yellow"
+                    app:bt_colorActive="@color/yellow"
+                    app:bt_shape="@drawable/bg_background_yellow"
+                    app:bt_title="Home" />
 
-                <ImageView
-                    android:id="@+id/list_view_icon"
+                <com.gauravk.bubblenavigation.BubbleToggleView
+                    android:id="@+id/l_item_search"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_list_view"
-                    android:visibility="gone" />
-            </LinearLayout>
+                    app:bt_iconHeight="20dp"
+                    app:bt_iconWidth="20dp"
+                    app:bt_colorActive="@color/red"
+                    app:bt_colorInactive="@color/red"
+                    app:bt_shape="@drawable/bg_background_red"
+                    app:bt_icon="@drawable/ic_movie"
+                    app:bt_title="Movies" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp" />
+                <com.gauravk.bubblenavigation.BubbleToggleView
+                    android:id="@+id/l_item_profile_list"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:bt_iconHeight="20dp"
+                    app:bt_iconWidth="20dp"
+                    app:bt_colorInactive="@color/green"
+                    app:bt_colorActive="@color/green"
+                    app:bt_shape="@drawable/bg_background_green"
+                    app:bt_icon="@drawable/ic_tv_show"
+                    app:bt_title="Series" />
+                    
+                <com.gauravk.bubblenavigation.BubbleToggleView
+                    android:id="@+id/l_item_profileist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:bt_iconHeight="20dp"
+                    app:bt_iconWidth="20dp"
+                    app:bt_colorInactive="@color/pruple"
+                    app:bt_colorActive="@color/pruple"
+                    app:bt_shape="@drawable/bg_background_pruple"
+                    app:bt_icon="@drawable/ic_television_box"
+                    app:bt_title="LiveTV" />
 
-            <!-- Pagination Controls -->
-            <LinearLayout
-                android:id="@+id/pagination_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:gravity="center"
-                android:visibility="gone">
+                <com.gauravk.bubblenavigation.BubbleToggleView
+                    android:id="@+id/l_ite_profi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:bt_iconHeight="20dp"
+                    app:bt_iconWidth="20dp"
+                    app:bt_colorInactive="@color/orange"
+                    app:bt_colorActive="@color/orange"
+                    app:bt_shape="@drawable/bg_background_orange"
+                    app:bt_icon="@drawable/ic_file_download"
+                    app:bt_title="Downloads" />
+            </com.gauravk.bubblenavigation.BubbleNavigationConstraintView>
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_previous"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:layout_marginEnd="24dp"
-                    android:backgroundTint="@color/primary"
-                    app:icon="@drawable/ic_arrow_back"
-                    app:iconGravity="textStart"
-                    app:iconPadding="0dp"
-                    app:iconSize="24dp"
-                    android:enabled="false"
-                    style="@style/Widget.Material3.Button.Icon" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_next"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:layout_marginStart="24dp"
-                    android:backgroundTint="@color/primary"
-                    app:icon="@drawable/ic_arrow_forward"
-                    app:iconGravity="textStart"
-                    app:iconPadding="0dp"
-                    app:iconSize="24dp"
-                    style="@style/Widget.Material3.Button.Icon" />
-
-            </LinearLayout>
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <!-- Navigation Drawer -->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        app:menu="@menu/bottom_navigation_menu" />
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        android:theme="@style/NavigationView"
+        app:itemTextColor="@color/white"
+        app:itemIconTint="@color/white"
+        android:background="@color/dark_gray"
+        app:headerLayout="@layout/nav_header_home"
+        app:menu="@menu/activity_main_drawer" />
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone" />
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.drawerlayout.widget.DrawerLayout>
