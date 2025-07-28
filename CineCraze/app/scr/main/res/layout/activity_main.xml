@@ -101,6 +101,63 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp" />
 
+            <!-- Filter Spinners Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:gravity="center"
+                android:background="@color/netflix_dark_gray">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_genre_filter"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="Genre"
+                    android:textSize="12sp"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    app:strokeColor="@color/primary"
+                    app:strokeWidth="1dp"
+                    app:cornerRadius="8dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_country_filter"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:text="Country"
+                    android:textSize="12sp"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    app:strokeColor="@color/primary"
+                    app:strokeWidth="1dp"
+                    app:cornerRadius="8dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_year_filter"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:text="Year"
+                    android:textSize="12sp"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    app:strokeColor="@color/primary"
+                    app:strokeWidth="1dp"
+                    app:cornerRadius="8dp" />
+
+            </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -147,7 +204,7 @@
                     android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:layout_marginEnd="24dp"
-                    android:backgroundTint="@color/design_default_color_primary"
+                    android:backgroundTint="@color/primary"
                     app:icon="@drawable/ic_arrow_back"
                     app:iconGravity="textStart"
                     app:iconPadding="0dp"
@@ -160,7 +217,7 @@
                     android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:layout_marginStart="24dp"
-                    android:backgroundTint="@color/design_default_color_primary"
+                    android:backgroundTint="@color/primary"
                     app:icon="@drawable/ic_arrow_forward"
                     app:iconGravity="textStart"
                     app:iconPadding="0dp"
