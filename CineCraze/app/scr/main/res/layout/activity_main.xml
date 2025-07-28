@@ -262,79 +262,14 @@
                     android:layout_height="0.5dp"/>
             </LinearLayout>
             
-            <com.gauravk.bubblenavigation.BubbleNavigationConstraintView
-                android:id="@+id/top_navigation_constraint"
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottom_navigation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/dark_gray"
-                android:elevation="0dp"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                app:bnc_mode="inside"
-                app:hideOnScroll="true">
-
-                <com.gauravk.bubblenavigation.BubbleToggleView
-                    android:id="@+id/l_item_home"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:bt_icon="@drawable/ic_home"
-                    app:bt_iconHeight="20dp"
-                    app:bt_iconWidth="20dp"
-                    app:bt_colorInactive="@color/yellow"
-                    app:bt_colorActive="@color/yellow"
-                    app:bt_shape="@drawable/bg_background_yellow"
-                    app:bt_title="Home" />
-
-                <com.gauravk.bubblenavigation.BubbleToggleView
-                    android:id="@+id/l_item_search"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:bt_iconHeight="20dp"
-                    app:bt_iconWidth="20dp"
-                    app:bt_colorActive="@color/red"
-                    app:bt_colorInactive="@color/red"
-                    app:bt_shape="@drawable/bg_background_red"
-                    app:bt_icon="@drawable/ic_movie"
-                    app:bt_title="Movies" />
-
-                <com.gauravk.bubblenavigation.BubbleToggleView
-                    android:id="@+id/l_item_profile_list"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:bt_iconHeight="20dp"
-                    app:bt_iconWidth="20dp"
-                    app:bt_colorInactive="@color/green"
-                    app:bt_colorActive="@color/green"
-                    app:bt_shape="@drawable/bg_background_green"
-                    app:bt_icon="@drawable/ic_tv_show"
-                    app:bt_title="Series" />
-                    
-                <com.gauravk.bubblenavigation.BubbleToggleView
-                    android:id="@+id/l_item_profileist"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:bt_iconHeight="20dp"
-                    app:bt_iconWidth="20dp"
-                    app:bt_colorInactive="@color/pruple"
-                    app:bt_colorActive="@color/pruple"
-                    app:bt_shape="@drawable/bg_background_pruple"
-                    app:bt_icon="@drawable/ic_television_box"
-                    app:bt_title="LiveTV" />
-
-                <com.gauravk.bubblenavigation.BubbleToggleView
-                    android:id="@+id/l_ite_profi"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:bt_iconHeight="20dp"
-                    app:bt_iconWidth="20dp"
-                    app:bt_colorInactive="@color/orange"
-                    app:bt_colorActive="@color/orange"
-                    app:bt_shape="@drawable/bg_background_orange"
-                    app:bt_icon="@drawable/ic_file_download"
-                    app:bt_title="Downloads" />
-            </com.gauravk.bubblenavigation.BubbleNavigationConstraintView>
+                app:itemIconTint="@color/white"
+                app:itemTextColor="@color/white"
+                app:menu="@menu/bottom_navigation_menu" />
 
         </LinearLayout>
 
