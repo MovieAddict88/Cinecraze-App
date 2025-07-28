@@ -33,4 +33,15 @@
     <!-- Updated primary colors for Netflix theme -->
     <color name="primary">#E50914</color>
     <color name="dark_surface">#0F0F0F</color>
+    
+    <!-- Bubble Navigation Colors -->
+    <color name="yellow">#FFC107</color>
+    <color name="red">#F44336</color>
+    <color name="green">#4CAF50</color>
+    <color name="pruple">#9C27B0</color>
+    <color name="orange">#FF9800</color>
+    <color name="dark_gray">#333333</color>
+    <color name="gray">#666666</color>
+    <color name="white_text">#FFFFFF</color>
+    <color name="transparent">#00000000</color>
 </resources>

@@ -4,32 +4,32 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.view.MenuItem;
+import android.view.KeyEvent;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.cinecraze.free.stream.fragments.HomeFragment;
+import com.cinecraze.free.stream.fragments.LiveTvFragment;
+import com.cinecraze.free.stream.fragments.MoviesFragment;
+import com.cinecraze.free.stream.fragments.SearchFragment;
+import com.cinecraze.free.stream.fragments.SeriesFragment;
 import com.cinecraze.free.stream.models.Category;
 import com.cinecraze.free.stream.models.Entry;
 import com.cinecraze.free.stream.models.Playlist;
 import com.cinecraze.free.stream.net.ApiService;
 import com.cinecraze.free.stream.net.RetrofitClient;
 import com.cinecraze.free.stream.repository.DataRepository;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.button.MaterialButton;
-import com.google.gson.Gson;
+import com.gauravk.bubblenavigation.BubbleNavigationConstraintView;
+import com.gauravk.bubblenavigation.listener.BubbleNavigationChangeListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,644 +39,338 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
- * TRUE PAGINATION IMPLEMENTATION
- * 
- * This activity implements proper pagination that only loads 20 items at a time.
- * It does NOT load all data at once like the original MainActivity.
- * 
- * Key differences:
- * 1. Only loads first page (20 items) on startup
- * 2. Subsequent pages loaded on demand via Previous/Next buttons
- * 3. Carousel loads only 5 items
- * 4. Search and filtering are also paginated
- * 
- * Performance benefits:
- * - Fast startup: ~0.5-1 second vs 2-5 seconds
- * - Low memory: ~5MB vs 50MB for large datasets
- * - Scalable: Can handle 1000+ items efficiently
+ * MainActivity with Bottom Navigation and Custom Search Bar
+ * Based on MovieAddict88/CineCrazeFetch implementation
  */
 public class MainActivity extends AppCompatActivity {
-
-    private RecyclerView recyclerView;
-    private MovieAdapter movieAdapter;
-    private List<Entry> currentPageEntries = new ArrayList<>();
-    private ViewPager2 carouselViewPager;
-    private CarouselAdapter carouselAdapter;
-    private ImageView gridViewIcon;
-    private ImageView listViewIcon;
-    private BottomNavigationView bottomNavigationView;
-    private ImageView searchIcon;
-    private ImageView closeSearchIcon;
-    private LinearLayout titleLayout;
-    private LinearLayout searchLayout;
-    private AutoCompleteTextView searchBar;
+    private static final String TAG = "MainActivity";
     
-    // Pagination UI elements
-    private LinearLayout paginationLayout;
-    private com.google.android.material.button.MaterialButton btnPrevious;
-    private com.google.android.material.button.MaterialButton btnNext;
+    // UI Components - Bottom Navigation
+    private ViewPager2 viewPager;
+    private ViewPagerAdapter adapter;
+    private BubbleNavigationConstraintView bubbleNavigationView;
     
-    // Filter UI elements
-    private MaterialButton btnGenreFilter;
-    private MaterialButton btnCountryFilter;
-    private MaterialButton btnYearFilter;
-    private FilterSpinner genreSpinner;
-    private FilterSpinner countrySpinner;
-    private FilterSpinner yearSpinner;
-
-    private boolean isGridView = true;
-    private boolean isSearchVisible = false;
-    private DataRepository dataRepository;
+    // Fragments
+    private HomeFragment homeFragment;
+    private MoviesFragment moviesFragment;
+    private SeriesFragment seriesFragment;
+    private LiveTvFragment liveTvFragment;
+    private SearchFragment searchFragment;
     
-    // Pagination variables
-    private int currentPage = 0;
-    private int pageSize = 20; // Small page size for fast loading
-    private boolean hasMorePages = false;
-    private int totalCount = 0;
-    private String currentCategory = "";
-    private String currentSearchQuery = "";
-    private boolean isLoading = false;
+    // Search Components
+    private RelativeLayout searchSection;
+    private EditText searchEditText;
+    private ImageView searchButton, closeSearchButton, backButton;
+    private Toolbar toolbar;
     
-    // Filter variables
-    private String currentGenreFilter = null;
-    private String currentCountryFilter = null;
-    private String currentYearFilter = null;
+    // Data
+    private List<Entry> allMovies = new ArrayList<>();
+    private List<Entry> carouselMovies = new ArrayList<>();
+    
+    // Repository
+    private DataRepository repository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main_with_nav);
         
-        Log.d("MainActivity", "Starting TRUE pagination implementation");
-        
-        // Set up our custom toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setDisplayShowTitleEnabled(false);
-            }
+        initViews();
+        initRepository();
+        initBottomNavigation();
+        initSearchFunctionality();
+        loadInitialData();
+    }
+
+    private void initViews() {
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("CineCraze");
         }
-
-        initializeViews();
-        setupRecyclerView();
-        setupCarousel();
-        setupBottomNavigation();
-        setupViewSwitch();
-        setupSearchToggle();
-        setupFilterSpinners();
-
-        // Initialize repository
-        dataRepository = new DataRepository(this);
-
-        // Load ONLY first page - this is the key difference!
-        loadInitialDataFast();
+        
+        // ViewPager setup
+        viewPager = findViewById(R.id.vp_horizontal_ntb);
+        adapter = new ViewPagerAdapter(this);
+        viewPager.setAdapter(adapter);
+        viewPager.setUserInputEnabled(true);
+        
+        // Search components
+        searchSection = findViewById(R.id.relative_layout_home_activity_search_section);
+        searchEditText = findViewById(R.id.edit_text_home_activity_search);
+        searchButton = findViewById(R.id.image_view_activity_home_search);
+        closeSearchButton = findViewById(R.id.image_view_activity_home_close_search);
+        backButton = findViewById(R.id.image_view_activity_actors_back);
+        
+        // Bottom Navigation
+        bubbleNavigationView = findViewById(R.id.top_navigation_constraint);
     }
 
-    private void initializeViews() {
-        recyclerView = findViewById(R.id.recycler_view);
-        carouselViewPager = findViewById(R.id.carousel_view_pager);
-        gridViewIcon = findViewById(R.id.grid_view_icon);
-        listViewIcon = findViewById(R.id.list_view_icon);
-        bottomNavigationView = findViewById(R.id.bottom_navigation);
-        searchIcon = findViewById(R.id.search_icon);
-        closeSearchIcon = findViewById(R.id.close_search_icon);
-        titleLayout = findViewById(R.id.title_layout);
-        searchLayout = findViewById(R.id.search_layout);
-        searchBar = findViewById(R.id.search_bar);
-        
-        // Initialize pagination UI elements
-        paginationLayout = findViewById(R.id.pagination_layout);
-        btnPrevious = findViewById(R.id.btn_previous);
-        btnNext = findViewById(R.id.btn_next);
-        
-        // Initialize filter UI elements
-        btnGenreFilter = findViewById(R.id.btn_genre_filter);
-        btnCountryFilter = findViewById(R.id.btn_country_filter);
-        btnYearFilter = findViewById(R.id.btn_year_filter);
-        
-        // Set up pagination button listeners
-        btnPrevious.setOnClickListener(v -> onPreviousPage());
-        btnNext.setOnClickListener(v -> onNextPage());
+    private void initRepository() {
+        repository = new DataRepository();
     }
 
-    private void setupRecyclerView() {
-        movieAdapter = new MovieAdapter(this, currentPageEntries, isGridView);
+    private void initBottomNavigation() {
+        // Set initial position
+        viewPager.setCurrentItem(0);
+        bubbleNavigationView.setCurrentActiveItem(0);
         
-        if (isGridView) {
-            recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-        } else {
-            recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        }
-        recyclerView.setAdapter(movieAdapter);
-    }
-
-    private void setupCarousel() {
-        // Initialize empty carousel - will be populated with first 5 items only
-        carouselAdapter = new CarouselAdapter(this, new ArrayList<>(), new ArrayList<>());
-        carouselViewPager.setAdapter(carouselAdapter);
-    }
-
-    private void setupBottomNavigation() {
-        bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
+        // ViewPager change listener
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                String category = "";
-                if (item.getItemId() == R.id.nav_movies) {
-                    category = "Movies";
-                } else if (item.getItemId() == R.id.nav_series) {
-                    category = "TV Series";
-                } else if (item.getItemId() == R.id.nav_home) {
-                    category = "";
-                } else if (item.getItemId() == R.id.nav_live) {
-                    category = "Live TV";
-                }
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                bubbleNavigationView.setCurrentActiveItem(position);
+            }
+        });
+        
+        // Bottom navigation change listener
+        bubbleNavigationView.setNavigationChangeListener(new BubbleNavigationChangeListener() {
+            @Override
+            public void onNavigationChanged(View view, int position) {
+                viewPager.setCurrentItem(position, true);
                 
-                filterByCategory(category);
+                // Update fragment data based on selection
+                updateFragmentData(position);
+            }
+        });
+    }
+
+    private void initSearchFunctionality() {
+        // Back button to close search
+        backButton.setOnClickListener(v -> {
+            searchSection.setVisibility(View.GONE);
+            searchEditText.setText("");
+        });
+        
+        // Search input listener
+        searchEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                performSearch();
                 return true;
             }
+            return false;
         });
-    }
-
-    private void setupViewSwitch() {
-        gridViewIcon.setOnClickListener(v -> {
-            if (!isGridView) {
-                isGridView = true;
-                updateViewMode();
-            }
-        });
-
-        listViewIcon.setOnClickListener(v -> {
-            if (isGridView) {
-                isGridView = false;
-                updateViewMode();
-            }
-        });
-    }
-
-    private void updateViewMode() {
-        movieAdapter.setGridView(isGridView);
         
-        if (isGridView) {
-            recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-            gridViewIcon.setVisibility(View.GONE);
-            listViewIcon.setVisibility(View.VISIBLE);
-        } else {
-            recyclerView.setLayoutManager(new LinearLayoutManager(this));
-            gridViewIcon.setVisibility(View.VISIBLE);
-            listViewIcon.setVisibility(View.GONE);
-        }
-    }
-
-    private void setupSearchToggle() {
-        searchIcon.setOnClickListener(v -> showSearchBar());
-        closeSearchIcon.setOnClickListener(v -> hideSearchBar());
+        // Close search button
+        closeSearchButton.setOnClickListener(v -> {
+            searchEditText.setText("");
+        });
         
-        searchBar.addTextChangedListener(new android.text.TextWatcher() {
+        // Search button
+        searchButton.setOnClickListener(v -> {
+            performSearch();
+        });
+        
+        // Show search when Search tab is selected (position 4)
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String query = s.toString().trim();
-                if (query.length() > 2) {
-                    performSearch(query);
-                } else if (query.isEmpty()) {
-                    clearSearch();
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                if (position == 4) { // Search tab
+                    showSearchSection();
+                } else {
+                    hideSearchSection();
                 }
             }
-
-            @Override
-            public void afterTextChanged(android.text.Editable s) {}
         });
     }
 
-    private void showSearchBar() {
-        try {
-            if (!isSearchVisible && titleLayout != null && searchLayout != null) {
-                titleLayout.setVisibility(View.GONE);
-                searchLayout.setVisibility(View.VISIBLE);
-                isSearchVisible = true;
-                searchBar.requestFocus();
+    private void showSearchSection() {
+        searchSection.setVisibility(View.VISIBLE);
+        searchEditText.requestFocus();
+    }
+
+    private void hideSearchSection() {
+        searchSection.setVisibility(View.GONE);
+        searchEditText.setText("");
+    }
+
+    private void performSearch() {
+        String query = searchEditText.getText().toString().trim();
+        if (!query.isEmpty()) {
+            // Filter movies based on search query
+            List<Entry> searchResults = new ArrayList<>();
+            for (Entry movie : allMovies) {
+                if (movie.getTitle().toLowerCase().contains(query.toLowerCase())) {
+                    searchResults.add(movie);
+                }
             }
-        } catch (Exception e) {
-            Log.e("MainActivity", "Error showing search bar: " + e.getMessage(), e);
+            
+            // Update SearchFragment with results
+            SearchFragment currentSearchFragment = getCurrentSearchFragment();
+            if (currentSearchFragment != null) {
+                currentSearchFragment.updateMovies(searchResults);
+            }
+            
+            Toast.makeText(this, "Found " + searchResults.size() + " results", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void hideSearchBar() {
-        try {
-            if (isSearchVisible && titleLayout != null && searchLayout != null) {
-                searchLayout.setVisibility(View.GONE);
-                titleLayout.setVisibility(View.VISIBLE);
-                isSearchVisible = false;
-                
-                if (searchBar != null) {
-                    searchBar.setText("");
-                    searchBar.clearFocus();
-                    android.view.inputmethod.InputMethodManager imm = 
-                        (android.view.inputmethod.InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                    if (imm != null) {
-                        imm.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
+    private void updateFragmentData(int position) {
+        List<Entry> filteredData = new ArrayList<>();
+        
+        switch (position) {
+            case 0: // Home - Show all
+                filteredData = allMovies;
+                HomeFragment homeFragment = getCurrentHomeFragment();
+                if (homeFragment != null) {
+                    homeFragment.updateMovies(filteredData);
+                    homeFragment.updateCarousel(carouselMovies);
+                }
+                break;
+            case 1: // Movies - Filter movies only
+                for (Entry entry : allMovies) {
+                    if ("movie".equalsIgnoreCase(entry.getType())) {
+                        filteredData.add(entry);
                     }
                 }
-                
-                clearSearch();
+                MoviesFragment moviesFragment = getCurrentMoviesFragment();
+                if (moviesFragment != null) {
+                    moviesFragment.updateMovies(filteredData);
+                }
+                break;
+            case 2: // Series - Filter series only
+                for (Entry entry : allMovies) {
+                    if ("series".equalsIgnoreCase(entry.getType())) {
+                        filteredData.add(entry);
+                    }
+                }
+                SeriesFragment seriesFragment = getCurrentSeriesFragment();
+                if (seriesFragment != null) {
+                    seriesFragment.updateMovies(filteredData);
+                }
+                break;
+            case 3: // Live TV - Filter live streams
+                for (Entry entry : allMovies) {
+                    if ("live".equalsIgnoreCase(entry.getType())) {
+                        filteredData.add(entry);
+                    }
+                }
+                LiveTvFragment liveTvFragment = getCurrentLiveTvFragment();
+                if (liveTvFragment != null) {
+                    liveTvFragment.updateMovies(filteredData);
+                }
+                break;
+            case 4: // Search - Show all but let search fragment handle filtering
+                SearchFragment searchFragment = getCurrentSearchFragment();
+                if (searchFragment != null) {
+                    searchFragment.updateMovies(allMovies);
+                }
+                break;
+        }
+    }
+
+    private void loadInitialData() {
+        if (!isNetworkAvailable()) {
+            Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Load playlist data
+        loadPlaylistData();
+    }
+
+    private void loadPlaylistData() {
+        ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
+        Call<Playlist> call = apiService.getPlaylist();
+        
+        call.enqueue(new Callback<Playlist>() {
+            @Override
+            public void onResponse(@NonNull Call<Playlist> call, @NonNull Response<Playlist> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Playlist playlist = response.body();
+                    processPlaylistData(playlist);
+                } else {
+                    Log.e(TAG, "Failed to load playlist: " + response.code());
+                    Toast.makeText(MainActivity.this, "Failed to load content", Toast.LENGTH_SHORT).show();
+                }
             }
+
+            @Override
+            public void onFailure(@NonNull Call<Playlist> call, @NonNull Throwable t) {
+                Log.e(TAG, "Network error: " + t.getMessage());
+                Toast.makeText(MainActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void processPlaylistData(Playlist playlist) {
+        allMovies.clear();
+        carouselMovies.clear();
+        
+        if (playlist.getCategories() != null) {
+            for (Category category : playlist.getCategories()) {
+                if (category.getStreams() != null) {
+                    allMovies.addAll(category.getStreams());
+                }
+            }
+        }
+        
+        // Get first 5 items for carousel
+        int carouselSize = Math.min(5, allMovies.size());
+        carouselMovies.addAll(allMovies.subList(0, carouselSize));
+        
+        // Update current fragment
+        updateFragmentData(viewPager.getCurrentItem());
+        
+        Log.d(TAG, "Loaded " + allMovies.size() + " items");
+    }
+
+    // Helper methods to get current fragments
+    private HomeFragment getCurrentHomeFragment() {
+        try {
+            return (HomeFragment) getSupportFragmentManager().findFragmentByTag("f0");
         } catch (Exception e) {
-            Log.e("MainActivity", "Error hiding search bar: " + e.getMessage(), e);
+            return null;
         }
     }
 
-    private void performSearch(String query) {
-        currentSearchQuery = query.trim();
-        currentPage = 0;
-        loadSearchResults();
-    }
-
-    private void clearSearch() {
-        currentSearchQuery = "";
-        currentPage = 0;
-        loadPage();
-    }
-
-    private void setupFilterSpinners() {
-        // Initialize empty spinners - will be populated when data loads
-        genreSpinner = new FilterSpinner(this, "Genre", new ArrayList<>(), currentGenreFilter);
-        countrySpinner = new FilterSpinner(this, "Country", new ArrayList<>(), currentCountryFilter);
-        yearSpinner = new FilterSpinner(this, "Year", new ArrayList<>(), currentYearFilter);
-        
-        // Set up filter listeners
-        FilterSpinner.OnFilterSelectedListener filterListener = new FilterSpinner.OnFilterSelectedListener() {
-            @Override
-            public void onFilterSelected(String filterType, String filterValue) {
-                switch (filterType) {
-                    case "Genre":
-                        currentGenreFilter = filterValue;
-                        btnGenreFilter.setText(filterValue != null ? filterValue : "Genre");
-                        break;
-                    case "Country":
-                        currentCountryFilter = filterValue;
-                        btnCountryFilter.setText(filterValue != null ? filterValue : "Country");
-                        break;
-                    case "Year":
-                        currentYearFilter = filterValue;
-                        btnYearFilter.setText(filterValue != null ? filterValue : "Year");
-                        break;
-                }
-                
-                // Reset pagination and apply filters
-                currentPage = 0;
-                currentSearchQuery = ""; // Clear search when filtering
-                currentCategory = ""; // Clear category when filtering
-                
-                // Hide search bar if visible
-                if (isSearchVisible) {
-                    hideSearchBar();
-                }
-                
-                loadPage(); // Use loadPage() which will automatically route to filtered data
-            }
-        };
-        
-        genreSpinner.setOnFilterSelectedListener(filterListener);
-        countrySpinner.setOnFilterSelectedListener(filterListener);
-        yearSpinner.setOnFilterSelectedListener(filterListener);
-        
-        // Set up button click listeners to show spinners
-        btnGenreFilter.setOnClickListener(v -> {
-            dismissAllSpinners();
-            genreSpinner.show(btnGenreFilter);
-        });
-        
-        btnCountryFilter.setOnClickListener(v -> {
-            dismissAllSpinners();
-            countrySpinner.show(btnCountryFilter);
-        });
-        
-        btnYearFilter.setOnClickListener(v -> {
-            dismissAllSpinners();
-            yearSpinner.show(btnYearFilter);
-        });
-    }
-    
-    private void dismissAllSpinners() {
-        if (genreSpinner != null && genreSpinner.isShowing()) {
-            genreSpinner.dismiss();
-        }
-        if (countrySpinner != null && countrySpinner.isShowing()) {
-            countrySpinner.dismiss();
-        }
-        if (yearSpinner != null && yearSpinner.isShowing()) {
-            yearSpinner.dismiss();
-        }
-    }
-    
-    private void populateFilterSpinners() {
-        // Get unique values from repository and populate spinners
-        List<String> genres = dataRepository.getUniqueGenres();
-        List<String> countries = dataRepository.getUniqueCountries();
-        List<String> years = dataRepository.getUniqueYears();
-        
-        if (genreSpinner != null) {
-            genreSpinner.updateFilterValues(genres);
-        }
-        if (countrySpinner != null) {
-            countrySpinner.updateFilterValues(countries);
-        }
-        if (yearSpinner != null) {
-            yearSpinner.updateFilterValues(years);
-        }
-        
-        Log.d("MainActivity", "Filter spinners populated: " + genres.size() + " genres, " + 
-              countries.size() + " countries, " + years.size() + " years");
-    }
-
-    private void filterByCategory(String category) {
-        currentCategory = category;
-        currentPage = 0;
-        currentSearchQuery = "";
-        clearAllFilters(); // Clear filters when switching categories
-        loadPage();
-    }
-    
-    private void clearAllFilters() {
-        currentGenreFilter = null;
-        currentCountryFilter = null;
-        currentYearFilter = null;
-        
-        // Reset button texts
-        btnGenreFilter.setText("Genre");
-        btnCountryFilter.setText("Country");
-        btnYearFilter.setText("Year");
-        
-        // Update spinners
-        if (genreSpinner != null) {
-            genreSpinner.setCurrentFilter(null);
-        }
-        if (countrySpinner != null) {
-            countrySpinner.setCurrentFilter(null);
-        }
-        if (yearSpinner != null) {
-            yearSpinner.setCurrentFilter(null);
+    private MoviesFragment getCurrentMoviesFragment() {
+        try {
+            return (MoviesFragment) getSupportFragmentManager().findFragmentByTag("f1");
+        } catch (Exception e) {
+            return null;
         }
     }
 
-    /**
-     * FAST INITIAL LOAD - Only checks if cache exists, doesn't load all data
-     */
-    private void loadInitialDataFast() {
-        Log.d("MainActivity", "Fast initialization - checking cache only");
-        findViewById(R.id.progress_bar).setVisibility(View.VISIBLE);
-        
-        // Check if cache exists, if not populate it, but don't return all data
-        dataRepository.ensureDataAvailable(new DataRepository.DataCallback() {
-            @Override
-            public void onSuccess(List<Entry> entries) {
-                Log.d("MainActivity", "Cache ready - loading ONLY first page");
-                loadFirstPageOnly();
-                setupCarouselFast();
-                populateFilterSpinners(); // Populate filter spinners with data from cache
-            }
-            
-            @Override
-            public void onError(String error) {
-                findViewById(R.id.progress_bar).setVisibility(View.GONE);
-                Log.e("MainActivity", "Error initializing: " + error);
-                Toast.makeText(MainActivity.this, "Failed to initialize: " + error, Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    /**
-     * Load carousel with only 5 items - no bulk loading
-     */
-    private void setupCarouselFast() {
-        dataRepository.getPaginatedData(0, 5, new DataRepository.PaginatedDataCallback() {
-            @Override
-            public void onSuccess(List<Entry> carouselEntries, boolean hasMorePages, int totalCount) {
-                Log.d("MainActivity", "Fast carousel loaded: " + carouselEntries.size() + " items only");
-                carouselAdapter = new CarouselAdapter(MainActivity.this, carouselEntries, carouselEntries);
-                carouselViewPager.setAdapter(carouselAdapter);
-                carouselAdapter.notifyDataSetChanged();
-            }
-            
-            @Override
-            public void onError(String error) {
-                Log.e("MainActivity", "Error loading carousel: " + error);
-                carouselAdapter = new CarouselAdapter(MainActivity.this, new ArrayList<>(), new ArrayList<>());
-                carouselViewPager.setAdapter(carouselAdapter);
-            }
-        });
-    }
-
-    private void loadFirstPageOnly() {
-        currentPage = 0;
-        loadPage();
-    }
-
-    private void loadPage() {
-        if (isLoading) return;
-        
-        isLoading = true;
-        setPaginationLoading(true);
-        
-        Log.d("MainActivity", "Loading page " + currentPage + " with " + pageSize + " items");
-        
-        if (!currentSearchQuery.isEmpty()) {
-            loadSearchResults();
-        } else if (!currentCategory.isEmpty()) {
-            loadCategoryPage();
-        } else if (hasActiveFilters()) {
-            loadFilteredPage();
-        } else {
-            loadAllEntriesPage();
+    private SeriesFragment getCurrentSeriesFragment() {
+        try {
+            return (SeriesFragment) getSupportFragmentManager().findFragmentByTag("f2");
+        } catch (Exception e) {
+            return null;
         }
     }
 
-    private void loadAllEntriesPage() {
-        dataRepository.getPaginatedData(currentPage, pageSize, new DataRepository.PaginatedDataCallback() {
-            @Override
-            public void onSuccess(List<Entry> entries, boolean hasMorePages, int totalCount) {
-                findViewById(R.id.progress_bar).setVisibility(View.GONE);
-                updatePageData(entries, hasMorePages, totalCount);
-                Log.d("MainActivity", "Loaded page " + currentPage + ": " + entries.size() + " items (Total: " + totalCount + ")");
-            }
-            
-            @Override
-            public void onError(String error) {
-                findViewById(R.id.progress_bar).setVisibility(View.GONE);
-                handlePageLoadError(error);
-            }
-        });
-    }
-
-    private void loadCategoryPage() {
-        dataRepository.getPaginatedDataByCategory(currentCategory, currentPage, pageSize, new DataRepository.PaginatedDataCallback() {
-            @Override
-            public void onSuccess(List<Entry> entries, boolean hasMorePages, int totalCount) {
-                findViewById(R.id.progress_bar).setVisibility(View.GONE);
-                updatePageData(entries, hasMorePages, totalCount);
-                Log.d("MainActivity", "Category '" + currentCategory + "' page " + currentPage + ": " + entries.size() + " items");
-            }
-            
-            @Override
-            public void onError(String error) {
-                findViewById(R.id.progress_bar).setVisibility(View.GONE);
-                handlePageLoadError(error);
-            }
-        });
-    }
-
-    private void loadSearchResults() {
-        dataRepository.searchPaginated(currentSearchQuery, currentPage, pageSize, new DataRepository.PaginatedDataCallback() {
-            @Override
-            public void onSuccess(List<Entry> entries, boolean hasMorePages, int totalCount) {
-                findViewById(R.id.progress_bar).setVisibility(View.GONE);
-                updatePageData(entries, hasMorePages, totalCount);
-                Log.d("MainActivity", "Search '" + currentSearchQuery + "' page " + currentPage + ": " + entries.size() + " results");
-            }
-            
-            @Override
-            public void onError(String error) {
-                findViewById(R.id.progress_bar).setVisibility(View.GONE);
-                handlePageLoadError(error);
-            }
-        });
-    }
-    
-    private boolean hasActiveFilters() {
-        return currentGenreFilter != null || currentCountryFilter != null || currentYearFilter != null;
-    }
-    
-    private void loadFilteredPage() {
-        dataRepository.getPaginatedFilteredData(currentGenreFilter, currentCountryFilter, currentYearFilter, 
-                currentPage, pageSize, new DataRepository.PaginatedDataCallback() {
-            @Override
-            public void onSuccess(List<Entry> entries, boolean hasMorePages, int totalCount) {
-                findViewById(R.id.progress_bar).setVisibility(View.GONE);
-                updatePageData(entries, hasMorePages, totalCount);
-                Log.d("MainActivity", "Loaded filtered page " + currentPage + ": " + entries.size() + 
-                      " items (Genre: " + currentGenreFilter + ", Country: " + currentCountryFilter + 
-                      ", Year: " + currentYearFilter + ")");
-            }
-            
-            @Override
-            public void onError(String error) {
-                findViewById(R.id.progress_bar).setVisibility(View.GONE);
-                handlePageLoadError(error);
-            }
-        });
-    }
-
-    private void updatePageData(List<Entry> entries, boolean hasMorePages, int totalCount) {
-        this.hasMorePages = hasMorePages;
-        this.totalCount = totalCount;
-        this.isLoading = false;
-        
-        currentPageEntries.clear();
-        currentPageEntries.addAll(entries);
-        
-        movieAdapter.setEntryList(currentPageEntries);
-        updatePaginationUI();
-        
-        // Additional check to ensure Next button is properly disabled when no more data
-        if (btnNext != null && (!hasMorePages || ((currentPage + 1) * pageSize >= totalCount))) {
-            btnNext.setEnabled(false);
-        }
-        
-        // Scroll to top of the list
-        recyclerView.scrollToPosition(0);
-        
-        Log.d("MainActivity", "Page updated: " + entries.size() + " items on page " + (currentPage + 1) + 
-              ", HasMore: " + hasMorePages + ", Total: " + totalCount);
-    }
-
-    private void handlePageLoadError(String error) {
-        isLoading = false;
-        setPaginationLoading(false);
-        Log.e("MainActivity", "Error loading page: " + error);
-        Toast.makeText(this, "Failed to load page: " + error, Toast.LENGTH_SHORT).show();
-    }
-
-    // Pagination methods
-    public void onPreviousPage() {
-        if (currentPage > 0 && !isLoading) {
-            currentPage--;
-            loadPage();
-            Log.d("MainActivity", "Previous page: " + currentPage);
+    private LiveTvFragment getCurrentLiveTvFragment() {
+        try {
+            return (LiveTvFragment) getSupportFragmentManager().findFragmentByTag("f3");
+        } catch (Exception e) {
+            return null;
         }
     }
 
-    public void onNextPage() {
-        // Additional validation to ensure we don't go beyond available data
-        boolean canGoNext = hasMorePages && !isLoading && ((currentPage + 1) * pageSize < totalCount);
-        if (canGoNext) {
-            currentPage++;
-            loadPage();
-            Log.d("MainActivity", "Next page: " + currentPage + " (Total items: " + totalCount + ")");
-        } else {
-            Log.d("MainActivity", "Cannot go to next page. HasMore: " + hasMorePages + ", Loading: " + isLoading + ", TotalCount: " + totalCount);
-            // Ensure Next button is disabled
-            if (btnNext != null) {
-                btnNext.setEnabled(false);
-            }
-        }
-    }
-    
-    private void updatePaginationUI() {
-        // Show pagination layout only if there are more than pageSize items
-        if (totalCount > pageSize) {
-            paginationLayout.setVisibility(View.VISIBLE);
-            
-            // Update button states with additional safety checks
-            if (btnPrevious != null) {
-                btnPrevious.setEnabled(currentPage > 0 && !isLoading);
-            }
-            if (btnNext != null) {
-                // Disable Next button if no more pages or if we're at the last possible page
-                boolean canGoNext = hasMorePages && !isLoading && ((currentPage + 1) * pageSize < totalCount);
-                btnNext.setEnabled(canGoNext);
-            }
-        } else {
-            // Hide pagination if not needed
-            paginationLayout.setVisibility(View.GONE);
-        }
-    }
-    
-    private void setPaginationLoading(boolean loading) {
-        isLoading = loading;
-        if (btnPrevious != null) {
-            btnPrevious.setEnabled(!loading && currentPage > 0);
-        }
-        if (btnNext != null) {
-            btnNext.setEnabled(!loading && hasMorePages);
+    private SearchFragment getCurrentSearchFragment() {
+        try {
+            return (SearchFragment) getSupportFragmentManager().findFragmentByTag("f4");
+        } catch (Exception e) {
+            return null;
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (currentPageEntries.isEmpty()) {
-            loadInitialDataFast();
-        }
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     @Override
     public void onBackPressed() {
-        try {
-            // Check if any spinner is showing and dismiss it first
-            if ((genreSpinner != null && genreSpinner.isShowing()) ||
-                (countrySpinner != null && countrySpinner.isShowing()) ||
-                (yearSpinner != null && yearSpinner.isShowing())) {
-                dismissAllSpinners();
-            } else if (isSearchVisible) {
-                hideSearchBar();
-            } else {
-                super.onBackPressed();
-            }
-        } catch (Exception e) {
-            Log.e("MainActivity", "Error handling back press: " + e.getMessage(), e);
+        if (searchSection.getVisibility() == View.VISIBLE) {
+            hideSearchSection();
+        } else if (viewPager.getCurrentItem() != 0) {
+            viewPager.setCurrentItem(0);
+        } else {
             super.onBackPressed();
         }
     }
