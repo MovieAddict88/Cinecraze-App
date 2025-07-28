@@ -30,6 +30,7 @@ import com.cinecraze.free.stream.net.RetrofitClient;
 import com.cinecraze.free.stream.repository.DataRepository;
 import com.gauravk.bubblenavigation.BubbleNavigationConstraintView;
 import com.gauravk.bubblenavigation.listener.BubbleNavigationChangeListener;
+import com.cinecraze.free.stream.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initRepository() {
-        repository = new DataRepository();
+        repository = new DataRepository(this);
     }
 
     private void initBottomNavigation() {
