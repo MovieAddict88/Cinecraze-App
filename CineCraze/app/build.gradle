@@ -52,6 +52,9 @@ dependencies {
     implementation 'androidx.room:room-runtime:2.6.1'
     annotationProcessor 'androidx.room:room-compiler:2.6.1'
     
+    // Bubble Navigation
+    implementation 'com.gauravk.bubblenavigation:bubblenavigation:1.0.7'
+    
     // Circle ImageView
     implementation 'de.hdodenhof:circleimageview:3.1.0'
     

@@ -34,6 +34,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
+import com.gauravk.bubblenavigation.BubbleNavigationConstraintView;
+import com.gauravk.bubblenavigation.listener.BubbleNavigationChangeListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,8 +80,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     
-    // Bottom Navigation
-    private BottomNavigationView bottomNavigationView;
+    // Bubble Navigation
+    private BubbleNavigationConstraintView bubbleNavigationView;
     
     // Pagination UI elements
     private LinearLayout paginationLayout;
@@ -130,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         initializeViews();
         setupNavigationDrawer();
-        setupBottomNavigation();
+        setupBubbleNavigation();
         setupRecyclerView();
         setupCarousel();
         setupViewSwitch();
@@ -154,26 +156,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
     }
     
-    private void setupBottomNavigation() {
-        bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
+    private void setupBubbleNavigation() {
+        bubbleNavigationView.setNavigationChangeListener(new BubbleNavigationChangeListener() {
             @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            public void onNavigationChanged(View view, int position) {
+                // Handle bubble navigation changes
                 String category = "";
-                if (item.getItemId() == R.id.nav_movies) {
-                    category = "Movies";
-                } else if (item.getItemId() == R.id.nav_series) {
-                    category = "TV Series";
-                } else if (item.getItemId() == R.id.nav_home) {
-                    category = "";
-                } else if (item.getItemId() == R.id.nav_live) {
-                    category = "Live TV";
-                } else if (item.getItemId() == R.id.nav_downloads) {
-                    // Handle downloads navigation
-                    return true;
+                switch (position) {
+                    case 0: // Home
+                        category = "";
+                        break;
+                    case 1: // Movies
+                        category = "Movies";
+                        break;
+                    case 2: // Series
+                        category = "TV Series";
+                        break;
+                    case 3: // LiveTV
+                        category = "Live TV";
+                        break;
+                    case 4: // Downloads
+                        // Handle downloads navigation
+                        break;
                 }
                 
-                filterByCategory(category);
-                return true;
+                if (position != 4) { // Don't filter for downloads
+                    filterByCategory(category);
+                }
             }
         });
     }
@@ -192,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Initialize navigation components
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
-        bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bubbleNavigationView = findViewById(R.id.top_navigation_constraint);
         
         // Initialize pagination UI elements
         paginationLayout = findViewById(R.id.pagination_layout);
