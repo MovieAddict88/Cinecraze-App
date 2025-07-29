@@ -43,6 +43,8 @@ import com.google.android.exoplayer2.util.Util;
 import java.util.HashMap;
 import java.util.UUID;
 import com.google.android.exoplayer2.drm.LocalMediaDrmCallback;
+import android.util.Log;
+import android.widget.Toast;
 
 public class DetailsActivity extends AppCompatActivity {
 
@@ -240,6 +242,14 @@ public class DetailsActivity extends AppCompatActivity {
         playerView.setPlayer(player);
         playerView.setControllerShowTimeoutMs(2000);
         playerView.setControllerHideOnTouch(true);
+
+        player.addListener(new com.google.android.exoplayer2.Player.Listener() {
+            @Override
+            public void onPlayerError(com.google.android.exoplayer2.PlaybackException error) {
+                Log.e("ExoPlayer", "Playback error: " + error.getMessage(), error);
+                Toast.makeText(DetailsActivity.this, "Playback error: " + error.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
 
         ImageButton fullscreenButton = playerView.findViewById(R.id.exo_fullscreen_button);
         fullscreenButton.setOnClickListener(v -> {
