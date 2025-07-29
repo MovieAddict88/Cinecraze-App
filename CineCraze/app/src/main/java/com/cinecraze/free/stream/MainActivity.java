@@ -89,8 +89,11 @@ public class MainActivity extends AppCompatActivity {
     // Floating filter UI elements
     private RelativeLayout floatingFilterButton;
     private androidx.cardview.widget.CardView floatingFilterPanel;
-    private android.widget.Spinner spinnerFloatingFilterGenre;
-    private android.widget.Spinner spinnerFloatingFilterOrder;
+    private Spinner spinnerFloatingFilterGenre;
+    private Spinner spinnerFloatingFilterOrder;
+    private Spinner spinnerFloatingFilterYear;
+    private Spinner spinnerFloatingFilterCountry;
+    private Spinner spinnerFloatingFilterRating;
     private ImageView imageViewFloatingFilterClose;
 
     private boolean isGridView = true;
@@ -171,6 +174,9 @@ public class MainActivity extends AppCompatActivity {
         floatingFilterPanel = findViewById(R.id.card_view_floating_filter_panel);
         spinnerFloatingFilterGenre = findViewById(R.id.spinner_floating_filter_genre);
         spinnerFloatingFilterOrder = findViewById(R.id.spinner_floating_filter_order);
+        spinnerFloatingFilterYear = findViewById(R.id.spinner_floating_filter_year);
+        spinnerFloatingFilterCountry = findViewById(R.id.spinner_floating_filter_country);
+        spinnerFloatingFilterRating = findViewById(R.id.spinner_floating_filter_rating);
         imageViewFloatingFilterClose = findViewById(R.id.image_view_floating_filter_close);
     }
 
@@ -729,15 +735,36 @@ public class MainActivity extends AppCompatActivity {
         ArrayAdapter<String> orderAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, orders);
         orderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerFloatingFilterOrder.setAdapter(orderAdapter);
+        // Year options
+        List<String> years = new ArrayList<>();
+        years.add("All Years");
+        years.addAll(dataRepository.getUniqueYears());
+        ArrayAdapter<String> yearAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, years);
+        yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerFloatingFilterYear.setAdapter(yearAdapter);
+        // Country options
+        List<String> countries = new ArrayList<>();
+        countries.add("All Countries");
+        countries.addAll(dataRepository.getUniqueCountries());
+        ArrayAdapter<String> countryAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, countries);
+        countryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerFloatingFilterCountry.setAdapter(countryAdapter);
+        // Rating options (example: 1-5 stars)
+        List<String> ratings = new ArrayList<>();
+        ratings.add("All Ratings");
+        ratings.add("5 Stars");
+        ratings.add("4 Stars & Up");
+        ratings.add("3 Stars & Up");
+        ratings.add("2 Stars & Up");
+        ratings.add("1 Star & Up");
+        ArrayAdapter<String> ratingAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, ratings);
+        ratingAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerFloatingFilterRating.setAdapter(ratingAdapter);
         // Handle filter changes
         spinnerFloatingFilterGenre.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                if (position == 0) {
-                    currentGenreFilter = null;
-                } else {
-                    currentGenreFilter = genres.get(position);
-                }
+                currentGenreFilter = (position == 0) ? null : genres.get(position);
                 currentPage = 0;
                 loadFilteredPage();
             }
@@ -747,7 +774,36 @@ public class MainActivity extends AppCompatActivity {
         spinnerFloatingFilterOrder.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                // For now, just reload the page; implement sorting if needed
+                currentPage = 0;
+                loadFilteredPage();
+            }
+            @Override
+            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
+        });
+        spinnerFloatingFilterYear.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                currentYearFilter = (position == 0) ? null : years.get(position);
+                currentPage = 0;
+                loadFilteredPage();
+            }
+            @Override
+            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
+        });
+        spinnerFloatingFilterCountry.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                currentCountryFilter = (position == 0) ? null : countries.get(position);
+                currentPage = 0;
+                loadFilteredPage();
+            }
+            @Override
+            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
+        });
+        spinnerFloatingFilterRating.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                // Implement rating filter logic if supported by backend/data
                 currentPage = 0;
                 loadFilteredPage();
             }
