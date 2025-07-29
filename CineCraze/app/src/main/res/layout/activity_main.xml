@@ -2,7 +2,6 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:bn="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
@@ -238,55 +237,47 @@
 
         <com.gauravk.bubblenavigation.BubbleToggleView
             android:id="@+id/nav_home"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            bn:badgeText=""
-            bn:badgeVisibility="gone"
-            bn:color="@color/primary"
-            bn:defaultIcon="@drawable/ic_home"
-            bn:iconSize="24dp"
-            bn:title="Home"
-            bn:titleSize="12sp" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:bt_icon="@drawable/ic_home"
+            app:bt_iconHeight="20dp"
+            app:bt_iconWidth="20dp"
+            app:bt_colorActive="@color/primary"
+            app:bt_colorInactive="@color/primary"
+            app:bt_title="Home" />
 
         <com.gauravk.bubblenavigation.BubbleToggleView
             android:id="@+id/nav_movies"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            bn:badgeText=""
-            bn:badgeVisibility="gone"
-            bn:color="@color/primary"
-            bn:defaultIcon="@drawable/ic_movie"
-            bn:iconSize="24dp"
-            bn:title="Movies"
-            bn:titleSize="12sp" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:bt_icon="@drawable/ic_movie"
+            app:bt_iconHeight="20dp"
+            app:bt_iconWidth="20dp"
+            app:bt_colorActive="@color/primary"
+            app:bt_colorInactive="@color/primary"
+            app:bt_title="Movies" />
 
         <com.gauravk.bubblenavigation.BubbleToggleView
             android:id="@+id/nav_series"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            bn:badgeText=""
-            bn:badgeVisibility="gone"
-            bn:color="@color/primary"
-            bn:defaultIcon="@drawable/ic_series"
-            bn:iconSize="24dp"
-            bn:title="Series"
-            bn:titleSize="12sp" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:bt_icon="@drawable/ic_series"
+            app:bt_iconHeight="20dp"
+            app:bt_iconWidth="20dp"
+            app:bt_colorActive="@color/primary"
+            app:bt_colorInactive="@color/primary"
+            app:bt_title="Series" />
 
         <com.gauravk.bubblenavigation.BubbleToggleView
             android:id="@+id/nav_live"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            bn:badgeText=""
-            bn:badgeVisibility="gone"
-            bn:color="@color/primary"
-            bn:defaultIcon="@drawable/ic_live"
-            bn:iconSize="24dp"
-            bn:title="Live"
-            bn:titleSize="12sp" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:bt_icon="@drawable/ic_live"
+            app:bt_iconHeight="20dp"
+            app:bt_iconWidth="20dp"
+            app:bt_colorActive="@color/primary"
+            app:bt_colorInactive="@color/primary"
+            app:bt_title="Live" />
 
     </com.gauravk.bubblenavigation.BubbleNavigationConstraintView>
 
