@@ -90,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
     private RelativeLayout floatingFilterButton;
     private androidx.cardview.widget.CardView floatingFilterPanel;
     private Spinner spinnerFloatingFilterGenre;
-    private Spinner spinnerFloatingFilterOrder;
     private Spinner spinnerFloatingFilterYear;
     private Spinner spinnerFloatingFilterCountry;
     private Spinner spinnerFloatingFilterRating;
@@ -174,7 +173,6 @@ public class MainActivity extends AppCompatActivity {
         floatingFilterButton = findViewById(R.id.relative_layout_floating_filter_button);
         floatingFilterPanel = findViewById(R.id.card_view_floating_filter_panel);
         spinnerFloatingFilterGenre = findViewById(R.id.spinner_floating_filter_genre);
-        spinnerFloatingFilterOrder = findViewById(R.id.spinner_floating_filter_order);
         spinnerFloatingFilterYear = findViewById(R.id.spinner_floating_filter_year);
         spinnerFloatingFilterCountry = findViewById(R.id.spinner_floating_filter_country);
         spinnerFloatingFilterRating = findViewById(R.id.spinner_floating_filter_rating);
@@ -775,15 +773,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
                 currentGenreFilter = (position == 0) ? null : genres.get(position);
-                currentPage = 0;
-                loadFilteredPage();
-            }
-            @Override
-            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
-        });
-        spinnerFloatingFilterOrder.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
                 currentPage = 0;
                 loadFilteredPage();
             }
