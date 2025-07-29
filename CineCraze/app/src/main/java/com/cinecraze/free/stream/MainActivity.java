@@ -714,13 +714,16 @@ public class MainActivity extends AppCompatActivity {
         boolean showFloating = "Movies".equals(currentCategory) || "TV Series".equals(currentCategory) || "Live TV".equals(currentCategory);
         if (floatingFilterButton != null) floatingFilterButton.setVisibility(showFloating ? View.VISIBLE : View.GONE);
         if (floatingFilterPanel != null && !showFloating) floatingFilterPanel.setVisibility(View.GONE);
-        // Set color based on category
+        // Set color based on category (use setBackground, not tint, for full compatibility)
         if (floatingFilterButton != null) {
-            int colorRes = R.color.badge_default;
-            if ("Movies".equals(currentCategory)) colorRes = R.color.badge_movies;
-            else if ("TV Series".equals(currentCategory)) colorRes = R.color.badge_series;
-            else if ("Live TV".equals(currentCategory)) colorRes = R.color.badge_live_tv;
-            floatingFilterButton.setBackgroundTintList(android.content.res.ColorStateList.valueOf(getResources().getColor(colorRes)));
+            int color = getResources().getColor(R.color.badge_default);
+            if ("Movies".equals(currentCategory)) color = getResources().getColor(R.color.badge_movies);
+            else if ("TV Series".equals(currentCategory)) color = getResources().getColor(R.color.badge_series);
+            else if ("Live TV".equals(currentCategory)) color = getResources().getColor(R.color.badge_live_tv);
+            android.graphics.drawable.GradientDrawable bg = new android.graphics.drawable.GradientDrawable();
+            bg.setColor(color);
+            bg.setCornerRadius(30f);
+            floatingFilterButton.setBackground(bg);
         }
     }
 
@@ -738,25 +741,10 @@ public class MainActivity extends AppCompatActivity {
         // Populate genres from real data
         List<String> genres = new ArrayList<>();
         genres.add("All Genres");
-        List<String> realGenres = dataRepository.getUniqueGenres();
-        genres.addAll(realGenres);
+        genres.addAll(dataRepository.getUniqueGenres());
         ArrayAdapter<String> genreAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, genres);
         genreAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerFloatingFilterGenre.setAdapter(genreAdapter);
-        // Year options
-        List<String> years = new ArrayList<>();
-        years.add("All Years");
-        years.addAll(dataRepository.getUniqueYears());
-        ArrayAdapter<String> yearAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, years);
-        yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerFloatingFilterYear.setAdapter(yearAdapter);
-        // Country options
-        List<String> countries = new ArrayList<>();
-        countries.add("All Countries");
-        countries.addAll(dataRepository.getUniqueCountries());
-        ArrayAdapter<String> countryAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, countries);
-        countryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerFloatingFilterCountry.setAdapter(countryAdapter);
         // Rating options (example: 1-5 stars)
         List<String> ratings = new ArrayList<>();
         ratings.add("All Ratings");
@@ -768,6 +756,20 @@ public class MainActivity extends AppCompatActivity {
         ArrayAdapter<String> ratingAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, ratings);
         ratingAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerFloatingFilterRating.setAdapter(ratingAdapter);
+        // Country options
+        List<String> countries = new ArrayList<>();
+        countries.add("All Countries");
+        countries.addAll(dataRepository.getUniqueCountries());
+        ArrayAdapter<String> countryAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, countries);
+        countryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerFloatingFilterCountry.setAdapter(countryAdapter);
+        // Year options
+        List<String> years = new ArrayList<>();
+        years.add("All Years");
+        years.addAll(dataRepository.getUniqueYears());
+        ArrayAdapter<String> yearAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, years);
+        yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerFloatingFilterYear.setAdapter(yearAdapter);
         // Handle filter changes
         spinnerFloatingFilterGenre.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
@@ -779,10 +781,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onNothingSelected(android.widget.AdapterView<?> parent) {}
         });
-        spinnerFloatingFilterYear.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+        spinnerFloatingFilterRating.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                currentYearFilter = (position == 0) ? null : years.get(position);
+                // TODO: Implement rating filter logic if supported by backend/data
                 currentPage = 0;
                 loadFilteredPage();
             }
@@ -799,10 +801,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onNothingSelected(android.widget.AdapterView<?> parent) {}
         });
-        spinnerFloatingFilterRating.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+        spinnerFloatingFilterYear.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                // Implement rating filter logic if supported by backend/data
+                currentYearFilter = (position == 0) ? null : years.get(position);
                 currentPage = 0;
                 loadFilteredPage();
             }
