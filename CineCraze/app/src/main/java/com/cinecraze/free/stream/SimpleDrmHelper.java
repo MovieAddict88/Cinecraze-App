@@ -22,6 +22,41 @@ public class SimpleDrmHelper {
                server.getDrmKey() != null && 
                server.getDrmKid() != null;
     }
+    
+    /**
+     * Check if we have DRM keys available for this server
+     */
+    public static boolean hasDrmKey(Server server) {
+        if (!server.isDrmProtected()) return false;
+        
+        // Check if keys are in the server object
+        if (server.getDrmKey() != null && server.getDrmKid() != null) {
+            return true;
+        }
+        
+        // Check if keys are in the key manager (for MPD files)
+        String url = server.getUrl();
+        if (url != null && url.contains(".mpd")) {
+            // Try to extract KID from MPD or use key manager
+            return DrmKeyManager.getKeyCount() > 0;
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Get DRM keys for server - either from server object or key manager
+     */
+    public static DrmKeyManager.DrmKeyPair getDrmKeys(Server server) {
+        // First check if keys are in the server object
+        if (server.getDrmKey() != null && server.getDrmKid() != null) {
+            return new DrmKeyManager.DrmKeyPair(server.getDrmKid(), server.getDrmKey());
+        }
+        
+        // If not, and this is an MPD file, we'll need to extract KID from MPD
+        // For now, return null - this would need MPD parsing
+        return null;
+    }
 
     /**
      * Creates a ClearKey license JSON for the given KID and key (both in hex format)

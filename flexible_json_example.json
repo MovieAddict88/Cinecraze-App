@@ -1,0 +1,65 @@
+{
+  "Categories": [
+    {
+      "MainCategory": "Live TV",
+      "SubCategories": ["Entertainment", "Sports", "News"],
+      "Entries": [
+        {
+          "Title": "Channel 1",
+          "SubCategory": "Entertainment",
+          "Country": "🇵🇭 Philippines",
+          "Description": "Channel 1 Description",
+          "Poster": "https://example.com/channel1.png",
+          "Thumbnail": "https://example.com/channel1.png",
+          "Rating": 0,
+          "Servers": [
+            {
+              "name": "HD",
+              "url": "https://example.com/channel1.mpd",
+              "is_drm_protected": true
+            }
+          ]
+        },
+        {
+          "Title": "Channel 2", 
+          "SubCategory": "Sports",
+          "Country": "🇵🇭 Philippines",
+          "Description": "Channel 2 Description",
+          "Poster": "https://example.com/channel2.png",
+          "Thumbnail": "https://example.com/channel2.png", 
+          "Rating": 0,
+          "Servers": [
+            {
+              "name": "HD",
+              "url": "https://example.com/channel2.mpd",
+              "is_drm_protected": true
+            },
+            {
+              "name": "SD HLS",
+              "url": "https://example.com/channel2.m3u8",
+              "is_drm_protected": false
+            }
+          ]
+        },
+        {
+          "Title": "Channel 3",
+          "SubCategory": "News", 
+          "Country": "🇵🇭 Philippines",
+          "Description": "Channel 3 Description",
+          "Poster": "https://example.com/channel3.png",
+          "Thumbnail": "https://example.com/channel3.png",
+          "Rating": 0,
+          "Servers": [
+            {
+              "name": "HD",
+              "url": "https://example.com/channel3.mpd",
+              "is_drm_protected": true,
+              "drm_kid": "specific_kid_if_needed",
+              "drm_key": "specific_key_if_needed"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -108,7 +108,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         
         // Initialize DRM keys
-        LocalLicenseServer.initializeKeys();
+        DrmKeyInitializer.initializeAllKeys();
+        
+        // Optional: Log key count for debugging
+        Log.d("MainActivity", "Loaded " + DrmKeyManager.getKeyCount() + " DRM keys");
         
         Log.d("MainActivity", "Starting TRUE pagination implementation");
         

@@ -326,13 +326,19 @@ public class DetailsActivity extends AppCompatActivity {
             Server currentServer = getCurrentServer();
             
             // Log DRM information for debugging
-            if (currentServer != null && SimpleDrmHelper.needsDrm(currentServer)) {
-                String license = SimpleDrmHelper.createClearKeyLicense(
-                    currentServer.getDrmKid(), 
-                    currentServer.getDrmKey()
-                );
-                Log.d("DRM", "Channel needs DRM. License: " + license);
-                Log.d("DRM", "Note: DRM playback requires ExoPlayer 2.19.1+ configuration or newer version");
+            if (currentServer != null && currentServer.isDrmProtected()) {
+                DrmKeyManager.DrmKeyPair keyPair = SimpleDrmHelper.getDrmKeys(currentServer);
+                
+                if (keyPair != null) {
+                    String license = SimpleDrmHelper.createClearKeyLicense(keyPair.kid, keyPair.key);
+                    Log.d("DRM", "Found DRM keys for channel");
+                    Log.d("DRM", "KID: " + keyPair.kid.substring(0, 8) + "...");
+                    Log.d("DRM", "License: " + license);
+                    Log.d("DRM", "Note: DRM playback requires ExoPlayer 2.19.1+ configuration or newer version");
+                } else {
+                    Log.d("DRM", "Channel marked as DRM protected but no keys found");
+                    Log.d("DRM", "URL: " + currentServer.getUrl());
+                }
             }
             
             // Create MediaItem and play (without DRM for now)
