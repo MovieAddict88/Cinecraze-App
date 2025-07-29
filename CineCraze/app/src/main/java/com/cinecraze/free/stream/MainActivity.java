@@ -114,168 +114,251 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        
-        Log.d("MainActivity", "Starting TRUE pagination implementation");
-        
-        // Set up our custom toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setDisplayShowTitleEnabled(false);
+        try {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_main);
+            
+            Log.d("MainActivity", "Starting TRUE pagination implementation");
+            
+            // Set up our custom toolbar
+            Toolbar toolbar = findViewById(R.id.toolbar);
+            if (toolbar != null) {
+                setSupportActionBar(toolbar);
+                if (getSupportActionBar() != null) {
+                    getSupportActionBar().setDisplayShowTitleEnabled(false);
+                }
+            }
+
+            initializeViews();
+            setupRecyclerView();
+            setupCarousel();
+            setupBottomNavigation();
+            setupViewSwitch();
+            setupSearchToggle();
+            setupFilterSpinners();
+
+            // Initialize repository
+            try {
+                dataRepository = new DataRepository(this);
+            } catch (Exception e) {
+                Log.e("MainActivity", "Error initializing DataRepository: " + e.getMessage(), e);
+                Toast.makeText(this, "Error initializing data repository", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            // Load ONLY first page - this is the key difference!
+            loadInitialDataFast();
+            
+        } catch (Exception e) {
+            Log.e("MainActivity", "Critical error in onCreate: " + e.getMessage(), e);
+            Toast.makeText(this, "Error initializing app", Toast.LENGTH_LONG).show();
+            // Try to show a basic error screen
+            try {
+                setContentView(R.layout.activity_error);
+            } catch (Exception ex) {
+                Log.e("MainActivity", "Failed to show error screen: " + ex.getMessage(), ex);
             }
         }
-
-        initializeViews();
-        setupRecyclerView();
-        setupCarousel();
-        setupBottomNavigation();
-        setupViewSwitch();
-        setupSearchToggle();
-        setupFilterSpinners();
-
-        // Initialize repository
-        dataRepository = new DataRepository(this);
-
-        // Load ONLY first page - this is the key difference!
-        loadInitialDataFast();
     }
 
     private void initializeViews() {
-        recyclerView = findViewById(R.id.recycler_view);
-        carouselViewPager = findViewById(R.id.carousel_view_pager);
-        gridViewIcon = findViewById(R.id.grid_view_icon);
-        listViewIcon = findViewById(R.id.list_view_icon);
-        bottomNavigationView = (BubbleNavigationConstraintView) findViewById(R.id.bottom_navigation);
-        searchIcon = findViewById(R.id.search_icon);
-        closeSearchIcon = findViewById(R.id.close_search_icon);
-        backSearchIcon = findViewById(R.id.back_search_icon);
-        titleLayout = findViewById(R.id.title_layout);
-        searchLayout = findViewById(R.id.search_layout);
-        searchBar = findViewById(R.id.search_bar);
-        
-        // Initialize navigation drawer elements
-        drawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.nav_view);
-        
-        // Initialize pagination UI elements
-        paginationLayout = findViewById(R.id.pagination_layout);
-        btnPrevious = findViewById(R.id.btn_previous);
-        btnNext = findViewById(R.id.btn_next);
-        
-        // Initialize filter UI elements
-        btnGenreFilter = findViewById(R.id.btn_genre_filter);
-        btnCountryFilter = findViewById(R.id.btn_country_filter);
-        btnYearFilter = findViewById(R.id.btn_year_filter);
-        
-        // Set up pagination button listeners
-        btnPrevious.setOnClickListener(v -> onPreviousPage());
-        btnNext.setOnClickListener(v -> onNextPage());
-        
-        // Set up navigation drawer
-        setupNavigationDrawer();
+        try {
+            recyclerView = findViewById(R.id.recycler_view);
+            carouselViewPager = findViewById(R.id.carousel_view_pager);
+            gridViewIcon = findViewById(R.id.grid_view_icon);
+            listViewIcon = findViewById(R.id.list_view_icon);
+            bottomNavigationView = (BubbleNavigationConstraintView) findViewById(R.id.bottom_navigation);
+            searchIcon = findViewById(R.id.search_icon);
+            closeSearchIcon = findViewById(R.id.close_search_icon);
+            backSearchIcon = findViewById(R.id.back_search_icon);
+            titleLayout = findViewById(R.id.title_layout);
+            searchLayout = findViewById(R.id.search_layout);
+            searchBar = findViewById(R.id.search_bar);
+            
+            // Initialize navigation drawer elements
+            drawerLayout = findViewById(R.id.drawer_layout);
+            navigationView = findViewById(R.id.nav_view);
+            
+            // Initialize pagination UI elements
+            paginationLayout = findViewById(R.id.pagination_layout);
+            btnPrevious = findViewById(R.id.btn_previous);
+            btnNext = findViewById(R.id.btn_next);
+            
+            // Initialize filter UI elements
+            btnGenreFilter = findViewById(R.id.btn_genre_filter);
+            btnCountryFilter = findViewById(R.id.btn_country_filter);
+            btnYearFilter = findViewById(R.id.btn_year_filter);
+            
+            // Set up pagination button listeners with null checks
+            if (btnPrevious != null) {
+                btnPrevious.setOnClickListener(v -> onPreviousPage());
+            }
+            if (btnNext != null) {
+                btnNext.setOnClickListener(v -> onNextPage());
+            }
+            
+            // Set up navigation drawer
+            setupNavigationDrawer();
+            
+        } catch (Exception e) {
+            Log.e("MainActivity", "Error initializing views: " + e.getMessage(), e);
+            Toast.makeText(this, "Error initializing app", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void setupRecyclerView() {
-        movieAdapter = new MovieAdapter(this, currentPageEntries, isGridView);
-        
-        if (isGridView) {
-            recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-        } else {
-            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        try {
+            if (recyclerView != null) {
+                movieAdapter = new MovieAdapter(this, currentPageEntries, isGridView);
+                
+                if (isGridView) {
+                    recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+                } else {
+                    recyclerView.setLayoutManager(new LinearLayoutManager(this));
+                }
+                recyclerView.setAdapter(movieAdapter);
+            }
+        } catch (Exception e) {
+            Log.e("MainActivity", "Error setting up RecyclerView: " + e.getMessage(), e);
         }
-        recyclerView.setAdapter(movieAdapter);
     }
 
     private void setupCarousel() {
-        // Initialize empty carousel - will be populated with first 5 items only
-        carouselAdapter = new CarouselAdapter(this, new ArrayList<>(), new ArrayList<>());
-        carouselViewPager.setAdapter(carouselAdapter);
+        try {
+            if (carouselViewPager != null) {
+                // Initialize empty carousel - will be populated with first 5 items only
+                carouselAdapter = new CarouselAdapter(this, new ArrayList<>(), new ArrayList<>());
+                carouselViewPager.setAdapter(carouselAdapter);
+            }
+        } catch (Exception e) {
+            Log.e("MainActivity", "Error setting up carousel: " + e.getMessage(), e);
+        }
     }
 
     private void setupBottomNavigation() {
-        // Set up navigation change listener
-        bottomNavigationView.setNavigationChangeListener((view, position) -> {
-            String category = "";
-            if (position == 0) {
-                category = "";
-            } else if (position == 1) {
-                category = "Movies";
-            } else if (position == 2) {
-                category = "TV Series";
-            } else if (position == 3) {
-                category = "Live TV";
+        try {
+            if (bottomNavigationView != null) {
+                // Set up navigation change listener
+                bottomNavigationView.setNavigationChangeListener((view, position) -> {
+                    String category = "";
+                    if (position == 0) {
+                        category = "";
+                    } else if (position == 1) {
+                        category = "Movies";
+                    } else if (position == 2) {
+                        category = "TV Series";
+                    } else if (position == 3) {
+                        category = "Live TV";
+                    }
+                    
+                    filterByCategory(category);
+                });
             }
-            
-            filterByCategory(category);
-        });
+        } catch (Exception e) {
+            Log.e("MainActivity", "Error setting up bottom navigation: " + e.getMessage(), e);
+        }
     }
 
     private void setupViewSwitch() {
-        gridViewIcon.setOnClickListener(v -> {
-            if (!isGridView) {
-                isGridView = true;
-                updateViewMode();
+        try {
+            if (gridViewIcon != null) {
+                gridViewIcon.setOnClickListener(v -> {
+                    if (!isGridView) {
+                        isGridView = true;
+                        updateViewMode();
+                    }
+                });
             }
-        });
 
-        listViewIcon.setOnClickListener(v -> {
-            if (isGridView) {
-                isGridView = false;
-                updateViewMode();
+            if (listViewIcon != null) {
+                listViewIcon.setOnClickListener(v -> {
+                    if (isGridView) {
+                        isGridView = false;
+                        updateViewMode();
+                    }
+                });
             }
-        });
+        } catch (Exception e) {
+            Log.e("MainActivity", "Error setting up view switch: " + e.getMessage(), e);
+        }
     }
 
     private void updateViewMode() {
-        movieAdapter.setGridView(isGridView);
-        
-        if (isGridView) {
-            recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-            gridViewIcon.setVisibility(View.GONE);
-            listViewIcon.setVisibility(View.VISIBLE);
-        } else {
-            recyclerView.setLayoutManager(new LinearLayoutManager(this));
-            gridViewIcon.setVisibility(View.VISIBLE);
-            listViewIcon.setVisibility(View.GONE);
+        try {
+            if (movieAdapter != null) {
+                movieAdapter.setGridView(isGridView);
+            }
+            
+            if (recyclerView != null) {
+                if (isGridView) {
+                    recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+                } else {
+                    recyclerView.setLayoutManager(new LinearLayoutManager(this));
+                }
+            }
+            
+            if (gridViewIcon != null) {
+                gridViewIcon.setVisibility(isGridView ? View.GONE : View.VISIBLE);
+            }
+            if (listViewIcon != null) {
+                listViewIcon.setVisibility(isGridView ? View.VISIBLE : View.GONE);
+            }
+        } catch (Exception e) {
+            Log.e("MainActivity", "Error updating view mode: " + e.getMessage(), e);
         }
     }
 
     private void setupNavigationDrawer() {
-        // Set up the ActionBarDrawerToggle
-        drawerToggle = new ActionBarDrawerToggle(
-            this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayout.addDrawerListener(drawerToggle);
-        drawerToggle.syncState();
+        try {
+            if (drawerLayout != null && navigationView != null) {
+                // Set up the ActionBarDrawerToggle
+                drawerToggle = new ActionBarDrawerToggle(
+                    this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                drawerLayout.addDrawerListener(drawerToggle);
+                drawerToggle.syncState();
 
-        // Set up navigation view listener
-        navigationView.setNavigationItemSelectedListener(this);
+                // Set up navigation view listener
+                navigationView.setNavigationItemSelectedListener(this);
+            }
+        } catch (Exception e) {
+            Log.e("MainActivity", "Error setting up navigation drawer: " + e.getMessage(), e);
+        }
     }
 
     private void setupSearchToggle() {
-        searchIcon.setOnClickListener(v -> showSearchBar());
-        closeSearchIcon.setOnClickListener(v -> hideSearchBar());
-        backSearchIcon.setOnClickListener(v -> hideSearchBar());
-        
-        searchBar.addTextChangedListener(new android.text.TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String query = s.toString().trim();
-                if (query.length() > 2) {
-                    performSearch(query);
-                } else if (query.isEmpty()) {
-                    clearSearch();
-                }
+        try {
+            if (searchIcon != null) {
+                searchIcon.setOnClickListener(v -> showSearchBar());
             }
+            if (closeSearchIcon != null) {
+                closeSearchIcon.setOnClickListener(v -> hideSearchBar());
+            }
+            if (backSearchIcon != null) {
+                backSearchIcon.setOnClickListener(v -> hideSearchBar());
+            }
+            
+            if (searchBar != null) {
+                searchBar.addTextChangedListener(new android.text.TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-            @Override
-            public void afterTextChanged(android.text.Editable s) {}
-        });
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        String query = s.toString().trim();
+                        if (query.length() > 2) {
+                            performSearch(query);
+                        } else if (query.isEmpty()) {
+                            clearSearch();
+                        }
+                    }
+
+                    @Override
+                    public void afterTextChanged(android.text.Editable s) {}
+                });
+            }
+        } catch (Exception e) {
+            Log.e("MainActivity", "Error setting up search toggle: " + e.getMessage(), e);
+        }
     }
 
     private void showSearchBar() {
@@ -371,20 +454,44 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         yearSpinner.setOnFilterSelectedListener(filterListener);
         
         // Set up button click listeners to show spinners
-        btnGenreFilter.setOnClickListener(v -> {
-            dismissAllSpinners();
-            genreSpinner.show(btnGenreFilter);
-        });
+        if (btnGenreFilter != null) {
+            btnGenreFilter.setOnClickListener(v -> {
+                try {
+                    dismissAllSpinners();
+                    if (genreSpinner != null) {
+                        genreSpinner.show(btnGenreFilter);
+                    }
+                } catch (Exception e) {
+                    Log.e("MainActivity", "Error showing genre spinner: " + e.getMessage(), e);
+                }
+            });
+        }
         
-        btnCountryFilter.setOnClickListener(v -> {
-            dismissAllSpinners();
-            countrySpinner.show(btnCountryFilter);
-        });
+        if (btnCountryFilter != null) {
+            btnCountryFilter.setOnClickListener(v -> {
+                try {
+                    dismissAllSpinners();
+                    if (countrySpinner != null) {
+                        countrySpinner.show(btnCountryFilter);
+                    }
+                } catch (Exception e) {
+                    Log.e("MainActivity", "Error showing country spinner: " + e.getMessage(), e);
+                }
+            });
+        }
         
-        btnYearFilter.setOnClickListener(v -> {
-            dismissAllSpinners();
-            yearSpinner.show(btnYearFilter);
-        });
+        if (btnYearFilter != null) {
+            btnYearFilter.setOnClickListener(v -> {
+                try {
+                    dismissAllSpinners();
+                    if (yearSpinner != null) {
+                        yearSpinner.show(btnYearFilter);
+                    }
+                } catch (Exception e) {
+                    Log.e("MainActivity", "Error showing year spinner: " + e.getMessage(), e);
+                }
+            });
+        }
     }
     
     private void dismissAllSpinners() {
@@ -453,26 +560,50 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * FAST INITIAL LOAD - Only checks if cache exists, doesn't load all data
      */
     private void loadInitialDataFast() {
-        Log.d("MainActivity", "Fast initialization - checking cache only");
-        findViewById(R.id.progress_bar).setVisibility(View.VISIBLE);
-        
-        // Check if cache exists, if not populate it, but don't return all data
-        dataRepository.ensureDataAvailable(new DataRepository.DataCallback() {
-            @Override
-            public void onSuccess(List<Entry> entries) {
-                Log.d("MainActivity", "Cache ready - loading ONLY first page");
-                loadFirstPageOnly();
-                setupCarouselFast();
-                populateFilterSpinners(); // Populate filter spinners with data from cache
+        try {
+            Log.d("MainActivity", "Fast initialization - checking cache only");
+            View progressBar = findViewById(R.id.progress_bar);
+            if (progressBar != null) {
+                progressBar.setVisibility(View.VISIBLE);
             }
             
-            @Override
-            public void onError(String error) {
-                findViewById(R.id.progress_bar).setVisibility(View.GONE);
-                Log.e("MainActivity", "Error initializing: " + error);
-                Toast.makeText(MainActivity.this, "Failed to initialize: " + error, Toast.LENGTH_LONG).show();
+            // Check if cache exists, if not populate it, but don't return all data
+            if (dataRepository != null) {
+                dataRepository.ensureDataAvailable(new DataRepository.DataCallback() {
+                    @Override
+                    public void onSuccess(List<Entry> entries) {
+                        try {
+                            Log.d("MainActivity", "Cache ready - loading ONLY first page");
+                            loadFirstPageOnly();
+                            setupCarouselFast();
+                            populateFilterSpinners(); // Populate filter spinners with data from cache
+                        } catch (Exception e) {
+                            Log.e("MainActivity", "Error in data success callback: " + e.getMessage(), e);
+                        }
+                    }
+                    
+                    @Override
+                    public void onError(String error) {
+                        try {
+                            View progressBar = findViewById(R.id.progress_bar);
+                            if (progressBar != null) {
+                                progressBar.setVisibility(View.GONE);
+                            }
+                            Log.e("MainActivity", "Error initializing: " + error);
+                            Toast.makeText(MainActivity.this, "Failed to initialize: " + error, Toast.LENGTH_LONG).show();
+                        } catch (Exception e) {
+                            Log.e("MainActivity", "Error handling initialization error: " + e.getMessage(), e);
+                        }
+                    }
+                });
+            } else {
+                Log.e("MainActivity", "DataRepository is null");
+                Toast.makeText(this, "Error: Data repository not initialized", Toast.LENGTH_LONG).show();
             }
-        });
+        } catch (Exception e) {
+            Log.e("MainActivity", "Error in loadInitialDataFast: " + e.getMessage(), e);
+            Toast.makeText(this, "Error loading data", Toast.LENGTH_LONG).show();
+        }
     }
 
     /**
@@ -731,7 +862,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onBackPressed() {
         try {
             // Check if navigation drawer is open
-            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
                 drawerLayout.closeDrawer(GravityCompat.START);
             } else if ((genreSpinner != null && genreSpinner.isShowing()) ||
                 (countrySpinner != null && countrySpinner.isShowing()) ||
