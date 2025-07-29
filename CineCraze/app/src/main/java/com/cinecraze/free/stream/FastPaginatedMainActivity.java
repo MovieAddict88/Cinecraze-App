@@ -145,12 +145,7 @@ public class FastPaginatedMainActivity extends AppCompatActivity implements Pagi
     }
 
     private void setupBottomNavigation() {
-        // Add navigation items programmatically
-        bottomNavigationView.addBubbleNavigationItem("Home", R.drawable.ic_home);
-        bottomNavigationView.addBubbleNavigationItem("Movies", R.drawable.ic_movie);
-        bottomNavigationView.addBubbleNavigationItem("Series", R.drawable.ic_series);
-        bottomNavigationView.addBubbleNavigationItem("Live", R.drawable.ic_live);
-        
+        // Set up navigation change listener
         bottomNavigationView.setNavigationChangeListener((view, position) -> {
             String category = "";
             if (position == 0) {

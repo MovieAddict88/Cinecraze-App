@@ -54,4 +54,7 @@ dependencies {
     
     // Bubble Navigation
     implementation 'com.gauravk.bubblenavigation:bubblenavigation:1.0.7'
+    
+    // ConstraintLayout support
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 }
