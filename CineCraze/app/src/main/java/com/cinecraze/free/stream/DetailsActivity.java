@@ -38,7 +38,7 @@ import com.google.android.exoplayer2.drm.DrmSessionManager;
 import com.google.android.exoplayer2.drm.DrmInitData;
 import com.google.android.exoplayer2.drm.UnsupportedDrmException;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.util.Util;
 import java.util.HashMap;
 import java.util.UUID;
@@ -329,7 +329,7 @@ public class DetailsActivity extends AppCompatActivity {
                         UUID drmSchemeUuid = C.CLEARKEY_UUID;
                         HashMap<String, String> keyRequestProperties = new HashMap<>();
                         keyRequestProperties.put("Content-Type", "application/json");
-                        MediaDrmCallback drmCallback = new HttpMediaDrmCallback("", new DefaultHttpDataSourceFactory(Util.getUserAgent(this, "CineCraze")), keyRequestProperties) {
+                        MediaDrmCallback drmCallback = new HttpMediaDrmCallback("", new DefaultHttpDataSource.Factory().setUserAgent(Util.getUserAgent(this, "CineCraze")), keyRequestProperties) {
                             @Override
                             public byte[] executeKeyRequest(UUID uuid, ExoMediaDrm.KeyRequest request) {
                                 return clearkeyJson.getBytes();
@@ -338,7 +338,7 @@ public class DetailsActivity extends AppCompatActivity {
                         DefaultDrmSessionManager drmSessionManager = new DefaultDrmSessionManager.Builder()
                                 .setUuidAndExoMediaDrmProvider(drmSchemeUuid, FrameworkMediaDrm.DEFAULT_PROVIDER)
                                 .build(drmCallback);
-                        DashMediaSource dashMediaSource = new DashMediaSource.Factory(new DefaultHttpDataSourceFactory(Util.getUserAgent(this, "CineCraze")))
+                        DashMediaSource dashMediaSource = new DashMediaSource.Factory(new DefaultHttpDataSource.Factory().setUserAgent(Util.getUserAgent(this, "CineCraze")))
                                 .setDrmSessionManager(drmSessionManager)
                                 .createMediaSource(android.net.Uri.parse(videoUrl));
                         player.setMediaSource(dashMediaSource);
