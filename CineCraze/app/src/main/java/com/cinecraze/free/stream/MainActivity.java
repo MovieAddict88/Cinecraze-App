@@ -73,13 +73,7 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout titleLayout;
     private LinearLayout searchLayout;
     private AutoCompleteTextView searchBar;
-    
-    // Search overlay components
-    private RelativeLayout relative_layout_home_activity_search_section;
-    private android.widget.EditText edit_text_home_activity_search;
-    private ImageView image_view_activity_home_close_search;
-    private ImageView image_view_activity_home_search;
-    private ImageView image_view_activity_actors_back;
+
     
     // Pagination UI elements
     private LinearLayout paginationLayout;
@@ -134,7 +128,6 @@ public class MainActivity extends AppCompatActivity {
         setupBottomNavigation();
         setupViewSwitch();
         setupSearchToggle();
-        setupSearchOverlay();
         setupFilterSpinners();
 
         // Initialize repository
@@ -165,13 +158,7 @@ public class MainActivity extends AppCompatActivity {
         btnGenreFilter = findViewById(R.id.btn_genre_filter);
         btnCountryFilter = findViewById(R.id.btn_country_filter);
         btnYearFilter = findViewById(R.id.btn_year_filter);
-        
-        // Initialize search overlay components
-        relative_layout_home_activity_search_section = findViewById(R.id.relative_layout_home_activity_search_section);
-        edit_text_home_activity_search = findViewById(R.id.edit_text_home_activity_search);
-        image_view_activity_home_close_search = findViewById(R.id.image_view_activity_home_close_search);
-        image_view_activity_home_search = findViewById(R.id.image_view_activity_home_search);
-        image_view_activity_actors_back = findViewById(R.id.image_view_activity_actors_back);
+
         
         // Set up pagination button listeners
         btnPrevious.setOnClickListener(v -> onPreviousPage());
