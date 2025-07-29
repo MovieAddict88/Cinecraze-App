@@ -4,22 +4,30 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
+import com.google.android.material.navigation.NavigationView;
 
 import com.cinecraze.free.stream.models.Category;
 import com.cinecraze.free.stream.models.Entry;
@@ -55,7 +63,7 @@ import retrofit2.Response;
  * - Low memory: ~5MB vs 50MB for large datasets
  * - Scalable: Can handle 1000+ items efficiently
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private RecyclerView recyclerView;
     private MovieAdapter movieAdapter;
@@ -65,11 +73,18 @@ public class MainActivity extends AppCompatActivity {
     private ImageView gridViewIcon;
     private ImageView listViewIcon;
     private BubbleNavigationConstraintView bottomNavigationView;
-    private ImageView searchIcon;
-    private ImageView closeSearchIcon;
-    private LinearLayout titleLayout;
-    private LinearLayout searchLayout;
-    private AutoCompleteTextView searchBar;
+    private NavigationView navigationView;
+    private DrawerLayout drawerLayout;
+    private TextView text_view_name_nave_header;
+    private de.hdodenhof.circleimageview.CircleImageView circle_image_view_profile_nav_header;
+    private ImageView image_view_profile_nav_header_bg;
+    
+    // Custom search bar elements
+    private RelativeLayout relative_layout_home_activity_search_section;
+    private EditText edit_text_home_activity_search;
+    private ImageView image_view_activity_home_close_search;
+    private ImageView image_view_activity_actors_back;
+    private ImageView image_view_activity_home_search;
     
     // Pagination UI elements
     private LinearLayout paginationLayout;
@@ -109,21 +124,14 @@ public class MainActivity extends AppCompatActivity {
         
         Log.d("MainActivity", "Starting TRUE pagination implementation");
         
-        // Set up our custom toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setDisplayShowTitleEnabled(false);
-            }
-        }
-
         initializeViews();
+        setupToolbar();
+        setupNavigationDrawer();
+        setupCustomSearch();
         setupRecyclerView();
         setupCarousel();
         setupBottomNavigation();
         setupViewSwitch();
-        setupSearchToggle();
         setupFilterSpinners();
 
         // Initialize repository
@@ -139,11 +147,23 @@ public class MainActivity extends AppCompatActivity {
         gridViewIcon = findViewById(R.id.grid_view_icon);
         listViewIcon = findViewById(R.id.list_view_icon);
         bottomNavigationView = (BubbleNavigationConstraintView) findViewById(R.id.bottom_navigation);
-        searchIcon = findViewById(R.id.search_icon);
-        closeSearchIcon = findViewById(R.id.close_search_icon);
-        titleLayout = findViewById(R.id.title_layout);
-        searchLayout = findViewById(R.id.search_layout);
-        searchBar = findViewById(R.id.search_bar);
+        
+        // Initialize navigation drawer elements
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
+        
+        // Initialize navigation header elements
+        View headerView = navigationView.getHeaderView(0);
+        text_view_name_nave_header = headerView.findViewById(R.id.text_view_name_nave_header);
+        circle_image_view_profile_nav_header = headerView.findViewById(R.id.circle_image_view_profile_nav_header);
+        image_view_profile_nav_header_bg = headerView.findViewById(R.id.image_view_profile_nav_header_bg);
+        
+        // Initialize custom search elements
+        relative_layout_home_activity_search_section = findViewById(R.id.relative_layout_home_activity_search_section);
+        edit_text_home_activity_search = findViewById(R.id.edit_text_home_activity_search);
+        image_view_activity_home_close_search = findViewById(R.id.image_view_activity_home_close_search);
+        image_view_activity_actors_back = findViewById(R.id.image_view_activity_actors_back);
+        image_view_activity_home_search = findViewById(R.id.image_view_activity_home_search);
         
         // Initialize pagination UI elements
         paginationLayout = findViewById(R.id.pagination_layout);
@@ -171,10 +191,123 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(movieAdapter);
     }
 
+    private void setupToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayShowTitleEnabled(false);
+            }
+        }
+    }
+
+    private void setupNavigationDrawer() {
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+            this, drawerLayout, findViewById(R.id.toolbar), 
+            R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.setDrawerListener(toggle);
+        toggle.syncState();
+        
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private void setupCustomSearch() {
+        // Back button to close search
+        image_view_activity_actors_back.setOnClickListener(v -> {
+            relative_layout_home_activity_search_section.setVisibility(View.GONE);
+            edit_text_home_activity_search.setText("");
+        });
+        
+        // Search on editor action
+        edit_text_home_activity_search.setOnEditorActionListener((v, actionId, event) -> {
+            if (edit_text_home_activity_search.getText().length() > 0) {
+                performSearch(edit_text_home_activity_search.getText().toString());
+                relative_layout_home_activity_search_section.setVisibility(View.GONE);
+                edit_text_home_activity_search.setText("");
+            }
+            return false;
+        });
+        
+        // Close search button
+        image_view_activity_home_close_search.setOnClickListener(v -> {
+            edit_text_home_activity_search.setText("");
+        });
+        
+        // Search button
+        image_view_activity_home_search.setOnClickListener(v -> {
+            if (edit_text_home_activity_search.getText().length() > 0) {
+                performSearch(edit_text_home_activity_search.getText().toString());
+                relative_layout_home_activity_search_section.setVisibility(View.GONE);
+                edit_text_home_activity_search.setText("");
+            }
+        });
+    }
+
     private void setupCarousel() {
         // Initialize empty carousel - will be populated with first 5 items only
         carouselAdapter = new CarouselAdapter(this, new ArrayList<>(), new ArrayList<>());
         carouselViewPager.setAdapter(carouselAdapter);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_search) {
+            relative_layout_home_activity_search_section.setVisibility(View.VISIBLE);
+            edit_text_home_activity_search.requestFocus();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        
+        if (id == R.id.nav_home) {
+            // Handle home navigation
+        } else if (id == R.id.my_profile) {
+            // Handle profile
+        } else if (id == R.id.my_password) {
+            // Handle password change
+        } else if (id == R.id.login) {
+            // Handle login
+        } else if (id == R.id.my_list) {
+            // Handle my list
+        } else if (id == R.id.logout) {
+            // Handle logout
+        } else if (id == R.id.nav_settings) {
+            // Handle settings
+        } else if (id == R.id.buy_now) {
+            // Handle subscription
+        } else if (id == R.id.nav_rate) {
+            // Handle rate app
+        } else if (id == R.id.nav_share) {
+            // Handle share app
+        } else if (id == R.id.nav_help) {
+            // Handle help
+        } else if (id == R.id.nav_policy) {
+            // Handle privacy policy
+        } else if (id == R.id.nav_exit) {
+            finish();
+        }
+        
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     private void setupBottomNavigation() {
@@ -225,65 +358,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setupSearchToggle() {
-        searchIcon.setOnClickListener(v -> showSearchBar());
-        closeSearchIcon.setOnClickListener(v -> hideSearchBar());
-        
-        searchBar.addTextChangedListener(new android.text.TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String query = s.toString().trim();
-                if (query.length() > 2) {
-                    performSearch(query);
-                } else if (query.isEmpty()) {
-                    clearSearch();
-                }
-            }
-
-            @Override
-            public void afterTextChanged(android.text.Editable s) {}
-        });
-    }
-
-    private void showSearchBar() {
-        try {
-            if (!isSearchVisible && titleLayout != null && searchLayout != null) {
-                titleLayout.setVisibility(View.GONE);
-                searchLayout.setVisibility(View.VISIBLE);
-                isSearchVisible = true;
-                searchBar.requestFocus();
-            }
-        } catch (Exception e) {
-            Log.e("MainActivity", "Error showing search bar: " + e.getMessage(), e);
-        }
-    }
-
-    private void hideSearchBar() {
-        try {
-            if (isSearchVisible && titleLayout != null && searchLayout != null) {
-                searchLayout.setVisibility(View.GONE);
-                titleLayout.setVisibility(View.VISIBLE);
-                isSearchVisible = false;
-                
-                if (searchBar != null) {
-                    searchBar.setText("");
-                    searchBar.clearFocus();
-                    android.view.inputmethod.InputMethodManager imm = 
-                        (android.view.inputmethod.InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                    if (imm != null) {
-                        imm.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
-                    }
-                }
-                
-                clearSearch();
-            }
-        } catch (Exception e) {
-            Log.e("MainActivity", "Error hiding search bar: " + e.getMessage(), e);
-        }
-    }
 
     private void performSearch(String query) {
         currentSearchQuery = query.trim();
@@ -662,13 +737,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         try {
-            // Check if any spinner is showing and dismiss it first
-            if ((genreSpinner != null && genreSpinner.isShowing()) ||
+            // Check if navigation drawer is open
+            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START);
+            } else if (relative_layout_home_activity_search_section.getVisibility() == View.VISIBLE) {
+                // Close search if it's open
+                relative_layout_home_activity_search_section.setVisibility(View.GONE);
+                edit_text_home_activity_search.setText("");
+            } else if ((genreSpinner != null && genreSpinner.isShowing()) ||
                 (countrySpinner != null && countrySpinner.isShowing()) ||
                 (yearSpinner != null && yearSpinner.isShowing())) {
+                // Dismiss spinners if they're showing
                 dismissAllSpinners();
-            } else if (isSearchVisible) {
-                hideSearchBar();
             } else {
                 super.onBackPressed();
             }
