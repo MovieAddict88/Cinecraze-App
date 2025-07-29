@@ -94,6 +94,9 @@ public class DetailsActivity extends AppCompatActivity {
     private LocalWebServer localWebServer;
     private int localPort = 8080;
 
+    // Set this to true to use the remote Shaka Player page as fallback
+    private boolean useRemoteShakaPlayer = false; // Set to true to use remote fallback
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -423,9 +426,16 @@ public class DetailsActivity extends AppCompatActivity {
     private void fallbackToWebViewPlayer(String url, String kid, String key) {
         playerView.setVisibility(View.GONE);
         webViewPlayer.setVisibility(View.VISIBLE);
-        // Pass the URL, kid, and key as query params to the HTML asset via localhost
-        String htmlUrl = "http://localhost:" + localPort + "/shaka_player.html?url=" + android.net.Uri.encode(url)
-                + "&kid=" + kid + "&key=" + key;
+        String htmlUrl;
+        if (useRemoteShakaPlayer) {
+            // Use remote Shaka Player page
+            htmlUrl = "https://movie-fcs.fwh.is/shakaplayer/?url=" + android.net.Uri.encode(url)
+                    + "&kid=" + kid + "&key=" + key;
+        } else {
+            // Use local NanoHTTPD server
+            htmlUrl = "http://localhost:" + localPort + "/shaka_player.html?url=" + android.net.Uri.encode(url)
+                    + "&kid=" + kid + "&key=" + key;
+        }
         webViewPlayer.loadUrl(htmlUrl);
     }
 
