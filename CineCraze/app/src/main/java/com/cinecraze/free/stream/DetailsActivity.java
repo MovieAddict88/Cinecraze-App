@@ -29,6 +29,19 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.drm.DefaultDrmSessionManager;
+import com.google.android.exoplayer2.drm.HttpMediaDrmCallback;
+import com.google.android.exoplayer2.drm.FrameworkMediaDrm;
+import com.google.android.exoplayer2.drm.ExoMediaDrm;
+import com.google.android.exoplayer2.drm.MediaDrmCallback;
+import com.google.android.exoplayer2.drm.DrmSessionManager;
+import com.google.android.exoplayer2.drm.DrmInitData;
+import com.google.android.exoplayer2.drm.UnsupportedDrmException;
+import com.google.android.exoplayer2.source.dash.DashMediaSource;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class DetailsActivity extends AppCompatActivity {
 
@@ -306,33 +319,40 @@ public class DetailsActivity extends AppCompatActivity {
             Server server = servers.get(currentServerIndex);
             String videoUrl = server.getUrl();
             if (videoUrl != null) {
-                MediaItem mediaItem;
-                if (server.isDrmProtected() && server.getDrmKid() != null && server.getDrmKey() != null) {
-                    // Build clearkey JSON
-                    String kid = server.getDrmKid();
-                    String key = server.getDrmKey();
-                    // Convert hex to base64 for clearkey JSON
-                    String kidB64 = android.util.Base64.encodeToString(hexStringToByteArray(kid), android.util.Base64.NO_WRAP);
-                    String keyB64 = android.util.Base64.encodeToString(hexStringToByteArray(key), android.util.Base64.NO_WRAP);
-                    String clearkeyJson = "{\"keys\":[{\"kty\":\"oct\",\"kid\":\"" + kidB64 + "\",\"k\":\"" + keyB64 + "\"}],\"type\":\"temporary\"}";
-                    MediaItem.DrmConfiguration drmConfig = new MediaItem.DrmConfiguration.Builder(C.CLEARKEY_UUID)
-                        .setLicenseUri("") // Not needed for clearkey
-                        .setKeySetId(null)
-                        .setMultiSession(false)
-                        .setForceDefaultLicenseUri(false)
-                        .setLicenseRequestHeaders(null)
-                        .setPlayClearContentWithoutKey(true)
-                        .build();
-                    mediaItem = new MediaItem.Builder()
-                        .setUri(videoUrl)
-                        .setDrmConfiguration(drmConfig)
-                        .build();
+                if (server.isDrmProtected() && server.getDrmKid() != null && server.getDrmKey() != null && videoUrl.endsWith(".mpd")) {
+                    try {
+                        // Build clearkey JSON
+                        String kid = server.getDrmKid();
+                        String key = server.getDrmKey();
+                        String clearkeyJson = "{\"keys\":[{\"kty\":\"oct\",\"kid\":\"" + kid + "\",\"k\":\"" + key + "\"}],\"type\":\"temporary\"}";
+                        // Setup DRM session manager
+                        UUID drmSchemeUuid = C.CLEARKEY_UUID;
+                        HashMap<String, String> keyRequestProperties = new HashMap<>();
+                        keyRequestProperties.put("Content-Type", "application/json");
+                        MediaDrmCallback drmCallback = new HttpMediaDrmCallback("", new DefaultHttpDataSourceFactory(Util.getUserAgent(this, "CineCraze")), keyRequestProperties) {
+                            @Override
+                            public byte[] executeKeyRequest(UUID uuid, ExoMediaDrm.KeyRequest request) {
+                                return clearkeyJson.getBytes();
+                            }
+                        };
+                        DefaultDrmSessionManager drmSessionManager = new DefaultDrmSessionManager.Builder()
+                                .setUuidAndExoMediaDrmProvider(drmSchemeUuid, FrameworkMediaDrm.DEFAULT_PROVIDER)
+                                .build(drmCallback);
+                        DashMediaSource dashMediaSource = new DashMediaSource.Factory(new DefaultHttpDataSourceFactory(Util.getUserAgent(this, "CineCraze")))
+                                .setDrmSessionManager(drmSessionManager)
+                                .createMediaSource(android.net.Uri.parse(videoUrl));
+                        player.setMediaSource(dashMediaSource);
+                        player.prepare();
+                        player.play();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 } else {
-                    mediaItem = MediaItem.fromUri(videoUrl);
+                    MediaItem mediaItem = MediaItem.fromUri(videoUrl);
+                    player.setMediaItem(mediaItem);
+                    player.prepare();
+                    player.play();
                 }
-                player.setMediaItem(mediaItem);
-                player.prepare();
-                player.play();
             }
         }
     }
