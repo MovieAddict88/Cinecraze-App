@@ -103,8 +103,8 @@
             app:bt_icon="@drawable/ic_home"
             app:bt_iconHeight="20dp"
             app:bt_iconWidth="20dp"
-            app:bt_colorActive="@color/yellow"
-            app:bt_colorInactive="@color/yellow"
+            app:bt_colorActive="@android:color/black"
+            app:bt_colorInactive="@android:color/black"
             app:bt_shape="@drawable/bg_background_yellow"
             app:bt_title="Home" />
 
@@ -115,8 +115,8 @@
             app:bt_icon="@drawable/ic_movie"
             app:bt_iconHeight="20dp"
             app:bt_iconWidth="20dp"
-            app:bt_colorActive="@color/red"
-            app:bt_colorInactive="@color/red"
+            app:bt_colorActive="@android:color/white"
+            app:bt_colorInactive="@android:color/white"
             app:bt_shape="@drawable/bg_background_red"
             app:bt_title="Movies" />
 
@@ -127,8 +127,8 @@
             app:bt_icon="@drawable/ic_series"
             app:bt_iconHeight="20dp"
             app:bt_iconWidth="20dp"
-            app:bt_colorActive="@color/green"
-            app:bt_colorInactive="@color/green"
+            app:bt_colorActive="@android:color/white"
+            app:bt_colorInactive="@android:color/white"
             app:bt_shape="@drawable/bg_background_green"
             app:bt_title="Series" />
 
@@ -139,8 +139,8 @@
             app:bt_icon="@drawable/ic_live"
             app:bt_iconHeight="20dp"
             app:bt_iconWidth="20dp"
-            app:bt_colorActive="@color/purple"
-            app:bt_colorInactive="@color/purple"
+            app:bt_colorActive="@android:color/white"
+            app:bt_colorInactive="@android:color/white"
             app:bt_shape="@drawable/bg_background_purple"
             app:bt_title="Live" />
 
