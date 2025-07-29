@@ -334,7 +334,8 @@ public class DetailsActivity extends AppCompatActivity {
                                 .build(drmCallback);
                         DashMediaSource.Factory dashFactory = new DashMediaSource.Factory(new DefaultHttpDataSource.Factory().setUserAgent(Util.getUserAgent(this, "CineCraze")));
                         dashFactory.setDrmSessionManagerProvider(mediaItem -> drmSessionManager);
-                        DashMediaSource dashMediaSource = dashFactory.createMediaSource(android.net.Uri.parse(videoUrl));
+                        MediaItem dashMediaItem = MediaItem.fromUri(videoUrl);
+                        DashMediaSource dashMediaSource = dashFactory.createMediaSource(dashMediaItem);
                         player.setMediaSource(dashMediaSource);
                         player.prepare();
                         player.play();
