@@ -52,8 +52,11 @@ dependencies {
     implementation 'androidx.room:room-runtime:2.6.1'
     annotationProcessor 'androidx.room:room-compiler:2.6.1'
     
-    // Bubble Navigation
+    // Bubble Navigation - using a different version
     implementation 'com.gauravk.bubblenavigation:bubblenavigation:1.0.7'
+    
+    // Alternative: Material Bottom Navigation
+    implementation 'com.google.android.material:material:1.11.0'
     
     // ConstraintLayout support
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'

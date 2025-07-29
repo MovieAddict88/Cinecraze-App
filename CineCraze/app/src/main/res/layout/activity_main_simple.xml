@@ -75,66 +75,13 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <com.gauravk.bubblenavigation.BubbleNavigationConstraintView
+    <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@color/white">
-
-        <com.gauravk.bubblenavigation.BubbleToggleView
-            android:id="@+id/nav_home"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            app:bn_badgeText=""
-            app:bn_badgeVisibility="gone"
-            app:bn_color="@color/primary"
-            app:bn_defaultIcon="@drawable/ic_home"
-            app:bn_iconSize="24dp"
-            app:bn_title="Home"
-            app:bn_titleSize="12sp" />
-
-        <com.gauravk.bubblenavigation.BubbleToggleView
-            android:id="@+id/nav_movies"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            app:bn_badgeText=""
-            app:bn_badgeVisibility="gone"
-            app:bn_color="@color/primary"
-            app:bn_defaultIcon="@drawable/ic_movie"
-            app:bn_iconSize="24dp"
-            app:bn_title="Movies"
-            app:bn_titleSize="12sp" />
-
-        <com.gauravk.bubblenavigation.BubbleToggleView
-            android:id="@+id/nav_series"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            app:bn_badgeText=""
-            app:bn_badgeVisibility="gone"
-            app:bn_color="@color/primary"
-            app:bn_defaultIcon="@drawable/ic_series"
-            app:bn_iconSize="24dp"
-            app:bn_title="Series"
-            app:bn_titleSize="12sp" />
-
-        <com.gauravk.bubblenavigation.BubbleToggleView
-            android:id="@+id/nav_live"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            app:bn_badgeText=""
-            app:bn_badgeVisibility="gone"
-            app:bn_color="@color/primary"
-            app:bn_defaultIcon="@drawable/ic_live"
-            app:bn_iconSize="24dp"
-            app:bn_title="Live"
-            app:bn_titleSize="12sp" />
-
-    </com.gauravk.bubblenavigation.BubbleNavigationConstraintView>
+        android:background="@color/white"
+        app:menu="@menu/bottom_navigation_menu" />
 
     <ProgressBar
         android:id="@+id/progress_bar"
