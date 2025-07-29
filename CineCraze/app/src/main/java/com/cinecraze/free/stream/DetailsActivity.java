@@ -28,6 +28,7 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.google.android.exoplayer2.C;
 
 public class DetailsActivity extends AppCompatActivity {
 
@@ -314,15 +315,13 @@ public class DetailsActivity extends AppCompatActivity {
                     String kidB64 = android.util.Base64.encodeToString(hexStringToByteArray(kid), android.util.Base64.NO_WRAP);
                     String keyB64 = android.util.Base64.encodeToString(hexStringToByteArray(key), android.util.Base64.NO_WRAP);
                     String clearkeyJson = "{\"keys\":[{\"kty\":\"oct\",\"kid\":\"" + kidB64 + "\",\"k\":\"" + keyB64 + "\"}],\"type\":\"temporary\"}";
-                    MediaItem.DrmConfiguration drmConfig = new MediaItem.DrmConfiguration.Builder(androidx.media3.common.C.CLEARKEY_UUID)
-                        .setKeySetId(null)
+                    MediaItem.DrmConfiguration drmConfig = new MediaItem.DrmConfiguration.Builder(C.CLEARKEY_UUID)
                         .setLicenseUri("") // Not needed for clearkey
+                        .setKeySetId(null)
                         .setMultiSession(false)
                         .setForceDefaultLicenseUri(false)
                         .setLicenseRequestHeaders(null)
-                        .setSessionForClearTypes(false)
                         .setPlayClearContentWithoutKey(true)
-                        .setCustomData(clearkeyJson.getBytes())
                         .build();
                     mediaItem = new MediaItem.Builder()
                         .setUri(videoUrl)
