@@ -1,0 +1,25 @@
+{
+  "channels_with_drm_keys": [
+    {
+      "channel": "AZ2",
+      "kid": "f703e4c8ec9041eeb5028ab4248fa094",
+      "key": "c22f2162e176eee6273a5d0b68d19530",
+      "mpd_url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_hd.mpd",
+      "status": "Multiple servers (HLS + DASH with DRM)"
+    },
+    {
+      "channel": "TV5",
+      "kid": "2615129ef2c846a9bbd43a641c7303ef",
+      "key": "07c7f996b1734ea288641a68e1cfdc4d",
+      "mpd_url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_hd.mpd",
+      "status": "Single DASH server with DRM"
+    },
+    {
+      "channel": "One Sports+",
+      "kid": "322d06e9326f4753a7ec0908030c13d8",
+      "key": "1e3e0ca32d421fbfec86feced0efefda",
+      "mpd_url": "https://qp-pldt-live-grp-03-prod.akamaized.net/out/u/cg_onesportsplus_hd1.mpd",
+      "status": "Single DASH server with DRM"
+    }
+  ]
+}

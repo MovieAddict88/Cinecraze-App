@@ -26,7 +26,19 @@ public class DrmTest {
         Log.d("DrmTest", "Generated License: " + license);
     }
     
+    public static void testAZ2Keys() {
+        String kid = "f703e4c8ec9041eeb5028ab4248fa094";
+        String key = "c22f2162e176eee6273a5d0b68d19530";
+        
+        String license = DrmHelper.createClearKeyLicense(kid, key);
+        
+        Log.d("DrmTest", "AZ2 KID: " + kid);
+        Log.d("DrmTest", "AZ2 Key: " + key);
+        Log.d("DrmTest", "Generated License: " + license);
+    }
+    
     public static void testAllKeys() {
+        testAZ2Keys();
         testTV5Keys();
         testOneSportsKeys();
     }

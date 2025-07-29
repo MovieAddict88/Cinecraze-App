@@ -1,0 +1,43 @@
+{
+  "Title": "AZ2",
+  "SubCategory": "Entertainment",
+  "Country": "🇵🇭 Philippines",
+  "Description": "AZ2",
+  "Poster": "https://i.imgur.com/1zsdloF.png",
+  "Thumbnail": "https://i.imgur.com/1zsdloF.png",
+  "Rating": 0,
+  "Servers": [
+    {
+      "name": "720p HLS",
+      "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_5.m3u8",
+      "is_drm_protected": false
+    },
+    {
+      "name": "480p HLS",
+      "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_4.m3u8",
+      "is_drm_protected": false
+    },
+    {
+      "name": "360p HLS",
+      "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_3.m3u8",
+      "is_drm_protected": false
+    },
+    {
+      "name": "240p HLS",
+      "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_2.m3u8",
+      "is_drm_protected": false
+    },
+    {
+      "name": "144p HLS",
+      "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_1.m3u8",
+      "is_drm_protected": false
+    },
+    {
+      "name": "HD DASH",
+      "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_hd.mpd",
+      "is_drm_protected": true,
+      "drm_kid": "f703e4c8ec9041eeb5028ab4248fa094",
+      "drm_key": "c22f2162e176eee6273a5d0b68d19530"
+    }
+  ]
+}
