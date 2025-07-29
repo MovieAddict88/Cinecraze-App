@@ -38,8 +38,8 @@ public class LocalLicenseServer {
     public static void initializeKeys() {
         // Add your keys here (hex format)
         addKey("2615129ef2c846a9bbd43a641c7303ef", "07c7f996b1734ea288641a68e1cfdc4d"); // TV5
+        addKey("322d06e9326f4753a7ec0908030c13d8", "1e3e0ca32d421fbfec86feced0efefda"); // One Sports+
         addKey("872910C8-4329-4319-800D-85F9A0940607", "your_key_for_hbo_family");
-        addKey("322D06E9-326F-4753-A7EC-0908030C13D8", "your_key_for_one_sports");
         // Add more keys as needed
     }
     

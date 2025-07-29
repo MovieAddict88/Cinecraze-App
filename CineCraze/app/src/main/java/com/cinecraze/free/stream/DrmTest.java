@@ -13,8 +13,21 @@ public class DrmTest {
         Log.d("DrmTest", "TV5 KID: " + kid);
         Log.d("DrmTest", "TV5 Key: " + key);
         Log.d("DrmTest", "Generated License: " + license);
+    }
+    
+    public static void testOneSportsKeys() {
+        String kid = "322d06e9326f4753a7ec0908030c13d8";
+        String key = "1e3e0ca32d421fbfec86feced0efefda";
         
-        // Expected format should be something like:
-        // {"keys":[{"kty":"oct","k":"B8f5lrFzTqKIZBpo4c_cTQ","kid":"JhUSnvLIRqm71DpkHHMD7w"}],"type":"temporary"}
+        String license = DrmHelper.createClearKeyLicense(kid, key);
+        
+        Log.d("DrmTest", "One Sports+ KID: " + kid);
+        Log.d("DrmTest", "One Sports+ Key: " + key);
+        Log.d("DrmTest", "Generated License: " + license);
+    }
+    
+    public static void testAllKeys() {
+        testTV5Keys();
+        testOneSportsKeys();
     }
 }

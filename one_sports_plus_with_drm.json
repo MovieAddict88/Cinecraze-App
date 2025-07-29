@@ -1,0 +1,20 @@
+{
+  "Title": "One Sport+",
+  "SubCategory": "Sports",
+  "Country": "🇵🇭 Philippines",
+  "Description": "One Sports+ is a Filipino pay television channel.",
+  "Poster": "https://i.imgur.com/cb9Hp32.png",
+  "Thumbnail": "https://i.imgur.com/cb9Hp32.png",
+  "Rating": 0,
+  "Duration": "",
+  "Year": 0,
+  "Servers": [
+    {
+      "name": "HD",
+      "url": "https://qp-pldt-live-grp-03-prod.akamaized.net/out/u/cg_onesportsplus_hd1.mpd",
+      "is_drm_protected": true,
+      "drm_kid": "322d06e9326f4753a7ec0908030c13d8",
+      "drm_key": "1e3e0ca32d421fbfec86feced0efefda"
+    }
+  ]
+}
