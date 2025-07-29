@@ -148,6 +148,11 @@ public class MainActivity extends AppCompatActivity {
         titleLayout = findViewById(R.id.title_layout);
         searchLayout = findViewById(R.id.search_layout);
         searchBar = findViewById(R.id.search_bar);
+
+        // Initialize search suggestion adapter after searchBar is initialized
+        searchSuggestionAdapter = new SearchSuggestionAdapter(this, suggestionList);
+        searchBar.setAdapter(searchSuggestionAdapter);
+        searchBar.setThreshold(1);
         
         // Initialize pagination UI elements
         paginationLayout = findViewById(R.id.pagination_layout);
