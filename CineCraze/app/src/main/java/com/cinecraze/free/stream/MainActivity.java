@@ -102,6 +102,10 @@ public class MainActivity extends AppCompatActivity {
     private String currentCountryFilter = null;
     private String currentYearFilter = null;
 
+    private SearchSuggestionAdapter searchSuggestionAdapter;
+    private List<Entry> allEntries = new ArrayList<>(); // Store all entries for suggestions
+    private List<Entry> suggestionList = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -236,6 +240,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String query = s.toString().trim();
+                updateSearchSuggestions(query);
                 if (query.length() > 2) {
                     performSearch(query);
                 } else if (query.isEmpty()) {
@@ -419,6 +424,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void updateSearchSuggestions(String query) {
+        suggestionList.clear();
+        if (query.length() > 1) {
+            for (Entry entry : allEntries) {
+                if (entry.getTitle() != null && entry.getTitle().toLowerCase().contains(query.toLowerCase())) {
+                    suggestionList.add(entry);
+                    if (suggestionList.size() >= 10) break; // Limit suggestions
+                }
+            }
+        }
+        searchSuggestionAdapter.notifyDataSetChanged();
+    }
+
     /**
      * FAST INITIAL LOAD - Only checks if cache exists, doesn't load all data
      */
@@ -434,6 +452,8 @@ public class MainActivity extends AppCompatActivity {
                 loadFirstPageOnly();
                 setupCarouselFast();
                 populateFilterSpinners(); // Populate filter spinners with data from cache
+                allEntries.clear(); // Clear previous entries
+                allEntries.addAll(entries); // Add all entries to the list for suggestions
             }
             
             @Override
