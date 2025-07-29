@@ -16,6 +16,9 @@ public class Server {
     @SerializedName("drm_kid")
     private String drmKid;
 
+    @SerializedName("drm_keys")
+    private String drmKeys; // Format: "kid:key"
+
     @SerializedName("license_url")
     private String licenseUrl;
 
@@ -30,12 +33,37 @@ public class Server {
         return url;
     }
 
-    public String getDrmKey() {
-        return drmKey;
-    }
+
 
     public String getDrmKid() {
-        return drmKid;
+        // If separate kid is provided, use it
+        if (drmKid != null) {
+            return drmKid;
+        }
+        // If combined format is provided, extract kid
+        if (drmKeys != null && drmKeys.contains(":")) {
+            return drmKeys.split(":")[0].trim();
+        }
+        return null;
+    }
+
+    public String getDrmKey() {
+        // If separate key is provided, use it
+        if (drmKey != null) {
+            return drmKey;
+        }
+        // If combined format is provided, extract key
+        if (drmKeys != null && drmKeys.contains(":")) {
+            String[] parts = drmKeys.split(":");
+            if (parts.length >= 2) {
+                return parts[1].trim();
+            }
+        }
+        return null;
+    }
+
+    public String getDrmKeys() {
+        return drmKeys;
     }
 
     public String getLicenseUrl() {

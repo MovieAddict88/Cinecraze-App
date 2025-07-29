@@ -19,8 +19,22 @@ public class SimpleDrmHelper {
      */
     public static boolean needsDrm(Server server) {
         return server.isDrmProtected() && 
-               server.getDrmKey() != null && 
-               server.getDrmKid() != null;
+               (hasValidDrmKeys(server));
+    }
+    
+    /**
+     * Check if server has valid DRM keys in any format
+     */
+    public static boolean hasValidDrmKeys(Server server) {
+        // Check if separate kid/key are provided
+        if (server.getDrmKey() != null && server.getDrmKid() != null) {
+            return true;
+        }
+        // Check if combined format is provided
+        if (server.getDrmKeys() != null && server.getDrmKeys().contains(":")) {
+            return true;
+        }
+        return false;
     }
     
     /**
@@ -28,33 +42,24 @@ public class SimpleDrmHelper {
      */
     public static boolean hasDrmKey(Server server) {
         if (!server.isDrmProtected()) return false;
-        
-        // Check if keys are in the server object
-        if (server.getDrmKey() != null && server.getDrmKid() != null) {
-            return true;
-        }
-        
-        // Check if keys are in the key manager (for MPD files)
-        String url = server.getUrl();
-        if (url != null && url.contains(".mpd")) {
-            // Try to extract KID from MPD or use key manager
-            return DrmKeyManager.getKeyCount() > 0;
-        }
-        
-        return false;
+        return hasValidDrmKeys(server);
     }
     
     /**
-     * Get DRM keys for server - either from server object or key manager
+     * Get DRM keys for server from JSON data
      */
     public static DrmKeyManager.DrmKeyPair getDrmKeys(Server server) {
-        // First check if keys are in the server object
-        if (server.getDrmKey() != null && server.getDrmKid() != null) {
-            return new DrmKeyManager.DrmKeyPair(server.getDrmKid(), server.getDrmKey());
+        if (!hasValidDrmKeys(server)) {
+            return null;
         }
         
-        // If not, and this is an MPD file, we'll need to extract KID from MPD
-        // For now, return null - this would need MPD parsing
+        String kid = server.getDrmKid();
+        String key = server.getDrmKey();
+        
+        if (kid != null && key != null) {
+            return new DrmKeyManager.DrmKeyPair(kid, key);
+        }
+        
         return null;
     }
 
