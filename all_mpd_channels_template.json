@@ -1,0 +1,185 @@
+{
+  "note": "Replace 'your_channel_kid:your_channel_key' with actual keys for each MPD channel",
+  "mpd_channels_from_github_json": [
+    {
+      "title": "HBO Family Asia",
+      "url": "https://qp-pldt-live-grp-03-prod.akamaized.net/out/u/cg_hbofam.mpd",
+      "drm_keys": "872910C8-4329-4319-800D-85F9A0940607:your_hbo_family_key"
+    },
+    {
+      "title": "One Sport+", 
+      "url": "https://qp-pldt-live-grp-03-prod.akamaized.net/out/u/cg_onesportsplus_hd1.mpd",
+      "drm_keys": "322d06e9326f4753a7ec0908030c13d8:1e3e0ca32d421fbfec86feced0efefda"
+    },
+    {
+      "title": "PBA Rush",
+      "url": "https://qp-pldt-live-grp-01-prod.akamaized.net/out/u/cg_pbarush_hd1.mpd", 
+      "drm_keys": "your_pba_rush_kid:your_pba_rush_key"
+    },
+    {
+      "title": "NBA TV Philippines",
+      "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/nba_sdi.mpd",
+      "drm_keys": "your_nba_tv_kid:your_nba_tv_key"
+    },
+    {
+      "title": "Premier Tennis HD",
+      "url": "https://qp-pldt-live-grp-13-prod.akamaized.net/out/u/dr_premiertennishd.mpd",
+      "drm_keys": "your_tennis_kid:your_tennis_key"
+    },
+    {
+      "title": "SPOTV HD",
+      "url": "https://qp-pldt-live-grp-11-prod.akamaized.net/out/u/dr_spotvhd.mpd",
+      "drm_keys": "your_spotv_kid:your_spotv_key"
+    },
+    {
+      "title": "Boomerang",
+      "url": "https://streaming.indihometv.com/atm/DASH/boomerang/manifest.mpd",
+      "drm_keys": "your_boomerang_kid:your_boomerang_key"
+    },
+    {
+      "title": "Cartoon Network HD",
+      "url": "https://qp-pldt-live-grp-12-prod.akamaized.net/out/u/dr_cartoonnetworkhd.mpd",
+      "drm_keys": "your_cartoon_network_kid:your_cartoon_network_key"
+    },
+    {
+      "title": "Animax",
+      "url": "https://qp-pldt-live-grp-07-prod.akamaized.net/out/u/cg_animax_sd_new.mpd",
+      "drm_keys": "your_animax_kid:your_animax_key"
+    },
+    {
+      "title": "Moonbug Kids",
+      "url": "https://qp-pldt-live-grp-06-prod.akamaized.net/out/u/cg_moonbug_kids_sd.mpd",
+      "drm_keys": "your_moonbug_kid:your_moonbug_key"
+    },
+    {
+      "title": "Asian Food Network",
+      "url": "https://qp-pldt-live-grp-07-prod.akamaized.net/out/u/asianfoodnetwork_sd.mpd",
+      "drm_keys": "your_afn_kid:your_afn_key"
+    },
+    {
+      "title": "Animal Planet",
+      "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/cg_animal_planet_sd.mpd",
+      "drm_keys": "your_animal_planet_kid:your_animal_planet_key"
+    },
+    {
+      "title": "History HD",
+      "url": "https://qp-pldt-live-grp-11-prod.akamaized.net/out/u/dr_historyhd.mpd",
+      "drm_keys": "your_history_kid:your_history_key"
+    },
+    {
+      "title": "Discovery Asia",
+      "url": "https://qp-pldt-live-grp-12-prod.akamaized.net/out/u/dr_discoveryasia.mpd",
+      "drm_keys": "your_discovery_asia_kid:your_discovery_asia_key"
+    },
+    {
+      "title": "Knowledge Channel",
+      "url": "https://abslive.akamaized.net/dash/live/2028189/kc/manifest.mpd",
+      "drm_keys": "your_knowledge_channel_kid:your_knowledge_channel_key"
+    },
+    {
+      "title": "Travel Channel",
+      "url": "https://qp-pldt-live-grp-08-prod.akamaized.net/out/u/travel_channel_sd.mpd",
+      "drm_keys": "your_travel_channel_kid:your_travel_channel_key"
+    },
+    {
+      "title": "Hits Now",
+      "url": "https://qp-pldt-live-grp-09-prod.akamaized.net/out/u/cg_hitsnow.mpd",
+      "drm_keys": "your_hits_now_kid:your_hits_now_key"
+    },
+    {
+      "title": "Food Network HD",
+      "url": "https://qp-pldt-live-grp-09-prod.akamaized.net/out/u/cg_foodnetwork_hd1.mpd",
+      "drm_keys": "your_food_network_kid:your_food_network_key"
+    },
+    {
+      "title": "TLC",
+      "url": "https://qp-pldt-live-grp-08-prod.akamaized.net/out/u/tlc_sd.mpd",
+      "drm_keys": "your_tlc_kid:your_tlc_key"
+    },
+    {
+      "title": "AXN",
+      "url": "https://qp-pldt-live-grp-06-prod.akamaized.net/out/u/cg_axn_sd.mpd",
+      "drm_keys": "your_axn_kid:your_axn_key"
+    },
+    {
+      "title": "Channel News Asia",
+      "url": "https://qp-pldt-live-grp-13-prod.akamaized.net/out/u/dr_channelnewsasia.mpd",
+      "drm_keys": "your_cna_kid:your_cna_key"
+    },
+    {
+      "title": "BBC World News",
+      "url": "https://qp-pldt-live-grp-04-prod.akamaized.net/out/u/bbcworld_news_sd.mpd",
+      "drm_keys": "your_bbc_world_kid:your_bbc_world_key"
+    },
+    {
+      "title": "UAAP",
+      "url": "https://qp-pldt-live-grp-04-prod.akamaized.net/out/u/cg_uaap_cplay_sd.mpd",
+      "drm_keys": "your_uaap_kid:your_uaap_key"
+    },
+    {
+      "title": "GMA",
+      "url": "https://amg01006-abs-cbn-abscbn-gma-x7-dash-abscbnono-dzsx9.amagi.tv/index.mpd",
+      "drm_keys": "your_gma_kid:your_gma_key"
+    },
+    {
+      "title": "TV5",
+      "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_hd.mpd",
+      "drm_keys": "2615129ef2c846a9bbd43a641c7303ef:07c7f996b1734ea288641a68e1cfdc4d"
+    },
+    {
+      "title": "Pinoy Box Office",
+      "url": "https://qp-pldt-live-grp-04-prod.akamaized.net/out/u/pbo_sd.mpd",
+      "drm_keys": "your_pbo_kid:your_pbo_key"
+    },
+    {
+      "title": "Viva Cinema",
+      "url": "https://qp-pldt-live-grp-06-prod.akamaized.net/out/u/viva_sd.mpd",
+      "drm_keys": "your_viva_kid:your_viva_key"
+    },
+    {
+      "title": "Cinema One",
+      "url": "https://qp-pldt-live-grp-01-prod.akamaized.net//out/u/celmovie_pinoy_sd.mpd",
+      "drm_keys": "your_cinema_one_kid:your_cinema_one_key"
+    },
+    {
+      "title": "Tagalog Movie",
+      "url": "https://qp-pldt-live-grp-07-prod.akamaized.net/out/u/cg_tagalogmovie.mpd",
+      "drm_keys": "your_tagalog_movie_kid:your_tagalog_movie_key"
+    },
+    {
+      "title": "Cinemax",
+      "url": "https://qp-pldt-live-grp-01-prod.akamaized.net/out/u/cg_cinemax.mpd",
+      "drm_keys": "your_cinemax_kid:your_cinemax_key"
+    },
+    {
+      "title": "KIX",
+      "url": "https://streaming.indihometv.com/atm/DASH/kix/manifest.mpd",
+      "drm_keys": "your_kix_kid:your_kix_key"
+    },
+    {
+      "title": "Thrill",
+      "url": "https://qp-pldt-live-grp-06-prod.akamaized.net/out/u/cg_thrill_sd.mpd",
+      "drm_keys": "your_thrill_kid:your_thrill_key"
+    },
+    {
+      "title": "HBO HD",
+      "url": "https://qp-pldt-live-grp-03-prod.akamaized.net/out/u/cg_hbohd.mpd",
+      "drm_keys": "your_hbo_hd_kid:your_hbo_hd_key"
+    },
+    {
+      "title": "Rock Extreme",
+      "url": "https://qp-pldt-live-grp-13-prod.akamaized.net/out/u/dr_rockextreme.mpd",
+      "drm_keys": "your_rock_extreme_kid:your_rock_extreme_key"
+    },
+    {
+      "title": "Hits Movies",
+      "url": "https://qp-pldt-live-grp-12-prod.akamaized.net/out/u/dr_hitsmovies.mpd",
+      "drm_keys": "your_hits_movies_kid:your_hits_movies_key"
+    },
+    {
+      "title": "DreamWorks",
+      "url": "https://qp-pldt-live-grp-07-prod.akamaized.net/out/u/cg_dreamworktag.mpd",
+      "drm_keys": "your_dreamworks_kid:your_dreamworks_key"
+    }
+  ]
+}

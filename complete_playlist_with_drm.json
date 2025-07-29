@@ -1,0 +1,244 @@
+{
+  "Categories": [
+    {
+      "MainCategory": "Live TV",
+      "SubCategories": [
+        "Entertainment"
+      ],
+      "Entries": [
+        {
+          "Title": "AZ2",
+          "SubCategory": "Entertainment",
+          "Country": "🇵🇭 Philippines",
+          "Description": "AZ2",
+          "Poster": "https://i.imgur.com/1zsdloF.png",
+          "Thumbnail": "https://i.imgur.com/1zsdloF.png",
+          "Rating": 0,
+          "Servers": [
+            {
+              "name": "720p HLS",
+              "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_5.m3u8",
+              "is_drm_protected": false
+            },
+            {
+              "name": "480p HLS",
+              "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_4.m3u8",
+              "is_drm_protected": false
+            },
+            {
+              "name": "360p HLS",
+              "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_3.m3u8",
+              "is_drm_protected": false
+            },
+            {
+              "name": "240p HLS",
+              "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_2.m3u8",
+              "is_drm_protected": false
+            },
+            {
+              "name": "144p HLS",
+              "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_1.m3u8",
+              "is_drm_protected": false
+            },
+            {
+              "name": "HD DASH",
+              "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_hd.mpd",
+              "is_drm_protected": true,
+              "drm_keys": "f703e4c8ec9041eeb5028ab4248fa094:c22f2162e176eee6273a5d0b68d19530"
+            }
+          ]
+        },
+        {
+          "Title": "HBO Family Asia",
+          "SubCategory": "Movies",
+          "Country": "🌐 Asia",
+          "Description": "HBO Family Asia is a pay television network that features family-friendly movies.",
+          "Poster": "https://i.imgur.com/5krGyOX.png",
+          "Thumbnail": "https://i.imgur.com/5krGyOX.png",
+          "Rating": 0,
+          "Duration": "",
+          "Year": 0,
+          "Servers": [
+            {
+              "name": "HD",
+              "url": "https://qp-pldt-live-grp-03-prod.akamaized.net/out/u/cg_hbofam.mpd",
+              "is_drm_protected": true,
+              "drm_keys": "872910C8-4329-4319-800D-85F9A0940607:your_hbo_family_key_here"
+            }
+          ]
+        },
+        {
+          "Title": "One Sport+",
+          "SubCategory": "Sports",
+          "Country": "🇵🇭 Philippines",
+          "Description": "One Sports+ is a Filipino pay television channel.",
+          "Poster": "https://i.imgur.com/cb9Hp32.png",
+          "Thumbnail": "https://i.imgur.com/cb9Hp32.png",
+          "Rating": 0,
+          "Duration": "",
+          "Year": 0,
+          "Servers": [
+            {
+              "name": "HD",
+              "url": "https://qp-pldt-live-grp-03-prod.akamaized.net/out/u/cg_onesportsplus_hd1.mpd",
+              "is_drm_protected": true,
+              "drm_keys": "322d06e9326f4753a7ec0908030c13d8:1e3e0ca32d421fbfec86feced0efefda"
+            }
+          ]
+        },
+        {
+          "Title": "PBA Rush",
+          "SubCategory": "Sports",
+          "Country": "🇵🇭 Philippines",
+          "Description": "PBA Rush is a 24/7 channel which has been dedicated to broadcast the PBA Games.",
+          "Poster": "https://i.imgur.com/FmvPl3U.png",
+          "Thumbnail": "https://i.imgur.com/FmvPl3U.png",
+          "Rating": 0,
+          "Duration": "",
+          "Year": 0,
+          "Servers": [
+            {
+              "name": "HD",
+              "url": "https://qp-pldt-live-grp-01-prod.akamaized.net/out/u/cg_pbarush_hd1.mpd",
+              "is_drm_protected": true,
+              "drm_keys": "your_pba_rush_kid:your_pba_rush_key"
+            }
+          ]
+        },
+        {
+          "Title": "NBA TV Philippines",
+          "SubCategory": "Sports",
+          "Country": "🇵🇭 Philippines",
+          "Description": "NBA TV Philippines is a Filipino pay television channel that is dedicated to basketball.",
+          "Poster": "https://i.imgur.com/zC6ul0L.png",
+          "Thumbnail": "https://i.imgur.com/zC6ul0L.png",
+          "Rating": 0,
+          "Duration": "",
+          "Year": 0,
+          "Servers": [
+            {
+              "name": "HD",
+              "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/nba_sdi.mpd",
+              "is_drm_protected": true,
+              "drm_keys": "your_nba_tv_kid:your_nba_tv_key"
+            }
+          ]
+        },
+        {
+          "Title": "Premier Tennis HD",
+          "SubCategory": "Sports",
+          "Country": "🌐 International",
+          "Description": "Premier Tennis HD broadcasts tennis tournaments and matches.",
+          "Poster": "https://i.imgur.com/tennis.png",
+          "Thumbnail": "https://i.imgur.com/tennis.png",
+          "Rating": 0,
+          "Duration": "",
+          "Year": 0,
+          "Servers": [
+            {
+              "name": "HD",
+              "url": "https://qp-pldt-live-grp-13-prod.akamaized.net/out/u/dr_premiertennishd.mpd",
+              "is_drm_protected": true,
+              "drm_keys": "your_tennis_kid:your_tennis_key"
+            }
+          ]
+        },
+        {
+          "Title": "SPOTV HD",
+          "SubCategory": "Sports",
+          "Country": "🌐 International",
+          "Description": "SPOTV HD is a sports channel.",
+          "Poster": "https://i.imgur.com/spotv.png",
+          "Thumbnail": "https://i.imgur.com/spotv.png",
+          "Rating": 0,
+          "Duration": "",
+          "Year": 0,
+          "Servers": [
+            {
+              "name": "HD",
+              "url": "https://qp-pldt-live-grp-11-prod.akamaized.net/out/u/dr_spotvhd.mpd",
+              "is_drm_protected": true,
+              "drm_keys": "your_spotv_kid:your_spotv_key"
+            }
+          ]
+        },
+        {
+          "Title": "Boomerang",
+          "SubCategory": "Kids",
+          "Country": "🌐 International",
+          "Description": "Boomerang is a cable and satellite television channel.",
+          "Poster": "https://i.imgur.com/boomerang.png",
+          "Thumbnail": "https://i.imgur.com/boomerang.png",
+          "Rating": 0,
+          "Duration": "",
+          "Year": 0,
+          "Servers": [
+            {
+              "name": "HD",
+              "url": "https://streaming.indihometv.com/atm/DASH/boomerang/manifest.mpd",
+              "is_drm_protected": true,
+              "drm_keys": "your_boomerang_kid:your_boomerang_key"
+            }
+          ]
+        },
+        {
+          "Title": "Cartoon Network HD",
+          "SubCategory": "Kids",
+          "Country": "🌐 International",
+          "Description": "Cartoon Network HD is a television channel.",
+          "Poster": "https://i.imgur.com/cartoon.png",
+          "Thumbnail": "https://i.imgur.com/cartoon.png",
+          "Rating": 0,
+          "Duration": "",
+          "Year": 0,
+          "Servers": [
+            {
+              "name": "HD",
+              "url": "https://qp-pldt-live-grp-12-prod.akamaized.net/out/u/dr_cartoonnetworkhd.mpd",
+              "is_drm_protected": true,
+              "drm_keys": "your_cartoon_network_kid:your_cartoon_network_key"
+            }
+          ]
+        },
+        {
+          "Title": "Animax",
+          "SubCategory": "Entertainment",
+          "Country": "🌐 Asia",
+          "Description": "Animax is a Japanese anime satellite television network.",
+          "Poster": "https://i.imgur.com/animax.png",
+          "Thumbnail": "https://i.imgur.com/animax.png",
+          "Rating": 0,
+          "Duration": "",
+          "Year": 0,
+          "Servers": [
+            {
+              "name": "SD",
+              "url": "https://qp-pldt-live-grp-07-prod.akamaized.net/out/u/cg_animax_sd_new.mpd",
+              "is_drm_protected": true,
+              "drm_keys": "your_animax_kid:your_animax_key"
+            }
+          ]
+        },
+        {
+          "Title": "TV5",
+          "SubCategory": "Entertainment",
+          "Country": "🇵🇭 PH",
+          "Description": "TV5 is a major Filipino commercial television network based in Mandaluyong City.",
+          "Poster": "https://i.imgur.com/Ufp278A.png",
+          "Thumbnail": "https://i.imgur.com/Ufp278A.png",
+          "Rating": 0,
+          "Duration": "",
+          "Year": 0,
+          "Servers": [
+            {
+              "name": "HD",
+              "url": "https://qp-pldt-live-grp-02-prod.akamaized.net/out/u/tv5_hd.mpd",
+              "is_drm_protected": true,
+              "drm_keys": "2615129ef2c846a9bbd43a641c7303ef:07c7f996b1734ea288641a68e1cfdc4d"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
