@@ -100,7 +100,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FilterSpinner yearSpinner;
 
     private boolean isGridView = true;
-    private boolean isSearchVisible = false;
     private DataRepository dataRepository;
     
     // Pagination variables
@@ -301,14 +300,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    @Override
-    public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
+
 
     private void setupBottomNavigation() {
         // Set up navigation change listener
@@ -403,8 +395,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 currentCategory = ""; // Clear category when filtering
                 
                 // Hide search bar if visible
-                if (isSearchVisible) {
-                    hideSearchBar();
+                if (relative_layout_home_activity_search_section.getVisibility() == View.VISIBLE) {
+                    relative_layout_home_activity_search_section.setVisibility(View.GONE);
+                    edit_text_home_activity_search.setText("");
                 }
                 
                 loadPage(); // Use loadPage() which will automatically route to filtered data
