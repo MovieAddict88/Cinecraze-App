@@ -1,0 +1,68 @@
+{
+  "Categories": [
+    {
+      "MainCategory": "Live TV",
+      "SubCategories": ["Entertainment"],
+      "Entries": [
+        {
+          "Title": "HBO Family Asia",
+          "SubCategory": "Movies",
+          "Country": "🌐 Asia",
+          "Description": "HBO Family Asia is a pay television network that features family-friendly movies.",
+          "Poster": "https://i.imgur.com/5krGyOX.png",
+          "Thumbnail": "https://i.imgur.com/5krGyOX.png",
+          "Rating": 0,
+          "Duration": "",
+          "Year": 0,
+          "Servers": [
+            {
+              "name": "HD",
+              "url": "https://qp-pldt-live-grp-03-prod.akamaized.net/out/u/cg_hbofam.mpd",
+              "is_drm_protected": true,
+              "drm_kid": "872910C8-4329-4319-800D-85F9A0940607",
+              "drm_key": "your_decryption_key_here",
+              "license_url": "https://your-license-server.com/license"
+            }
+          ]
+        },
+        {
+          "Title": "One Sport+",
+          "SubCategory": "Sports",
+          "Country": "🇵🇭 Philippines",
+          "Description": "One Sports+ is a Filipino pay television channel.",
+          "Poster": "https://i.imgur.com/cb9Hp32.png",
+          "Thumbnail": "https://i.imgur.com/cb9Hp32.png",
+          "Rating": 0,
+          "Duration": "",
+          "Year": 0,
+          "Servers": [
+            {
+              "name": "HD",
+              "url": "https://qp-pldt-live-grp-03-prod.akamaized.net/out/u/cg_onesportsplus_hd1.mpd",
+              "is_drm_protected": true,
+              "drm_kid": "322D06E9-326F-4753-A7EC-0908030C13D8",
+              "drm_key": "your_decryption_key_here",
+              "license_url": "https://your-license-server.com/license"
+            }
+          ]
+        },
+        {
+          "Title": "Regular Video",
+          "SubCategory": "Movies",
+          "Country": "🌐 Global",
+          "Description": "Non-DRM protected content",
+          "Poster": "https://example.com/poster.jpg",
+          "Thumbnail": "https://example.com/thumb.jpg",
+          "Rating": 8.5,
+          "Servers": [
+            {
+              "name": "720p",
+              "url": "https://archive.org/download/sample/video.mp4",
+              "is_drm_protected": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

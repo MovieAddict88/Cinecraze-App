@@ -298,11 +298,30 @@ public class DetailsActivity extends AppCompatActivity {
         }
         return null;
     }
+
+    private Server getCurrentServer() {
+        List<Server> servers = getCurrentServers();
+        if (servers != null && currentServerIndex < servers.size()) {
+            return servers.get(currentServerIndex);
+        }
+        return null;
+    }
     
     private void playCurrentVideo() {
         String videoUrl = getCurrentVideoUrl();
         if (videoUrl != null) {
-            MediaItem mediaItem = MediaItem.fromUri(videoUrl);
+            // Get current server for DRM information
+            Server currentServer = getCurrentServer();
+            MediaItem mediaItem;
+            
+            if (currentServer != null && currentServer.isDrmProtected()) {
+                // Use DRM helper for protected content
+                mediaItem = DrmHelper.createMediaItem(currentServer);
+            } else {
+                // Regular content without DRM
+                mediaItem = MediaItem.fromUri(videoUrl);
+            }
+            
             player.setMediaItem(mediaItem);
             player.prepare();
             player.play();

@@ -107,6 +107,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
+        // Initialize DRM keys
+        LocalLicenseServer.initializeKeys();
+        
         Log.d("MainActivity", "Starting TRUE pagination implementation");
         
         // Set up our custom toolbar
