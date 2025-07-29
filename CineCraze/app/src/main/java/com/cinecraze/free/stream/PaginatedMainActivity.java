@@ -27,7 +27,7 @@ import com.cinecraze.free.stream.models.Playlist;
 import com.cinecraze.free.stream.net.ApiService;
 import com.cinecraze.free.stream.net.RetrofitClient;
 import com.cinecraze.free.stream.repository.DataRepository;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.gauravk.bubblenavigation.BubbleNavigationConstraintView;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class PaginatedMainActivity extends AppCompatActivity implements Paginate
     private CarouselAdapter carouselAdapter;
     private ImageView gridViewIcon;
     private ImageView listViewIcon;
-    private BottomNavigationView bottomNavigationView;
+    private BubbleNavigationConstraintView bottomNavigationView;
     private ImageView searchIcon;
     private ImageView closeSearchIcon;
     private LinearLayout titleLayout;
@@ -87,7 +87,7 @@ public class PaginatedMainActivity extends AppCompatActivity implements Paginate
         carouselViewPager = findViewById(R.id.carousel_view_pager);
         gridViewIcon = findViewById(R.id.grid_view_icon);
         listViewIcon = findViewById(R.id.list_view_icon);
-        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        bottomNavigationView = (BubbleNavigationConstraintView) findViewById(R.id.bottom_navigation);
         searchIcon = findViewById(R.id.search_icon);
         closeSearchIcon = findViewById(R.id.close_search_icon);
         titleLayout = findViewById(R.id.title_layout);
@@ -125,24 +125,21 @@ public class PaginatedMainActivity extends AppCompatActivity implements Paginate
     }
 
     private void setupBottomNavigation() {
-        // Set up navigation item selected listener
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+        // Set up navigation change listener
+        bottomNavigationView.setNavigationChangeListener((view, position) -> {
             // Handle navigation item selection
             String category = "";
-            int itemId = item.getItemId();
-            
-            if (itemId == R.id.nav_home) {
+            if (position == 0) {
                 category = "";
-            } else if (itemId == R.id.nav_movies) {
+            } else if (position == 1) {
                 category = "Movies";
-            } else if (itemId == R.id.nav_series) {
+            } else if (position == 2) {
                 category = "TV Shows";
-            } else if (itemId == R.id.nav_live) {
+            } else if (position == 3) {
                 category = "Live";
             }
             
             filterByCategory(category);
-            return true;
         });
     }
 
