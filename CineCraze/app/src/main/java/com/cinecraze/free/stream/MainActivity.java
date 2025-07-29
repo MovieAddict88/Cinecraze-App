@@ -114,96 +114,68 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        try {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_main);
-            
-            Log.d("MainActivity", "Starting TRUE pagination implementation");
-            
-            // Set up our custom toolbar
-            Toolbar toolbar = findViewById(R.id.toolbar);
-            if (toolbar != null) {
-                setSupportActionBar(toolbar);
-                if (getSupportActionBar() != null) {
-                    getSupportActionBar().setDisplayShowTitleEnabled(false);
-                }
-            }
-
-            initializeViews();
-            setupRecyclerView();
-            setupCarousel();
-            setupBottomNavigation();
-            setupViewSwitch();
-            setupSearchToggle();
-            setupFilterSpinners();
-
-            // Initialize repository
-            try {
-                dataRepository = new DataRepository(this);
-            } catch (Exception e) {
-                Log.e("MainActivity", "Error initializing DataRepository: " + e.getMessage(), e);
-                Toast.makeText(this, "Error initializing data repository", Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            // Load ONLY first page - this is the key difference!
-            loadInitialDataFast();
-            
-        } catch (Exception e) {
-            Log.e("MainActivity", "Critical error in onCreate: " + e.getMessage(), e);
-            Toast.makeText(this, "Error initializing app", Toast.LENGTH_LONG).show();
-            // Try to show a basic error screen
-            try {
-                setContentView(R.layout.activity_error);
-            } catch (Exception ex) {
-                Log.e("MainActivity", "Failed to show error screen: " + ex.getMessage(), ex);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        
+        Log.d("MainActivity", "Starting TRUE pagination implementation");
+        
+        // Set up our custom toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayShowTitleEnabled(false);
             }
         }
+
+        initializeViews();
+        setupRecyclerView();
+        setupCarousel();
+        setupBottomNavigation();
+        setupViewSwitch();
+        setupSearchToggle();
+        setupFilterSpinners();
+
+        // Initialize repository
+        dataRepository = new DataRepository(this);
+
+        // Load ONLY first page - this is the key difference!
+        loadInitialDataFast();
     }
 
     private void initializeViews() {
-        try {
-            recyclerView = findViewById(R.id.recycler_view);
-            carouselViewPager = findViewById(R.id.carousel_view_pager);
-            gridViewIcon = findViewById(R.id.grid_view_icon);
-            listViewIcon = findViewById(R.id.list_view_icon);
-            bottomNavigationView = (BubbleNavigationConstraintView) findViewById(R.id.bottom_navigation);
-            searchIcon = findViewById(R.id.search_icon);
-            closeSearchIcon = findViewById(R.id.close_search_icon);
-            backSearchIcon = findViewById(R.id.back_search_icon);
-            titleLayout = findViewById(R.id.title_layout);
-            searchLayout = findViewById(R.id.search_layout);
-            searchBar = findViewById(R.id.search_bar);
-            
-            // Initialize navigation drawer elements
-            drawerLayout = findViewById(R.id.drawer_layout);
-            navigationView = findViewById(R.id.nav_view);
-            
-            // Initialize pagination UI elements
-            paginationLayout = findViewById(R.id.pagination_layout);
-            btnPrevious = findViewById(R.id.btn_previous);
-            btnNext = findViewById(R.id.btn_next);
-            
-            // Initialize filter UI elements
-            btnGenreFilter = findViewById(R.id.btn_genre_filter);
-            btnCountryFilter = findViewById(R.id.btn_country_filter);
-            btnYearFilter = findViewById(R.id.btn_year_filter);
-            
-            // Set up pagination button listeners with null checks
-            if (btnPrevious != null) {
-                btnPrevious.setOnClickListener(v -> onPreviousPage());
-            }
-            if (btnNext != null) {
-                btnNext.setOnClickListener(v -> onNextPage());
-            }
-            
-            // Set up navigation drawer
-            setupNavigationDrawer();
-            
-        } catch (Exception e) {
-            Log.e("MainActivity", "Error initializing views: " + e.getMessage(), e);
-            Toast.makeText(this, "Error initializing app", Toast.LENGTH_SHORT).show();
-        }
+        recyclerView = findViewById(R.id.recycler_view);
+        carouselViewPager = findViewById(R.id.carousel_view_pager);
+        gridViewIcon = findViewById(R.id.grid_view_icon);
+        listViewIcon = findViewById(R.id.list_view_icon);
+        bottomNavigationView = (BubbleNavigationConstraintView) findViewById(R.id.bottom_navigation);
+        searchIcon = findViewById(R.id.search_icon);
+        closeSearchIcon = findViewById(R.id.close_search_icon);
+        backSearchIcon = findViewById(R.id.back_search_icon);
+        titleLayout = findViewById(R.id.title_layout);
+        searchLayout = findViewById(R.id.search_layout);
+        searchBar = findViewById(R.id.search_bar);
+        
+        // Initialize navigation drawer elements
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
+        
+        // Initialize pagination UI elements
+        paginationLayout = findViewById(R.id.pagination_layout);
+        btnPrevious = findViewById(R.id.btn_previous);
+        btnNext = findViewById(R.id.btn_next);
+        
+        // Initialize filter UI elements
+        btnGenreFilter = findViewById(R.id.btn_genre_filter);
+        btnCountryFilter = findViewById(R.id.btn_country_filter);
+        btnYearFilter = findViewById(R.id.btn_year_filter);
+        
+        // Set up pagination button listeners
+        btnPrevious.setOnClickListener(v -> onPreviousPage());
+        btnNext.setOnClickListener(v -> onNextPage());
+        
+        // Set up navigation drawer
+        setupNavigationDrawer();
     }
 
     private void setupRecyclerView() {
@@ -309,20 +281,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void setupNavigationDrawer() {
-        try {
-            if (drawerLayout != null && navigationView != null) {
-                // Set up the ActionBarDrawerToggle
-                drawerToggle = new ActionBarDrawerToggle(
-                    this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-                drawerLayout.addDrawerListener(drawerToggle);
-                drawerToggle.syncState();
+        // Set up the ActionBarDrawerToggle
+        drawerToggle = new ActionBarDrawerToggle(
+            this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(drawerToggle);
+        drawerToggle.syncState();
 
-                // Set up navigation view listener
-                navigationView.setNavigationItemSelectedListener(this);
-            }
-        } catch (Exception e) {
-            Log.e("MainActivity", "Error setting up navigation drawer: " + e.getMessage(), e);
-        }
+        // Set up navigation view listener
+        navigationView.setNavigationItemSelectedListener(this);
     }
 
     private void setupSearchToggle() {
