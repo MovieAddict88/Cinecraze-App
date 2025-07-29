@@ -258,6 +258,7 @@ public class MainActivity extends AppCompatActivity {
                         performSearch(query);
                     } else if (query.isEmpty()) {
                         clearSearch();
+                        loadPage();
                     }
                 };
                 handler.postDelayed(runnable, 300); // 300ms delay
@@ -307,6 +308,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void performSearch(String query) {
         currentSearchQuery = query.trim();
+        currentPage = 0;
+        loadPage();
         loadSearchResults();
     }
 
