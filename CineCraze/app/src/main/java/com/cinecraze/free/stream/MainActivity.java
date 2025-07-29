@@ -102,6 +102,9 @@ public class MainActivity extends AppCompatActivity {
     private String currentCountryFilter = null;
     private String currentYearFilter = null;
 
+    private SearchSuggestionAdapter searchSuggestionAdapter;
+    private List<Entry> allEntries = new ArrayList<>(); // Store all entries for suggestions
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -144,6 +147,11 @@ public class MainActivity extends AppCompatActivity {
         titleLayout = findViewById(R.id.title_layout);
         searchLayout = findViewById(R.id.search_layout);
         searchBar = findViewById(R.id.search_bar);
+
+        // Initialize search suggestion adapter after searchBar is initialized
+        searchSuggestionAdapter = new SearchSuggestionAdapter(this, allEntries);
+        searchBar.setAdapter(searchSuggestionAdapter);
+        searchBar.setThreshold(1);
         
         // Initialize pagination UI elements
         paginationLayout = findViewById(R.id.pagination_layout);
@@ -245,6 +253,14 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(android.text.Editable s) {}
+        });
+
+        searchBar.setOnItemClickListener((parent, view, position, id) -> {
+            Entry selectedEntry = searchSuggestionAdapter.getItem(position);
+            if (selectedEntry != null) {
+                // Start DetailsActivity and play the selected entry
+                DetailsActivity.start(MainActivity.this, selectedEntry, allEntries);
+            }
         });
     }
 
@@ -419,6 +435,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void updateSearchSuggestions(String query) {
+        // This method is no longer needed as updateAllEntries handles suggestions
+    }
+
     /**
      * FAST INITIAL LOAD - Only checks if cache exists, doesn't load all data
      */
@@ -434,6 +454,9 @@ public class MainActivity extends AppCompatActivity {
                 loadFirstPageOnly();
                 setupCarouselFast();
                 populateFilterSpinners(); // Populate filter spinners with data from cache
+                allEntries.clear(); // Clear previous entries
+                allEntries.addAll(entries); // Add all entries to the list for suggestions
+                searchSuggestionAdapter.updateAllEntries(allEntries);
             }
             
             @Override
