@@ -350,12 +350,12 @@ public class DetailsActivity extends AppCompatActivity {
             fallbackKid = null;
             fallbackKey = null;
             if (videoUrl != null) {
+                String kid = null;
+                String key = null;
                 if ((server.isDrmProtected() && server.getDrmKid() != null && server.getDrmKey() != null && videoUrl.endsWith(".mpd")) ||
                     (server.getLicense() != null && server.getLicense().contains(":") && videoUrl.endsWith(".mpd"))) {
                     try {
                         // Support both separate kid/key and combined license field
-                        String kid = null;
-                        String key = null;
                         if (server.getLicense() != null && server.getLicense().contains(":")) {
                             String[] parts = server.getLicense().split(":");
                             if (parts.length == 2) {
