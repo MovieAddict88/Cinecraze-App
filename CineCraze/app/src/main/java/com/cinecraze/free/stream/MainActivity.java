@@ -131,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Load ONLY first page - this is the key difference!
         loadInitialDataFast();
+        updateHomeUIVisibility(); // Ensure correct visibility on launch
     }
 
     private void initializeViews() {
@@ -395,6 +396,7 @@ public class MainActivity extends AppCompatActivity {
         currentSearchQuery = "";
         clearAllFilters(); // Clear filters when switching categories
         loadPage();
+        updateHomeUIVisibility(); // Update UI visibility when category changes
     }
     
     private void clearAllFilters() {
@@ -676,5 +678,15 @@ public class MainActivity extends AppCompatActivity {
             Log.e("MainActivity", "Error handling back press: " + e.getMessage(), e);
             super.onBackPressed();
         }
+    }
+
+    private void updateHomeUIVisibility() {
+        boolean isHome = currentCategory == null || currentCategory.isEmpty();
+        if (carouselViewPager != null) carouselViewPager.setVisibility(isHome ? View.VISIBLE : View.GONE);
+        if (btnGenreFilter != null) btnGenreFilter.setVisibility(isHome ? View.VISIBLE : View.GONE);
+        if (btnCountryFilter != null) btnCountryFilter.setVisibility(isHome ? View.VISIBLE : View.GONE);
+        if (btnYearFilter != null) btnYearFilter.setVisibility(isHome ? View.VISIBLE : View.GONE);
+        if (gridViewIcon != null) gridViewIcon.setVisibility(isHome ? View.VISIBLE : View.GONE);
+        if (listViewIcon != null) listViewIcon.setVisibility(isHome ? View.VISIBLE : View.GONE);
     }
 }
