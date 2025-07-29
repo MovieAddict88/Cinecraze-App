@@ -10,11 +10,32 @@ public class Server {
     @SerializedName("url")
     private String url;
 
+    @SerializedName("is_drm_protected")
+    private boolean isDrmProtected;
+
+    @SerializedName("drm_kid")
+    private String drmKid;
+
+    @SerializedName("drm_key")
+    private String drmKey;
+
     public String getName() {
         return name;
     }
 
     public String getUrl() {
         return url;
+    }
+
+    public boolean isDrmProtected() {
+        return isDrmProtected;
+    }
+
+    public String getDrmKid() {
+        return drmKid;
+    }
+
+    public String getDrmKey() {
+        return drmKey;
     }
 }

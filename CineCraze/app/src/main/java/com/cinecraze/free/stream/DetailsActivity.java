@@ -300,13 +300,53 @@ public class DetailsActivity extends AppCompatActivity {
     }
     
     private void playCurrentVideo() {
-        String videoUrl = getCurrentVideoUrl();
-        if (videoUrl != null) {
-            MediaItem mediaItem = MediaItem.fromUri(videoUrl);
-            player.setMediaItem(mediaItem);
-            player.prepare();
-            player.play();
+        List<Server> servers = getCurrentServers();
+        if (servers != null && currentServerIndex < servers.size()) {
+            Server server = servers.get(currentServerIndex);
+            String videoUrl = server.getUrl();
+            if (videoUrl != null) {
+                MediaItem mediaItem;
+                if (server.isDrmProtected() && server.getDrmKid() != null && server.getDrmKey() != null) {
+                    // Build clearkey JSON
+                    String kid = server.getDrmKid();
+                    String key = server.getDrmKey();
+                    // Convert hex to base64 for clearkey JSON
+                    String kidB64 = android.util.Base64.encodeToString(hexStringToByteArray(kid), android.util.Base64.NO_WRAP);
+                    String keyB64 = android.util.Base64.encodeToString(hexStringToByteArray(key), android.util.Base64.NO_WRAP);
+                    String clearkeyJson = "{\"keys\":[{\"kty\":\"oct\",\"kid\":\"" + kidB64 + "\",\"k\":\"" + keyB64 + "\"}],\"type\":\"temporary\"}";
+                    MediaItem.DrmConfiguration drmConfig = new MediaItem.DrmConfiguration.Builder(androidx.media3.common.C.CLEARKEY_UUID)
+                        .setKeySetId(null)
+                        .setLicenseUri("") // Not needed for clearkey
+                        .setMultiSession(false)
+                        .setForceDefaultLicenseUri(false)
+                        .setLicenseRequestHeaders(null)
+                        .setSessionForClearTypes(false)
+                        .setPlayClearContentWithoutKey(true)
+                        .setCustomData(clearkeyJson.getBytes())
+                        .build();
+                    mediaItem = new MediaItem.Builder()
+                        .setUri(videoUrl)
+                        .setDrmConfiguration(drmConfig)
+                        .build();
+                } else {
+                    mediaItem = MediaItem.fromUri(videoUrl);
+                }
+                player.setMediaItem(mediaItem);
+                player.prepare();
+                player.play();
+            }
         }
+    }
+
+    // Helper to convert hex string to byte array
+    private static byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+                                 + Character.digit(s.charAt(i+1), 16));
+        }
+        return data;
     }
 
     private void setupEpisodeNavigationButtons() {
