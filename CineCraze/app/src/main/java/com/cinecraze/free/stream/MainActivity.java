@@ -251,6 +251,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(android.text.Editable s) {}
         });
+
+        searchBar.setOnItemClickListener((parent, view, position, id) -> {
+            Entry selectedEntry = searchSuggestionAdapter.getItem(position);
+            if (selectedEntry != null) {
+                // Start DetailsActivity and play the selected entry
+                DetailsActivity.start(MainActivity.this, selectedEntry, allEntries);
+            }
+        });
     }
 
     private void showSearchBar() {
