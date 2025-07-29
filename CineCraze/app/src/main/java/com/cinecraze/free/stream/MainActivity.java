@@ -145,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
         loadInitialDataFast();
         updateHomeUIVisibility(); // Ensure correct visibility on launch
         setupFloatingFilter(); // Setup floating filter logic
+        updateFloatingFilterVisibilityAndColor(); // Set initial floating filter state
     }
 
     private void initializeViews() {
@@ -416,6 +417,7 @@ public class MainActivity extends AppCompatActivity {
         clearAllFilters(); // Clear filters when switching categories
         loadPage();
         updateHomeUIVisibility(); // Update UI visibility when category changes
+        updateFloatingFilterVisibilityAndColor(); // Show/hide and recolor floating filter
     }
     
     private void clearAllFilters() {
@@ -709,6 +711,21 @@ public class MainActivity extends AppCompatActivity {
         if (listViewIcon != null) listViewIcon.setVisibility(isHome ? View.VISIBLE : View.GONE);
     }
 
+    private void updateFloatingFilterVisibilityAndColor() {
+        // Only show for Movies, Series, Live TV
+        boolean showFloating = "Movies".equals(currentCategory) || "TV Series".equals(currentCategory) || "Live TV".equals(currentCategory);
+        if (floatingFilterButton != null) floatingFilterButton.setVisibility(showFloating ? View.VISIBLE : View.GONE);
+        if (floatingFilterPanel != null && !showFloating) floatingFilterPanel.setVisibility(View.GONE);
+        // Set color based on category
+        if (floatingFilterButton != null) {
+            int colorRes = R.color.badge_default;
+            if ("Movies".equals(currentCategory)) colorRes = R.color.badge_movies;
+            else if ("TV Series".equals(currentCategory)) colorRes = R.color.badge_series;
+            else if ("Live TV".equals(currentCategory)) colorRes = R.color.badge_live_tv;
+            floatingFilterButton.setBackgroundTintList(android.content.res.ColorStateList.valueOf(getResources().getColor(colorRes)));
+        }
+    }
+
     private void setupFloatingFilter() {
         // Show panel, hide button
         floatingFilterButton.setOnClickListener(v -> {
@@ -728,13 +745,6 @@ public class MainActivity extends AppCompatActivity {
         ArrayAdapter<String> genreAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, genres);
         genreAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerFloatingFilterGenre.setAdapter(genreAdapter);
-        // Order options
-        List<String> orders = new ArrayList<>();
-        orders.add("Newest");
-        orders.add("Top Rated");
-        ArrayAdapter<String> orderAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, orders);
-        orderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerFloatingFilterOrder.setAdapter(orderAdapter);
         // Year options
         List<String> years = new ArrayList<>();
         years.add("All Years");
