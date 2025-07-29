@@ -27,7 +27,7 @@ import com.cinecraze.free.stream.models.Playlist;
 import com.cinecraze.free.stream.net.ApiService;
 import com.cinecraze.free.stream.net.RetrofitClient;
 import com.cinecraze.free.stream.repository.DataRepository;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.gauravk.bubblenavigation.BubbleNavigationConstraintView;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class PaginatedMainActivity extends AppCompatActivity implements Paginate
     private CarouselAdapter carouselAdapter;
     private ImageView gridViewIcon;
     private ImageView listViewIcon;
-    private BottomNavigationView bottomNavigationView;
+    private BubbleNavigationConstraintView bottomNavigationView;
     private ImageView searchIcon;
     private ImageView closeSearchIcon;
     private LinearLayout titleLayout;
@@ -125,24 +125,20 @@ public class PaginatedMainActivity extends AppCompatActivity implements Paginate
     }
 
     private void setupBottomNavigation() {
-        bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                // Handle navigation item selection
-                String category = "";
-                if (item.getItemId() == R.id.nav_movies) {
-                    category = "Movies";
-                } else if (item.getItemId() == R.id.nav_series) {
-                    category = "TV Shows";
-                } else if (item.getItemId() == R.id.nav_home) {
-                    category = "";
-                } else if (item.getItemId() == R.id.nav_live) {
-                    category = "Live";
-                }
-                
-                filterByCategory(category);
-                return true;
+        bottomNavigationView.setNavigationChangeListener((view, position) -> {
+            // Handle navigation item selection
+            String category = "";
+            if (position == 0) {
+                category = "";
+            } else if (position == 1) {
+                category = "Movies";
+            } else if (position == 2) {
+                category = "TV Shows";
+            } else if (position == 3) {
+                category = "Live";
             }
+            
+            filterByCategory(category);
         });
     }
 

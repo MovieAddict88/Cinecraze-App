@@ -27,7 +27,7 @@ import com.cinecraze.free.stream.models.Playlist;
 import com.cinecraze.free.stream.net.ApiService;
 import com.cinecraze.free.stream.net.RetrofitClient;
 import com.cinecraze.free.stream.repository.DataRepository;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.gauravk.bubblenavigation.BubbleNavigationConstraintView;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ public class MainActivityOld extends AppCompatActivity {
     private CarouselAdapter carouselAdapter;
     private ImageView gridViewIcon;
     private ImageView listViewIcon;
-    private BottomNavigationView bottomNavigationView;
+    private BubbleNavigationConstraintView bottomNavigationView;
     private ImageView searchIcon;
     private ImageView closeSearchIcon;
     private LinearLayout titleLayout;
@@ -115,26 +115,25 @@ public class MainActivityOld extends AppCompatActivity {
     }
 
     private void setupBottomNavigation() {
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+        bottomNavigationView.setNavigationChangeListener((view, position) -> {
             try {
                 // Hide search bar when navigating
                 if (isSearchVisible) {
                     hideSearchBar();
                 }
                 
-                if (item.getItemId() == R.id.nav_home) {
+                if (position == 0) {
                     filterEntries("");
-                } else if (item.getItemId() == R.id.nav_movies) {
+                } else if (position == 1) {
                     filterEntries("Movies");
-                } else if (item.getItemId() == R.id.nav_series) {
+                } else if (position == 2) {
                     filterEntries("TV Series");
-                } else if (item.getItemId() == R.id.nav_live) {
+                } else if (position == 3) {
                     filterEntries("Live TV");
                 }
             } catch (Exception e) {
                 Log.e("MainActivity", "Error handling navigation: " + e.getMessage(), e);
             }
-            return true;
         });
     }
 
