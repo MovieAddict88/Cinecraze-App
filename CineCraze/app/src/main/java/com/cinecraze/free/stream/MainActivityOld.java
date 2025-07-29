@@ -115,6 +115,12 @@ public class MainActivityOld extends AppCompatActivity {
     }
 
     private void setupBottomNavigation() {
+        // Add navigation items programmatically
+        bottomNavigationView.addBubbleNavigationItem("Home", R.drawable.ic_home, 0);
+        bottomNavigationView.addBubbleNavigationItem("Movies", R.drawable.ic_movie, 1);
+        bottomNavigationView.addBubbleNavigationItem("Series", R.drawable.ic_series, 2);
+        bottomNavigationView.addBubbleNavigationItem("Live", R.drawable.ic_live, 3);
+        
         bottomNavigationView.setNavigationChangeListener((view, position) -> {
             try {
                 // Hide search bar when navigating

@@ -134,11 +134,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@color/white"
-        app:bnc_badgeMode="hide"
-        app:bnc_elevation="8dp"
-        app:bnc_type="fixed"
-        app:bnc_menu="@menu/bubble_navigation_menu" />
+        android:background="@color/white" />
 
     <ProgressBar
         android:id="@+id/progress_bar"
