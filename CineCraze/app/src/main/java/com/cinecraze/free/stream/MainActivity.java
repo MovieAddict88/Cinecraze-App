@@ -144,6 +144,15 @@ public class MainActivity extends AppCompatActivity {
         titleLayout = findViewById(R.id.title_layout);
         searchLayout = findViewById(R.id.search_layout);
         searchBar = findViewById(R.id.search_bar);
+
+        // Null checks for critical views
+        if (gridViewIcon == null) Log.e("MainActivity", "gridViewIcon is null!");
+        if (listViewIcon == null) Log.e("MainActivity", "listViewIcon is null!");
+        if (searchIcon == null) Log.e("MainActivity", "searchIcon is null!");
+        if (closeSearchIcon == null) Log.e("MainActivity", "closeSearchIcon is null!");
+        if (titleLayout == null) Log.e("MainActivity", "titleLayout is null!");
+        if (searchLayout == null) Log.e("MainActivity", "searchLayout is null!");
+        if (searchBar == null) Log.e("MainActivity", "searchBar is null!");
         
         // Initialize pagination UI elements
         paginationLayout = findViewById(R.id.pagination_layout);
@@ -196,19 +205,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupViewSwitch() {
-        gridViewIcon.setOnClickListener(v -> {
-            if (!isGridView) {
-                isGridView = true;
-                updateViewMode();
-            }
-        });
-
-        listViewIcon.setOnClickListener(v -> {
-            if (isGridView) {
-                isGridView = false;
-                updateViewMode();
-            }
-        });
+        if (gridViewIcon != null) {
+            gridViewIcon.setOnClickListener(v -> {
+                if (!isGridView) {
+                    isGridView = true;
+                    updateViewMode();
+                }
+            });
+        } else {
+            Log.e("MainActivity", "gridViewIcon is null in setupViewSwitch!");
+        }
+        if (listViewIcon != null) {
+            listViewIcon.setOnClickListener(v -> {
+                if (isGridView) {
+                    isGridView = false;
+                    updateViewMode();
+                }
+            });
+        } else {
+            Log.e("MainActivity", "listViewIcon is null in setupViewSwitch!");
+        }
     }
 
     private void updateViewMode() {
