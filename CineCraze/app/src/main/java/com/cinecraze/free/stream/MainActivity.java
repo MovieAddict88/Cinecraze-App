@@ -10,6 +10,8 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 import android.util.Log;
 
@@ -84,6 +86,13 @@ public class MainActivity extends AppCompatActivity {
     private FilterSpinner countrySpinner;
     private FilterSpinner yearSpinner;
 
+    // Floating filter UI elements
+    private RelativeLayout floatingFilterButton;
+    private androidx.cardview.widget.CardView floatingFilterPanel;
+    private android.widget.Spinner spinnerFloatingFilterGenre;
+    private android.widget.Spinner spinnerFloatingFilterOrder;
+    private ImageView imageViewFloatingFilterClose;
+
     private boolean isGridView = true;
     private boolean isSearchVisible = false;
     private DataRepository dataRepository;
@@ -132,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
         // Load ONLY first page - this is the key difference!
         loadInitialDataFast();
         updateHomeUIVisibility(); // Ensure correct visibility on launch
+        setupFloatingFilter(); // Setup floating filter logic
     }
 
     private void initializeViews() {
@@ -156,9 +166,12 @@ public class MainActivity extends AppCompatActivity {
         btnCountryFilter = findViewById(R.id.btn_country_filter);
         btnYearFilter = findViewById(R.id.btn_year_filter);
         
-        // Set up pagination button listeners
-        btnPrevious.setOnClickListener(v -> onPreviousPage());
-        btnNext.setOnClickListener(v -> onNextPage());
+        // Floating filter
+        floatingFilterButton = findViewById(R.id.relative_layout_floating_filter_button);
+        floatingFilterPanel = findViewById(R.id.card_view_floating_filter_panel);
+        spinnerFloatingFilterGenre = findViewById(R.id.spinner_floating_filter_genre);
+        spinnerFloatingFilterOrder = findViewById(R.id.spinner_floating_filter_order);
+        imageViewFloatingFilterClose = findViewById(R.id.image_view_floating_filter_close);
     }
 
     private void setupRecyclerView() {
@@ -688,5 +701,50 @@ public class MainActivity extends AppCompatActivity {
         if (btnYearFilter != null) btnYearFilter.setVisibility(isHome ? View.VISIBLE : View.GONE);
         if (gridViewIcon != null) gridViewIcon.setVisibility(isHome ? View.VISIBLE : View.GONE);
         if (listViewIcon != null) listViewIcon.setVisibility(isHome ? View.VISIBLE : View.GONE);
+    }
+
+    private void setupFloatingFilter() {
+        // Show panel, hide button
+        floatingFilterButton.setOnClickListener(v -> {
+            floatingFilterPanel.setVisibility(View.VISIBLE);
+            floatingFilterButton.setVisibility(View.INVISIBLE);
+        });
+        // Hide panel, show button
+        imageViewFloatingFilterClose.setOnClickListener(v -> {
+            floatingFilterPanel.setVisibility(View.GONE);
+            floatingFilterButton.setVisibility(View.VISIBLE);
+        });
+        // Example: populate genre/order spinners (replace with real data)
+        List<String> genres = new ArrayList<>();
+        genres.add("All Genres");
+        genres.add("Action");
+        genres.add("Comedy");
+        genres.add("Drama");
+        ArrayAdapter<String> genreAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, genres);
+        genreAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerFloatingFilterGenre.setAdapter(genreAdapter);
+        List<String> orders = new ArrayList<>();
+        orders.add("Newest");
+        orders.add("Top Rated");
+        ArrayAdapter<String> orderAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, orders);
+        orderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerFloatingFilterOrder.setAdapter(orderAdapter);
+        // Handle filter changes
+        spinnerFloatingFilterGenre.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                // TODO: Apply genre filter logic here
+            }
+            @Override
+            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
+        });
+        spinnerFloatingFilterOrder.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                // TODO: Apply order filter logic here
+            }
+            @Override
+            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
+        });
     }
 }
