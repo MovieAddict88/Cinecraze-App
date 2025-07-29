@@ -134,7 +134,41 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@color/white" />
+        android:background="@color/white">
+        
+        <com.gauravk.bubblenavigation.BubbleToggleView
+            android:id="@+id/nav_home"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:bnc_icon="@drawable/ic_home"
+            app:bnc_title="Home" />
+
+        <com.gauravk.bubblenavigation.BubbleToggleView
+            android:id="@+id/nav_movies"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:bnc_icon="@drawable/ic_movie"
+            app:bnc_title="Movies" />
+
+        <com.gauravk.bubblenavigation.BubbleToggleView
+            android:id="@+id/nav_series"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:bnc_icon="@drawable/ic_series"
+            app:bnc_title="Series" />
+
+        <com.gauravk.bubblenavigation.BubbleToggleView
+            android:id="@+id/nav_live"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:bnc_icon="@drawable/ic_live"
+            app:bnc_title="Live" />
+
+    </com.gauravk.bubblenavigation.BubbleNavigationConstraintView>
 
     <ProgressBar
         android:id="@+id/progress_bar"
