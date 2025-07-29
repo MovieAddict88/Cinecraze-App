@@ -59,7 +59,7 @@ import retrofit2.Response;
  * - Low memory: ~5MB vs 50MB for large datasets
  * - Scalable: Can handle 1000+ items efficiently
  */
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private MovieAdapter movieAdapter;
@@ -76,10 +76,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private LinearLayout searchLayout;
     private AutoCompleteTextView searchBar;
     
-    // Navigation Drawer elements
-    private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
-    private ActionBarDrawerToggle drawerToggle;
+
     
     // Pagination UI elements
     private LinearLayout paginationLayout;
@@ -156,9 +153,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         searchLayout = findViewById(R.id.search_layout);
         searchBar = findViewById(R.id.search_bar);
         
-        // Initialize navigation drawer elements
-        drawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.nav_view);
+        
         
         // Initialize pagination UI elements
         paginationLayout = findViewById(R.id.pagination_layout);
@@ -174,8 +169,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         btnPrevious.setOnClickListener(v -> onPreviousPage());
         btnNext.setOnClickListener(v -> onNextPage());
         
-        // Set up navigation drawer
-        setupNavigationDrawer();
+
     }
 
     private void setupRecyclerView() {
@@ -280,16 +274,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void setupNavigationDrawer() {
-        // Set up the ActionBarDrawerToggle
-        drawerToggle = new ActionBarDrawerToggle(
-            this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayout.addDrawerListener(drawerToggle);
-        drawerToggle.syncState();
 
-        // Set up navigation view listener
-        navigationView.setNavigationItemSelectedListener(this);
-    }
 
     private void setupSearchToggle() {
         try {
@@ -786,51 +771,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        // Handle navigation view item clicks here
-        int id = item.getItemId();
-        
-        if (id == R.id.nav_home) {
-            // Already on home, just close drawer
-        } else if (id == R.id.my_profile) {
-            Toast.makeText(this, "My Profile", Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.my_password) {
-            Toast.makeText(this, "Change Password", Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.login) {
-            Toast.makeText(this, "Login", Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.my_list) {
-            Toast.makeText(this, "My List", Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.logout) {
-            Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.nav_settings) {
-            Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.buy_now) {
-            Toast.makeText(this, "Subscribe", Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.nav_rate) {
-            Toast.makeText(this, "Rate App", Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.nav_share) {
-            Toast.makeText(this, "Share App", Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.nav_help) {
-            Toast.makeText(this, "Support", Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.nav_policy) {
-            Toast.makeText(this, "Privacy Policy", Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.nav_exit) {
-            finish();
-        }
-        
-        // Close the navigation drawer
-        drawerLayout.closeDrawer(GravityCompat.START);
-        return true;
-    }
+
 
     @Override
     public void onBackPressed() {
         try {
-            // Check if navigation drawer is open
-            if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
-                drawerLayout.closeDrawer(GravityCompat.START);
-            } else if ((genreSpinner != null && genreSpinner.isShowing()) ||
+            if ((genreSpinner != null && genreSpinner.isShowing()) ||
                 (countrySpinner != null && countrySpinner.isShowing()) ||
                 (yearSpinner != null && yearSpinner.isShowing())) {
                 dismissAllSpinners();
