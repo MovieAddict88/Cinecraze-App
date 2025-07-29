@@ -57,4 +57,5 @@ dependencies {
     
     // ConstraintLayout support
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'org.nanohttpd:nanohttpd:2.3.1'
 }

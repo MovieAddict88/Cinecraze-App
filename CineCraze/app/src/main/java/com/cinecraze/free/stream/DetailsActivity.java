@@ -48,6 +48,8 @@ import android.widget.Toast;
 import android.webkit.WebView;
 import android.webkit.WebSettings;
 import android.webkit.WebViewClient;
+import com.cinecraze.free.stream.LocalWebServer;
+import java.io.IOException;
 
 public class DetailsActivity extends AppCompatActivity {
 
@@ -89,6 +91,9 @@ public class DetailsActivity extends AppCompatActivity {
     private String fallbackKid = null;
     private String fallbackKey = null;
 
+    private LocalWebServer localWebServer;
+    private int localPort = 8080;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,6 +105,13 @@ public class DetailsActivity extends AppCompatActivity {
         WebSettings webSettings = webViewPlayer.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webViewPlayer.setWebViewClient(new WebViewClient());
+        // Start local web server for fallback
+        localWebServer = new LocalWebServer(this, localPort);
+        try {
+            localWebServer.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         title = findViewById(R.id.title);
         description = findViewById(R.id.description);
         relatedContentRecyclerView = findViewById(R.id.related_content_recycler_view);
@@ -411,8 +423,8 @@ public class DetailsActivity extends AppCompatActivity {
     private void fallbackToWebViewPlayer(String url, String kid, String key) {
         playerView.setVisibility(View.GONE);
         webViewPlayer.setVisibility(View.VISIBLE);
-        // Pass the URL, kid, and key as query params to the HTML asset
-        String htmlUrl = "file:///android_asset/shaka_player.html?url=" + android.net.Uri.encode(url)
+        // Pass the URL, kid, and key as query params to the HTML asset via localhost
+        String htmlUrl = "http://localhost:" + localPort + "/shaka_player.html?url=" + android.net.Uri.encode(url)
                 + "&kid=" + kid + "&key=" + key;
         webViewPlayer.loadUrl(htmlUrl);
     }
@@ -596,6 +608,9 @@ public class DetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        if (localWebServer != null) {
+            localWebServer.stop();
+        }
         super.onDestroy();
         if (player != null) {
             player.release();
