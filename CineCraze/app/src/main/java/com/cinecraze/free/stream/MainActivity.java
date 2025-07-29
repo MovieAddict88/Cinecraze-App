@@ -62,8 +62,6 @@ public class MainActivity extends AppCompatActivity {
     private List<Entry> currentPageEntries = new ArrayList<>();
     private ViewPager2 carouselViewPager;
     private CarouselAdapter carouselAdapter;
-    private ImageView gridViewIcon;
-    private ImageView listViewIcon;
     private BubbleNavigationConstraintView bottomNavigationView;
     private ImageView searchIcon;
     private ImageView closeSearchIcon;
@@ -110,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MainActivity", "Starting TRUE pagination implementation");
         
         // Set up our custom toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             if (getSupportActionBar() != null) {
@@ -122,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
         setupRecyclerView();
         setupCarousel();
         setupBottomNavigation();
-        setupViewSwitch();
         setupSearchToggle();
         setupFilterSpinners();
 
@@ -136,8 +133,6 @@ public class MainActivity extends AppCompatActivity {
     private void initializeViews() {
         recyclerView = findViewById(R.id.recycler_view);
         carouselViewPager = findViewById(R.id.carousel_view_pager);
-        gridViewIcon = findViewById(R.id.grid_view_icon);
-        listViewIcon = findViewById(R.id.list_view_icon);
         bottomNavigationView = (BubbleNavigationConstraintView) findViewById(R.id.bottom_navigation);
         searchIcon = findViewById(R.id.search_icon);
         closeSearchIcon = findViewById(R.id.close_search_icon);
@@ -195,35 +190,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void setupViewSwitch() {
-        gridViewIcon.setOnClickListener(v -> {
-            if (!isGridView) {
-                isGridView = true;
-                updateViewMode();
-            }
-        });
 
-        listViewIcon.setOnClickListener(v -> {
-            if (isGridView) {
-                isGridView = false;
-                updateViewMode();
-            }
-        });
-    }
-
-    private void updateViewMode() {
-        movieAdapter.setGridView(isGridView);
-        
-        if (isGridView) {
-            recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-            gridViewIcon.setVisibility(View.GONE);
-            listViewIcon.setVisibility(View.VISIBLE);
-        } else {
-            recyclerView.setLayoutManager(new LinearLayoutManager(this));
-            gridViewIcon.setVisibility(View.VISIBLE);
-            listViewIcon.setVisibility(View.GONE);
-        }
-    }
+    private Toolbar toolbar;
 
     private void setupSearchToggle() {
         searchIcon.setOnClickListener(v -> showSearchBar());
@@ -675,6 +643,48 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e("MainActivity", "Error handling back press: " + e.getMessage(), e);
             super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(android.view.Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int itemId = item.getItemId();
+        if (itemId == R.id.action_grid_view) {
+            if (!isGridView) {
+                isGridView = true;
+                updateViewMode(item);
+            }
+            return true;
+        } else if (itemId == R.id.action_list_view) {
+            if (isGridView) {
+                isGridView = false;
+                updateViewMode(item);
+            }
+            return true;
+        } else if (itemId == R.id.action_search) {
+            showSearchBar();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void updateViewMode(MenuItem item) {
+        movieAdapter.setGridView(isGridView);
+
+        if (isGridView) {
+            recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+            item.setVisible(false);
+            toolbar.getMenu().findItem(R.id.action_list_view).setVisible(true);
+        } else {
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+            item.setVisible(false);
+            toolbar.getMenu().findItem(R.id.action_grid_view).setVisible(true);
         }
     }
 }
