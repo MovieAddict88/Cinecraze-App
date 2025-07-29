@@ -31,18 +31,16 @@ public class DrmHelper {
      */
     private static DrmConfiguration createDrmConfiguration(Server server) {
         try {
-            // Use ClearKey DRM when you have the actual decryption keys
-            Map<String, String> keyMap = new HashMap<>();
-            
-            // Format the KID and Key properly
-            String formattedKid = formatKeyId(server.getDrmKid());
-            String formattedKey = server.getDrmKey();
-            
-            keyMap.put(formattedKid, formattedKey);
+            // Create ClearKey license JSON
+            String license = createClearKeyLicense(server.getDrmKid(), server.getDrmKey());
+            if (license == null) {
+                return null;
+            }
             
             return new DrmConfiguration.Builder(C.CLEARKEY_UUID)
+                    .setLicenseUri("data:application/json;base64," + 
+                        Base64.encodeToString(license.getBytes(), Base64.NO_WRAP))
                     .setMultiSession(false)
-                    .setForceDefaultLicenseUri(false)
                     .build();
                     
         } catch (Exception e) {
@@ -66,10 +64,10 @@ public class DrmHelper {
     }
 
     /**
-     * Formats Key ID from UUID format to base64url format for ClearKey
+     * Formats Key ID from hex format to base64url format for ClearKey
      */
     private static String formatKeyId(String kid) {
-        // Remove hyphens from UUID format
+        // Remove hyphens if present (UUID format)
         String cleanKid = kid.replace("-", "");
         
         // Convert hex to bytes
@@ -77,6 +75,17 @@ public class DrmHelper {
         
         // Encode to base64url (no padding)
         return Base64.encodeToString(kidBytes, Base64.URL_SAFE | Base64.NO_PADDING);
+    }
+
+    /**
+     * Formats decryption key from hex format to base64url format for ClearKey
+     */
+    private static String formatKey(String key) {
+        // Convert hex to bytes
+        byte[] keyBytes = hexStringToByteArray(key);
+        
+        // Encode to base64url (no padding)
+        return Base64.encodeToString(keyBytes, Base64.URL_SAFE | Base64.NO_PADDING);
     }
 
     /**
@@ -93,14 +102,18 @@ public class DrmHelper {
     }
 
     /**
-     * Creates a custom license request for ClearKey
+     * Creates a ClearKey license JSON for the given KID and key (both in hex format)
      */
     public static String createClearKeyLicense(String kid, String key) {
         try {
+            // Format both KID and key from hex to base64url
+            String formattedKid = formatKeyId(kid);
+            String formattedKey = formatKey(key);
+            
             // ClearKey license format
             String license = String.format(
                 "{\"keys\":[{\"kty\":\"oct\",\"k\":\"%s\",\"kid\":\"%s\"}],\"type\":\"temporary\"}",
-                key, formatKeyId(kid)
+                formattedKey, formattedKid
             );
             return license;
         } catch (Exception e) {
