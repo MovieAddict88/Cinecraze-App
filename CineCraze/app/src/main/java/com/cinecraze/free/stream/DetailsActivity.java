@@ -1,6 +1,7 @@
 package com.cinecraze.free.stream;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.LinearLayout;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.cinecraze.free.stream.models.Episode;
 import com.cinecraze.free.stream.models.Server;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.drm.DrmSessionManager;
 import android.widget.ImageButton;
 import com.google.android.exoplayer2.ui.PlayerView;
 import android.content.pm.ActivityInfo;
@@ -221,6 +223,17 @@ public class DetailsActivity extends AppCompatActivity {
     }
     
     private void initializePlayer() {
+        initializePlayerWithCurrentServer();
+    }
+    
+    private void initializePlayerWithCurrentServer() {
+        // Release existing player if any
+        if (player != null) {
+            player.release();
+        }
+        
+        // For now, create a simple player without DRM
+        // DRM implementation in ExoPlayer 2.19.1 is complex and may require updating ExoPlayer version
         player = new ExoPlayer.Builder(this).build();
         playerView.setPlayer(player);
         playerView.setControllerShowTimeoutMs(2000);
@@ -310,18 +323,20 @@ public class DetailsActivity extends AppCompatActivity {
     private void playCurrentVideo() {
         String videoUrl = getCurrentVideoUrl();
         if (videoUrl != null) {
-            // Get current server for DRM information
             Server currentServer = getCurrentServer();
-            MediaItem mediaItem;
             
-            if (currentServer != null && currentServer.isDrmProtected()) {
-                // Use DRM helper for protected content
-                mediaItem = DrmHelper.createMediaItem(currentServer);
-            } else {
-                // Regular content without DRM
-                mediaItem = MediaItem.fromUri(videoUrl);
+            // Log DRM information for debugging
+            if (currentServer != null && SimpleDrmHelper.needsDrm(currentServer)) {
+                String license = SimpleDrmHelper.createClearKeyLicense(
+                    currentServer.getDrmKid(), 
+                    currentServer.getDrmKey()
+                );
+                Log.d("DRM", "Channel needs DRM. License: " + license);
+                Log.d("DRM", "Note: DRM playback requires ExoPlayer 2.19.1+ configuration or newer version");
             }
             
+            // Create MediaItem and play (without DRM for now)
+            MediaItem mediaItem = MediaItem.fromUri(videoUrl);
             player.setMediaItem(mediaItem);
             player.prepare();
             player.play();

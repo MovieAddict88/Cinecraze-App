@@ -3,7 +3,12 @@ package com.cinecraze.free.stream;
 import android.util.Base64;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.MediaItem;
-import com.google.android.exoplayer2.drm.DrmConfiguration;
+import com.google.android.exoplayer2.drm.DrmInitData;
+import com.google.android.exoplayer2.drm.DrmSessionManager;
+import com.google.android.exoplayer2.drm.DefaultDrmSessionManager;
+import com.google.android.exoplayer2.drm.HttpMediaDrmCallback;
+import com.google.android.exoplayer2.drm.FrameworkMediaDrm;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.cinecraze.free.stream.models.Server;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,14 +17,30 @@ public class DrmHelper {
 
     /**
      * Creates a MediaItem with DRM configuration if the server has DRM protection
+     * For ExoPlayer 2.19.1 compatibility
      */
     public static MediaItem createMediaItem(Server server) {
         MediaItem.Builder builder = new MediaItem.Builder().setUri(server.getUrl());
         
         if (server.isDrmProtected() && server.getDrmKey() != null && server.getDrmKid() != null) {
-            DrmConfiguration drmConfig = createDrmConfiguration(server);
-            if (drmConfig != null) {
-                builder.setDrmConfiguration(drmConfig);
+            // For ExoPlayer 2.19.1, we need to set DRM init data
+            try {
+                String license = createClearKeyLicense(server.getDrmKid(), server.getDrmKey());
+                if (license != null) {
+                    String licenseUri = "data:application/json;base64," + 
+                        Base64.encodeToString(license.getBytes(), Base64.NO_WRAP);
+                    
+                    // Create DRM init data for ClearKey
+                    DrmInitData drmInitData = new DrmInitData(
+                        C.CLEARKEY_UUID,
+                        null, // No scheme data needed for ClearKey
+                        new DrmInitData.SchemeData[0]
+                    );
+                    
+                    builder.setDrmInitData(drmInitData);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         
@@ -27,21 +48,35 @@ public class DrmHelper {
     }
 
     /**
-     * Creates DRM configuration using ClearKey (for cases where you have the actual keys)
+     * Creates DRM session manager for ClearKey (ExoPlayer 2.19.1)
      */
-    private static DrmConfiguration createDrmConfiguration(Server server) {
+    public static DrmSessionManager createClearKeyDrmSessionManager(Server server) {
         try {
-            // Create ClearKey license JSON
+            if (!server.isDrmProtected() || server.getDrmKey() == null || server.getDrmKid() == null) {
+                return null;
+            }
+            
             String license = createClearKeyLicense(server.getDrmKid(), server.getDrmKey());
             if (license == null) {
                 return null;
             }
             
-            return new DrmConfiguration.Builder(C.CLEARKEY_UUID)
-                    .setLicenseUri("data:application/json;base64," + 
-                        Base64.encodeToString(license.getBytes(), Base64.NO_WRAP))
-                    .setMultiSession(false)
-                    .build();
+            String licenseUri = "data:application/json;base64," + 
+                Base64.encodeToString(license.getBytes(), Base64.NO_WRAP);
+            
+            DefaultHttpDataSource.Factory dataSourceFactory = new DefaultHttpDataSource.Factory();
+            HttpMediaDrmCallback drmCallback = new HttpMediaDrmCallback(licenseUri, dataSourceFactory);
+            
+            return new DefaultDrmSessionManager.Builder()
+                    .setUuidAndExoMediaDrmProvider(C.CLEARKEY_UUID, 
+                        uuid -> {
+                            try {
+                                return new FrameworkMediaDrm(uuid);
+                            } catch (Exception e) {
+                                return null;
+                            }
+                        })
+                    .build(drmCallback);
                     
         } catch (Exception e) {
             e.printStackTrace();
@@ -50,17 +85,32 @@ public class DrmHelper {
     }
 
     /**
-     * Creates Widevine DRM configuration (requires license server)
+     * Creates Widevine DRM session manager (requires license server)
      */
-    public static DrmConfiguration createWidevineDrmConfiguration(Server server) {
-        if (server.getLicenseUrl() == null) {
+    public static DrmSessionManager createWidevineDrmSessionManager(Server server) {
+        try {
+            if (server.getLicenseUrl() == null) {
+                return null;
+            }
+            
+            DefaultHttpDataSource.Factory dataSourceFactory = new DefaultHttpDataSource.Factory();
+            HttpMediaDrmCallback drmCallback = new HttpMediaDrmCallback(server.getLicenseUrl(), dataSourceFactory);
+            
+            return new DefaultDrmSessionManager.Builder()
+                    .setUuidAndExoMediaDrmProvider(C.WIDEVINE_UUID, 
+                        uuid -> {
+                            try {
+                                return new FrameworkMediaDrm(uuid);
+                            } catch (Exception e) {
+                                return null;
+                            }
+                        })
+                    .build(drmCallback);
+                    
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
-        
-        return new DrmConfiguration.Builder(C.WIDEVINE_UUID)
-                .setLicenseUri(server.getLicenseUrl())
-                .setMultiSession(false)
-                .build();
     }
 
     /**
