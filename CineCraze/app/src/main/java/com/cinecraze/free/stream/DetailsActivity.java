@@ -95,7 +95,7 @@ public class DetailsActivity extends AppCompatActivity {
     private int localPort = 8080;
 
     // Set this to true to use the remote Shaka Player page as fallback
-    private boolean useRemoteShakaPlayer = false; // Set to true to use remote fallback
+    // private boolean useRemoteShakaPlayer = false; // Set to true to use remote fallback
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -424,10 +424,15 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void fallbackToWebViewPlayer(String url, String kid, String key) {
+        fallbackToWebViewPlayer(url, kid, key, false);
+    }
+
+    // Two-step fallback: try local first, then remote if local fails
+    private void fallbackToWebViewPlayer(String url, String kid, String key, boolean triedRemote) {
         playerView.setVisibility(View.GONE);
         webViewPlayer.setVisibility(View.VISIBLE);
         String htmlUrl;
-        if (useRemoteShakaPlayer) {
+        if (triedRemote) {
             // Use remote Shaka Player page
             htmlUrl = "https://movie-fcs.fwh.is/shakaplayer/?url=" + android.net.Uri.encode(url)
                     + "&kid=" + kid + "&key=" + key;
@@ -436,6 +441,19 @@ public class DetailsActivity extends AppCompatActivity {
             htmlUrl = "http://localhost:" + localPort + "/shaka_player.html?url=" + android.net.Uri.encode(url)
                     + "&kid=" + kid + "&key=" + key;
         }
+        webViewPlayer.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                // If local fails, try remote
+                if (!triedRemote) {
+                    fallbackToWebViewPlayer(url, kid, key, true);
+                }
+            }
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                // Optionally, inject JS to listen for Shaka Player errors and trigger remote fallback
+            }
+        });
         webViewPlayer.loadUrl(htmlUrl);
     }
 
