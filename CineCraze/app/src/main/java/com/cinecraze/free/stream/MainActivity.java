@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -71,6 +72,13 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout searchLayout;
     private AutoCompleteTextView searchBar;
     
+    // Search overlay components
+    private RelativeLayout relative_layout_home_activity_search_section;
+    private android.widget.EditText edit_text_home_activity_search;
+    private ImageView image_view_activity_home_close_search;
+    private ImageView image_view_activity_home_search;
+    private ImageView image_view_activity_actors_back;
+    
     // Pagination UI elements
     private LinearLayout paginationLayout;
     private com.google.android.material.button.MaterialButton btnPrevious;
@@ -124,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
         setupBottomNavigation();
         setupViewSwitch();
         setupSearchToggle();
+        setupSearchOverlay();
         setupFilterSpinners();
 
         // Initialize repository
@@ -154,6 +163,13 @@ public class MainActivity extends AppCompatActivity {
         btnGenreFilter = findViewById(R.id.btn_genre_filter);
         btnCountryFilter = findViewById(R.id.btn_country_filter);
         btnYearFilter = findViewById(R.id.btn_year_filter);
+        
+        // Initialize search overlay components
+        relative_layout_home_activity_search_section = findViewById(R.id.relative_layout_home_activity_search_section);
+        edit_text_home_activity_search = findViewById(R.id.edit_text_home_activity_search);
+        image_view_activity_home_close_search = findViewById(R.id.image_view_activity_home_close_search);
+        image_view_activity_home_search = findViewById(R.id.image_view_activity_home_search);
+        image_view_activity_actors_back = findViewById(R.id.image_view_activity_actors_back);
         
         // Set up pagination button listeners
         btnPrevious.setOnClickListener(v -> onPreviousPage());
@@ -246,6 +262,78 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(android.text.Editable s) {}
         });
+        
+        // Handle search action when user presses enter
+        searchBar.setOnEditorActionListener((v, actionId, event) -> {
+            String query = searchBar.getText().toString().trim();
+            if (query.length() > 0) {
+                launchSearchActivity(query);
+                hideSearchBar();
+            }
+            return true;
+                 });
+    }
+    
+    private void setupSearchOverlay() {
+        // Back button action
+        if (image_view_activity_actors_back != null) {
+            image_view_activity_actors_back.setOnClickListener(v -> {
+                hideSearchOverlay();
+            });
+        }
+        
+        // Close search button action
+        if (image_view_activity_home_close_search != null) {
+            image_view_activity_home_close_search.setOnClickListener(v -> {
+                if (edit_text_home_activity_search != null) {
+                    edit_text_home_activity_search.setText("");
+                }
+            });
+        }
+        
+        // Search button action
+        if (image_view_activity_home_search != null) {
+            image_view_activity_home_search.setOnClickListener(v -> {
+                if (edit_text_home_activity_search != null) {
+                    String query = edit_text_home_activity_search.getText().toString().trim();
+                    if (query.length() > 0) {
+                        launchSearchActivity(query);
+                        hideSearchOverlay();
+                    }
+                }
+            });
+        }
+        
+        // Handle search action when user presses enter in overlay
+        if (edit_text_home_activity_search != null) {
+            edit_text_home_activity_search.setOnEditorActionListener((v, actionId, event) -> {
+                String query = edit_text_home_activity_search.getText().toString().trim();
+                if (query.length() > 0) {
+                    launchSearchActivity(query);
+                    hideSearchOverlay();
+                }
+                return true;
+            });
+        }
+    }
+    
+    private void showSearchOverlay() {
+        if (relative_layout_home_activity_search_section != null) {
+            relative_layout_home_activity_search_section.setVisibility(View.VISIBLE);
+            if (edit_text_home_activity_search != null) {
+                edit_text_home_activity_search.requestFocus();
+            }
+        }
+    }
+    
+    private void hideSearchOverlay() {
+        if (relative_layout_home_activity_search_section != null) {
+            relative_layout_home_activity_search_section.setVisibility(View.GONE);
+            if (edit_text_home_activity_search != null) {
+                edit_text_home_activity_search.setText("");
+                edit_text_home_activity_search.clearFocus();
+            }
+        }
     }
 
     private void showSearchBar() {
@@ -289,6 +377,12 @@ public class MainActivity extends AppCompatActivity {
         currentSearchQuery = query.trim();
         currentPage = 0;
         loadSearchResults();
+    }
+    
+    private void launchSearchActivity(String query) {
+        Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+        intent.putExtra("query", query);
+        startActivity(intent);
     }
 
     private void clearSearch() {
@@ -657,6 +751,24 @@ public class MainActivity extends AppCompatActivity {
         if (currentPageEntries.isEmpty()) {
             loadInitialDataFast();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        
+        if (id == R.id.action_search) {
+            showSearchOverlay();
+            return true;
+        }
+        
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

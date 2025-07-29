@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    android:fitsSystemWindows="true"
+    tools:context=".SearchActivity">
+    
+    <RelativeLayout
+        android:layout_above="@id/linear_layout_ads"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayout"
+            app:elevation="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            
+            <RelativeLayout
+                app:layout_scrollFlags="scroll|enterAlways"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                
+                <androidx.appcompat.widget.Toolbar
+                    app:layout_scrollFlags="scroll|enterAlways"
+                    app:elevation="2dp"
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="@color/black"
+                    style="@style/Widget.MaterialComponents.Toolbar"
+                    app:popupTheme="@style/ThemeOverlay.MaterialComponents.Dark"
+                    />
+            </RelativeLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+        
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/appBarLayout">
+            
+            <RelativeLayout
+                android:layout_above="@+id/relative_layout_movie_activity_controller"
+                android:id="@+id/relative_layout_popular_f"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                
+                <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                    android:id="@+id/swipe_refresh_layout_list_search_search"
+                    android:layout_width="match_parent"
+                    android:layout_height="fill_parent">
+                    
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent">
+                        
+                        <LinearLayout
+                            android:visibility="gone"
+                            android:id="@+id/linear_layout_load_search_activity"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <!-- Loading placeholder can be added here -->
+                            <ProgressBar
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center" />
+                        </LinearLayout>
+                        
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            android:id="@+id/linear_layout_layout_error"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <!-- Error layout -->
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Error loading search results"
+                                android:textColor="@android:color/white"
+                                android:gravity="center"
+                                android:layout_gravity="center" />
+                            <Button
+                                android:id="@+id/button_try_again"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Try Again"
+                                android:layout_gravity="center" />
+                        </LinearLayout>
+                        
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:visibility="visible"
+                            android:id="@+id/recycler_view_activity_search"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:clipToPadding="false"
+                            android:clipChildren="false"
+                            />
+                            
+                        <ImageView
+                            android:visibility="gone"
+                            android:padding="100dp"
+                            app:srcCompat="@drawable/ic_search"
+                            android:id="@+id/image_view_empty_list"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                    </LinearLayout>
+                </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+                
+                <RelativeLayout
+                    android:elevation="3dp"
+                    android:visibility="gone"
+                    android:id="@+id/relative_layout_load_more"
+                    android:gravity="center"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentBottom="true"
+                    android:background="@drawable/bg_search"
+                    android:layout_marginBottom="10dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp">
+                    <ProgressBar
+                        style="?android:attr/progressBarStyleLarge"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp" />
+                </RelativeLayout>
+            </RelativeLayout>
+            
+        </RelativeLayout>
+    </RelativeLayout>
+    
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/linear_layout_ads"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </LinearLayout>
+</RelativeLayout>

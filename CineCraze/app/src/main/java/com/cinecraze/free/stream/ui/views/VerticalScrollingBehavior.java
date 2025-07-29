@@ -37,6 +37,7 @@ public abstract class VerticalScrollingBehavior<V extends View> extends Coordina
         int SCROLL_NONE = 0;
     }
 
+
     /*
        @return Overscroll direction: SCROLL_DIRECTION_UP, CROLL_DIRECTION_DOWN, SCROLL_NONE
    */
@@ -45,13 +46,16 @@ public abstract class VerticalScrollingBehavior<V extends View> extends Coordina
         return mOverScrollDirection;
     }
 
+
     /**
      * @return Scroll direction: SCROLL_DIRECTION_UP, SCROLL_DIRECTION_DOWN, SCROLL_NONE
      */
+
     @ScrollDirection
     public int getScrollDirection() {
         return mScrollDirection;
     }
+
 
     /**
      * @param coordinatorLayout
@@ -110,6 +114,7 @@ public abstract class VerticalScrollingBehavior<V extends View> extends Coordina
         onDirectionNestedPreScroll(coordinatorLayout, child, target, dx, dy, consumed, mScrollDirection);
     }
 
+
     @Override
     public boolean onNestedFling(CoordinatorLayout coordinatorLayout, V child, View target, float velocityX, float velocityY, boolean consumed) {
         super.onNestedFling(coordinatorLayout, child, target, velocityX, velocityY, consumed);
@@ -126,6 +131,7 @@ public abstract class VerticalScrollingBehavior<V extends View> extends Coordina
 
     @Override
     public WindowInsetsCompat onApplyWindowInsets(CoordinatorLayout coordinatorLayout, V child, WindowInsetsCompat insets) {
+
         return super.onApplyWindowInsets(coordinatorLayout, child, insets);
     }
 
@@ -133,4 +139,5 @@ public abstract class VerticalScrollingBehavior<V extends View> extends Coordina
     public Parcelable onSaveInstanceState(CoordinatorLayout parent, V child) {
         return super.onSaveInstanceState(parent, child);
     }
+
 }
