@@ -29,6 +29,12 @@
                 app:resize_mode="fit"
                 app:surface_type="texture_view" />
 
+            <WebView
+                android:id="@+id/webview_player"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:visibility="gone" />
+
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"

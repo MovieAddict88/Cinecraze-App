@@ -45,6 +45,9 @@ import java.util.UUID;
 import com.google.android.exoplayer2.drm.LocalMediaDrmCallback;
 import android.util.Log;
 import android.widget.Toast;
+import android.webkit.WebView;
+import android.webkit.WebSettings;
+import android.webkit.WebViewClient;
 
 public class DetailsActivity extends AppCompatActivity {
 
@@ -81,12 +84,22 @@ public class DetailsActivity extends AppCompatActivity {
     private SmartServerSpinner serverSpinner;
     private boolean isInFullscreen = false;
 
+    private WebView webViewPlayer;
+    private String fallbackUrl = null;
+    private String fallbackKid = null;
+    private String fallbackKey = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
         playerView = findViewById(R.id.player_view);
+        webViewPlayer = findViewById(R.id.webview_player);
+        // WebView setup
+        WebSettings webSettings = webViewPlayer.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webViewPlayer.setWebViewClient(new WebViewClient());
         title = findViewById(R.id.title);
         description = findViewById(R.id.description);
         relatedContentRecyclerView = findViewById(R.id.related_content_recycler_view);
@@ -248,6 +261,10 @@ public class DetailsActivity extends AppCompatActivity {
             public void onPlayerError(com.google.android.exoplayer2.PlaybackException error) {
                 Log.e("ExoPlayer", "Playback error: " + error.getMessage(), error);
                 Toast.makeText(DetailsActivity.this, "Playback error: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                // Fallback to WebView if we have a key and fallback info is set
+                if (fallbackUrl != null && fallbackKid != null && fallbackKey != null) {
+                    fallbackToWebViewPlayer(fallbackUrl, fallbackKid, fallbackKey);
+                }
             }
         });
 
@@ -329,6 +346,9 @@ public class DetailsActivity extends AppCompatActivity {
         if (servers != null && currentServerIndex < servers.size()) {
             Server server = servers.get(currentServerIndex);
             String videoUrl = server.getUrl();
+            fallbackUrl = null;
+            fallbackKid = null;
+            fallbackKey = null;
             if (videoUrl != null) {
                 if ((server.isDrmProtected() && server.getDrmKid() != null && server.getDrmKey() != null && videoUrl.endsWith(".mpd")) ||
                     (server.getLicense() != null && server.getLicense().contains(":") && videoUrl.endsWith(".mpd"))) {
@@ -347,34 +367,54 @@ public class DetailsActivity extends AppCompatActivity {
                             key = server.getDrmKey();
                         }
                         if (kid != null && key != null) {
+                            fallbackUrl = videoUrl;
+                            fallbackKid = kid;
+                            fallbackKey = key;
                             String kidB64 = android.util.Base64.encodeToString(hexStringToByteArray(kid), android.util.Base64.NO_WRAP);
                             String keyB64 = android.util.Base64.encodeToString(hexStringToByteArray(key), android.util.Base64.NO_WRAP);
                             String clearkeyJson = "{\"keys\":[{\"kty\":\"oct\",\"kid\":\"" + kidB64 + "\",\"k\":\"" + keyB64 + "\"}],\"type\":\"temporary\"}";
                             // Setup DRM session manager
-                            UUID drmSchemeUuid = C.CLEARKEY_UUID;
-                            LocalMediaDrmCallback drmCallback = new LocalMediaDrmCallback(clearkeyJson.getBytes());
-                            DefaultDrmSessionManager drmSessionManager = new DefaultDrmSessionManager.Builder()
-                                    .setUuidAndExoMediaDrmProvider(drmSchemeUuid, FrameworkMediaDrm.DEFAULT_PROVIDER)
+                            java.util.UUID drmSchemeUuid = com.google.android.exoplayer2.C.CLEARKEY_UUID;
+                            com.google.android.exoplayer2.drm.LocalMediaDrmCallback drmCallback = new com.google.android.exoplayer2.drm.LocalMediaDrmCallback(clearkeyJson.getBytes());
+                            com.google.android.exoplayer2.drm.DefaultDrmSessionManager drmSessionManager = new com.google.android.exoplayer2.drm.DefaultDrmSessionManager.Builder()
+                                    .setUuidAndExoMediaDrmProvider(drmSchemeUuid, com.google.android.exoplayer2.drm.FrameworkMediaDrm.DEFAULT_PROVIDER)
                                     .build(drmCallback);
-                            DashMediaSource.Factory dashFactory = new DashMediaSource.Factory(new DefaultHttpDataSource.Factory().setUserAgent(Util.getUserAgent(this, "CineCraze")));
+                            com.google.android.exoplayer2.source.dash.DashMediaSource.Factory dashFactory = new com.google.android.exoplayer2.source.dash.DashMediaSource.Factory(new com.google.android.exoplayer2.upstream.DefaultHttpDataSource.Factory().setUserAgent(com.google.android.exoplayer2.util.Util.getUserAgent(this, "CineCraze")));
                             dashFactory.setDrmSessionManagerProvider(mediaItem -> drmSessionManager);
-                            MediaItem dashMediaItem = MediaItem.fromUri(videoUrl);
-                            DashMediaSource dashMediaSource = dashFactory.createMediaSource(dashMediaItem);
+                            com.google.android.exoplayer2.MediaItem dashMediaItem = com.google.android.exoplayer2.MediaItem.fromUri(videoUrl);
+                            com.google.android.exoplayer2.source.dash.DashMediaSource dashMediaSource = dashFactory.createMediaSource(dashMediaItem);
+                            playerView.setVisibility(View.VISIBLE);
+                            webViewPlayer.setVisibility(View.GONE);
                             player.setMediaSource(dashMediaSource);
                             player.prepare();
                             player.play();
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
+                        // Fallback immediately if ExoPlayer setup fails
+                        if (kid != null && key != null) {
+                            fallbackToWebViewPlayer(videoUrl, kid, key);
+                        }
                     }
                 } else {
-                    MediaItem mediaItem = MediaItem.fromUri(videoUrl);
+                    playerView.setVisibility(View.VISIBLE);
+                    webViewPlayer.setVisibility(View.GONE);
+                    com.google.android.exoplayer2.MediaItem mediaItem = com.google.android.exoplayer2.MediaItem.fromUri(videoUrl);
                     player.setMediaItem(mediaItem);
                     player.prepare();
                     player.play();
                 }
             }
         }
+    }
+
+    private void fallbackToWebViewPlayer(String url, String kid, String key) {
+        playerView.setVisibility(View.GONE);
+        webViewPlayer.setVisibility(View.VISIBLE);
+        // Pass the URL, kid, and key as query params to the HTML asset
+        String htmlUrl = "file:///android_asset/shaka_player.html?url=" + android.net.Uri.encode(url)
+                + "&kid=" + kid + "&key=" + key;
+        webViewPlayer.loadUrl(htmlUrl);
     }
 
     // Helper to convert hex string to byte array

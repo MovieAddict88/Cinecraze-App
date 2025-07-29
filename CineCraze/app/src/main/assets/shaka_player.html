@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Shaka Player Fallback</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.compiled.js"></script>
+  <style>
+    html, body { height: 100%; margin: 0; background: #000; }
+    #video { width: 100vw; height: 100vh; background: #000; }
+  </style>
+</head>
+<body>
+  <video id="video" controls autoplay></video>
+  <script>
+    function getQueryParam(name) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name);
+    }
+    const manifestUri = getQueryParam('url');
+    const kid = getQueryParam('kid');
+    const key = getQueryParam('key');
+    async function initApp() {
+      const video = document.getElementById('video');
+      const player = new shaka.Player(video);
+      if (kid && key) {
+        const clearkeys = {};
+        // Convert KID to base64
+        function hexToBase64(hex) {
+          return btoa(hex.match(/.{1,2}/g).map(byte => String.fromCharCode(parseInt(byte, 16))).join(''));
+        }
+        clearkeys[hexToBase64(kid)] = hexToBase64(key);
+        player.configure({
+          drm: {
+            clearKeys: clearkeys
+          }
+        });
+      }
+      try {
+        await player.load(manifestUri);
+      } catch (e) {
+        video.style.display = 'none';
+        document.body.innerHTML += '<div style="color:white;text-align:center;margin-top:2em;">Playback Error: ' + e + '</div>';
+      }
+    }
+    document.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>
