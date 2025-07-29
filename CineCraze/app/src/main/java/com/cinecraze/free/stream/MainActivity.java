@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -229,49 +230,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupSearchToggle() {
         searchIcon.setOnClickListener(v -> showSearchBar());
-        
-        // Add long-press option to launch SearchActivity
-        searchIcon.setOnLongClickListener(v -> {
-            // Show a quick way to launch SearchActivity
-            if (searchBar != null && searchBar.getText().toString().trim().length() > 0) {
-                launchSearchActivity(searchBar.getText().toString().trim());
-            } else {
-                // Launch SearchActivity with empty query to let user type there
-                launchSearchActivity("");
-            }
-            return true;
-        });
-        
         closeSearchIcon.setOnClickListener(v -> hideSearchBar());
         
-        searchBar.addTextChangedListener(new android.text.TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String query = s.toString().trim();
-                if (query.length() > 2) {
-                    performSearch(query);
-                } else if (query.isEmpty()) {
-                    clearSearch();
-                }
-            }
-
-            @Override
-            public void afterTextChanged(android.text.Editable s) {}
-        });
+        // Remove inline search - search will only launch SearchActivity like the reference
         
-                // Handle search action when user presses enter - keep inline search OR launch SearchActivity
+                // Handle search action when user presses enter - launch SearchActivity like the reference
         searchBar.setOnEditorActionListener((v, actionId, event) -> {
             String query = searchBar.getText().toString().trim();
             if (query.length() > 0) {
-                // Option 1: Keep your existing inline search behavior
-                performSearch(query);
-                
-                // Option 2: Uncomment below to launch SearchActivity instead
-                // launchSearchActivity(query);
-                // hideSearchBar();
+                launchSearchActivity(query);
+                hideSearchBar();
             }
             return true;
         });
@@ -696,7 +664,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Menu handling removed to preserve existing toolbar functionality
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        
+        if (id == R.id.action_search) {
+            showSearchBar();
+            return true;
+        }
+        
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public void onBackPressed() {
