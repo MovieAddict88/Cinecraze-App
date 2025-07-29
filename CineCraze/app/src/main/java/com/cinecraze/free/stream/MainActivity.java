@@ -104,7 +104,6 @@ public class MainActivity extends AppCompatActivity {
 
     private SearchSuggestionAdapter searchSuggestionAdapter;
     private List<Entry> allEntries = new ArrayList<>(); // Store all entries for suggestions
-    private List<Entry> suggestionList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         searchBar = findViewById(R.id.search_bar);
 
         // Initialize search suggestion adapter after searchBar is initialized
-        searchSuggestionAdapter = new SearchSuggestionAdapter(this, suggestionList);
+        searchSuggestionAdapter = new SearchSuggestionAdapter(this, allEntries);
         searchBar.setAdapter(searchSuggestionAdapter);
         searchBar.setThreshold(1);
         
@@ -245,7 +244,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String query = s.toString().trim();
-                updateSearchSuggestions(query);
                 if (query.length() > 2) {
                     performSearch(query);
                 } else if (query.isEmpty()) {
@@ -438,16 +436,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateSearchSuggestions(String query) {
-        suggestionList.clear();
-        if (query.length() > 1) {
-            for (Entry entry : allEntries) {
-                if (entry.getTitle() != null && entry.getTitle().toLowerCase().contains(query.toLowerCase())) {
-                    suggestionList.add(entry);
-                    if (suggestionList.size() >= 10) break; // Limit suggestions
-                }
-            }
-        }
-        searchSuggestionAdapter.notifyDataSetChanged();
+        // This method is no longer needed as updateAllEntries handles suggestions
     }
 
     /**
@@ -467,6 +456,7 @@ public class MainActivity extends AppCompatActivity {
                 populateFilterSpinners(); // Populate filter spinners with data from cache
                 allEntries.clear(); // Clear previous entries
                 allEntries.addAll(entries); // Add all entries to the list for suggestions
+                searchSuggestionAdapter.updateAllEntries(allEntries);
             }
             
             @Override
