@@ -330,27 +330,40 @@ public class DetailsActivity extends AppCompatActivity {
             Server server = servers.get(currentServerIndex);
             String videoUrl = server.getUrl();
             if (videoUrl != null) {
-                if (server.isDrmProtected() && server.getDrmKid() != null && server.getDrmKey() != null && videoUrl.endsWith(".mpd")) {
+                if ((server.isDrmProtected() && server.getDrmKid() != null && server.getDrmKey() != null && videoUrl.endsWith(".mpd")) ||
+                    (server.getLicense() != null && server.getLicense().contains(":") && videoUrl.endsWith(".mpd"))) {
                     try {
-                        // Build clearkey JSON
-                        String kid = server.getDrmKid();
-                        String key = server.getDrmKey();
-                        String kidB64 = android.util.Base64.encodeToString(hexStringToByteArray(kid), android.util.Base64.NO_WRAP);
-                        String keyB64 = android.util.Base64.encodeToString(hexStringToByteArray(key), android.util.Base64.NO_WRAP);
-                        String clearkeyJson = "{\"keys\":[{\"kty\":\"oct\",\"kid\":\"" + kidB64 + "\",\"k\":\"" + keyB64 + "\"}],\"type\":\"temporary\"}";
-                        // Setup DRM session manager
-                        UUID drmSchemeUuid = C.CLEARKEY_UUID;
-                        LocalMediaDrmCallback drmCallback = new LocalMediaDrmCallback(clearkeyJson.getBytes());
-                        DefaultDrmSessionManager drmSessionManager = new DefaultDrmSessionManager.Builder()
-                                .setUuidAndExoMediaDrmProvider(drmSchemeUuid, FrameworkMediaDrm.DEFAULT_PROVIDER)
-                                .build(drmCallback);
-                        DashMediaSource.Factory dashFactory = new DashMediaSource.Factory(new DefaultHttpDataSource.Factory().setUserAgent(Util.getUserAgent(this, "CineCraze")));
-                        dashFactory.setDrmSessionManagerProvider(mediaItem -> drmSessionManager);
-                        MediaItem dashMediaItem = MediaItem.fromUri(videoUrl);
-                        DashMediaSource dashMediaSource = dashFactory.createMediaSource(dashMediaItem);
-                        player.setMediaSource(dashMediaSource);
-                        player.prepare();
-                        player.play();
+                        // Support both separate kid/key and combined license field
+                        String kid = null;
+                        String key = null;
+                        if (server.getLicense() != null && server.getLicense().contains(":")) {
+                            String[] parts = server.getLicense().split(":");
+                            if (parts.length == 2) {
+                                kid = parts[0];
+                                key = parts[1];
+                            }
+                        } else {
+                            kid = server.getDrmKid();
+                            key = server.getDrmKey();
+                        }
+                        if (kid != null && key != null) {
+                            String kidB64 = android.util.Base64.encodeToString(hexStringToByteArray(kid), android.util.Base64.NO_WRAP);
+                            String keyB64 = android.util.Base64.encodeToString(hexStringToByteArray(key), android.util.Base64.NO_WRAP);
+                            String clearkeyJson = "{\"keys\":[{\"kty\":\"oct\",\"kid\":\"" + kidB64 + "\",\"k\":\"" + keyB64 + "\"}],\"type\":\"temporary\"}";
+                            // Setup DRM session manager
+                            UUID drmSchemeUuid = C.CLEARKEY_UUID;
+                            LocalMediaDrmCallback drmCallback = new LocalMediaDrmCallback(clearkeyJson.getBytes());
+                            DefaultDrmSessionManager drmSessionManager = new DefaultDrmSessionManager.Builder()
+                                    .setUuidAndExoMediaDrmProvider(drmSchemeUuid, FrameworkMediaDrm.DEFAULT_PROVIDER)
+                                    .build(drmCallback);
+                            DashMediaSource.Factory dashFactory = new DashMediaSource.Factory(new DefaultHttpDataSource.Factory().setUserAgent(Util.getUserAgent(this, "CineCraze")));
+                            dashFactory.setDrmSessionManagerProvider(mediaItem -> drmSessionManager);
+                            MediaItem dashMediaItem = MediaItem.fromUri(videoUrl);
+                            DashMediaSource dashMediaSource = dashFactory.createMediaSource(dashMediaItem);
+                            player.setMediaSource(dashMediaSource);
+                            player.prepare();
+                            player.play();
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

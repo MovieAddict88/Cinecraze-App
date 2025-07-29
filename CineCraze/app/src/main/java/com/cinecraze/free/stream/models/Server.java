@@ -19,6 +19,9 @@ public class Server {
     @SerializedName("drm_key")
     private String drmKey;
 
+    @SerializedName("license")
+    private String license;
+
     public String getName() {
         return name;
     }
@@ -38,4 +41,6 @@ public class Server {
     public String getDrmKey() {
         return drmKey;
     }
+
+    public String getLicense() { return license; }
 }
