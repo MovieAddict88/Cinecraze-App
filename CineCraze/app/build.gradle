@@ -55,6 +55,9 @@ dependencies {
     // Bubble Navigation - same as working reference
     implementation 'com.gauravk.bubblenavigation:bubblenavigation:1.0.7'
     
+    // CircleImageView for navigation drawer header
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+    
     // ConstraintLayout support
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 }

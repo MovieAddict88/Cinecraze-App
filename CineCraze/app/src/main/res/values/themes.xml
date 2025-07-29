@@ -31,4 +31,9 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+    
+    <style name="NavigationView" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="android:textColorPrimary">@color/white_text</item>
+        <item name="android:textColorSecondary">@color/netflix_light_gray</item>
+    </style>
 </resources>

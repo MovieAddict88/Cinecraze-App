@@ -41,4 +41,8 @@
     <color name="purple">#9C27B0</color>
     <color name="orange">#FF9800</color>
     <color name="dark_gray">#333333</color>
+    
+    <!-- Navigation Drawer Colors -->
+    <color name="white_text">#FFFFFF</color>
+    <color name="transparent">#00000000</color>
 </resources>
