@@ -254,48 +254,56 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:bt_icon="@drawable/ic_home"
-            app:bt_iconHeight="20dp"
-            app:bt_iconWidth="20dp"
+            app:bt_iconHeight="24dp"
+            app:bt_iconWidth="24dp"
             app:bt_colorActive="@color/yellow"
             app:bt_colorInactive="@color/yellow"
             app:bt_shape="@drawable/bg_background_yellow"
-            app:bt_title="Home" />
+            app:bt_title="Home"
+            app:bt_titleColor="@android:color/black"
+            app:bt_titleSize="14sp" />
 
         <com.gauravk.bubblenavigation.BubbleToggleView
             android:id="@+id/nav_movies"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:bt_icon="@drawable/ic_movie"
-            app:bt_iconHeight="20dp"
-            app:bt_iconWidth="20dp"
+            app:bt_iconHeight="24dp"
+            app:bt_iconWidth="24dp"
             app:bt_colorActive="@color/red"
             app:bt_colorInactive="@color/red"
             app:bt_shape="@drawable/bg_background_red"
-            app:bt_title="Movies" />
+            app:bt_title="Movies"
+            app:bt_titleColor="@android:color/white"
+            app:bt_titleSize="14sp" />
 
         <com.gauravk.bubblenavigation.BubbleToggleView
             android:id="@+id/nav_series"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:bt_icon="@drawable/ic_series"
-            app:bt_iconHeight="20dp"
-            app:bt_iconWidth="20dp"
+            app:bt_iconHeight="24dp"
+            app:bt_iconWidth="24dp"
             app:bt_colorActive="@color/green"
             app:bt_colorInactive="@color/green"
             app:bt_shape="@drawable/bg_background_green"
-            app:bt_title="Series" />
+            app:bt_title="Series"
+            app:bt_titleColor="@android:color/white"
+            app:bt_titleSize="14sp" />
 
         <com.gauravk.bubblenavigation.BubbleToggleView
             android:id="@+id/nav_live"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:bt_icon="@drawable/ic_live"
-            app:bt_iconHeight="20dp"
-            app:bt_iconWidth="20dp"
+            app:bt_iconHeight="24dp"
+            app:bt_iconWidth="24dp"
             app:bt_colorActive="@color/purple"
             app:bt_colorInactive="@color/purple"
             app:bt_shape="@drawable/bg_background_purple"
-            app:bt_title="Live" />
+            app:bt_title="Live"
+            app:bt_titleColor="@android:color/white"
+            app:bt_titleSize="14sp" />
 
         </com.gauravk.bubblenavigation.BubbleNavigationConstraintView>
     </LinearLayout>
