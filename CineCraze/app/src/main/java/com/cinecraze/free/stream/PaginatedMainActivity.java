@@ -87,7 +87,7 @@ public class PaginatedMainActivity extends AppCompatActivity implements Paginate
         carouselViewPager = findViewById(R.id.carousel_view_pager);
         gridViewIcon = findViewById(R.id.grid_view_icon);
         listViewIcon = findViewById(R.id.list_view_icon);
-        bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView = (BubbleNavigationConstraintView) findViewById(R.id.bottom_navigation);
         searchIcon = findViewById(R.id.search_icon);
         closeSearchIcon = findViewById(R.id.close_search_icon);
         titleLayout = findViewById(R.id.title_layout);
@@ -126,10 +126,10 @@ public class PaginatedMainActivity extends AppCompatActivity implements Paginate
 
     private void setupBottomNavigation() {
         // Add navigation items programmatically
-        bottomNavigationView.addBubbleNavigationItem("Home", R.drawable.ic_home, 0);
-        bottomNavigationView.addBubbleNavigationItem("Movies", R.drawable.ic_movie, 1);
-        bottomNavigationView.addBubbleNavigationItem("Series", R.drawable.ic_series, 2);
-        bottomNavigationView.addBubbleNavigationItem("Live", R.drawable.ic_live, 3);
+        bottomNavigationView.addBubbleNavigationItem("Home", R.drawable.ic_home);
+        bottomNavigationView.addBubbleNavigationItem("Movies", R.drawable.ic_movie);
+        bottomNavigationView.addBubbleNavigationItem("Series", R.drawable.ic_series);
+        bottomNavigationView.addBubbleNavigationItem("Live", R.drawable.ic_live);
         
         bottomNavigationView.setNavigationChangeListener((view, position) -> {
             // Handle navigation item selection

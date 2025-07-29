@@ -57,7 +57,7 @@ public class MainActivitySimple extends AppCompatActivity {
             carouselViewPager = findViewById(R.id.carousel_view_pager);
             gridViewIcon = findViewById(R.id.grid_view_icon);
             listViewIcon = findViewById(R.id.list_view_icon);
-            bottomNavigationView = findViewById(R.id.bottom_navigation);
+            bottomNavigationView = (BubbleNavigationConstraintView) findViewById(R.id.bottom_navigation);
             
             setupRecyclerView();
             setupCarousel();
@@ -91,10 +91,10 @@ public class MainActivitySimple extends AppCompatActivity {
 
     private void setupBottomNavigation() {
         // Add navigation items programmatically
-        bottomNavigationView.addBubbleNavigationItem("Home", R.drawable.ic_home, 0);
-        bottomNavigationView.addBubbleNavigationItem("Movies", R.drawable.ic_movie, 1);
-        bottomNavigationView.addBubbleNavigationItem("Series", R.drawable.ic_series, 2);
-        bottomNavigationView.addBubbleNavigationItem("Live", R.drawable.ic_live, 3);
+        bottomNavigationView.addBubbleNavigationItem("Home", R.drawable.ic_home);
+        bottomNavigationView.addBubbleNavigationItem("Movies", R.drawable.ic_movie);
+        bottomNavigationView.addBubbleNavigationItem("Series", R.drawable.ic_series);
+        bottomNavigationView.addBubbleNavigationItem("Live", R.drawable.ic_live);
         
         bottomNavigationView.setNavigationChangeListener((view, position) -> {
             if (position == 0) {
