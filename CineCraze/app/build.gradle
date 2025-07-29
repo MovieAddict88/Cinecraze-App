@@ -52,12 +52,8 @@ dependencies {
     implementation 'androidx.room:room-runtime:2.6.1'
     annotationProcessor 'androidx.room:room-compiler:2.6.1'
     
-    // Bubble Navigation - original library
+    // Bubble Navigation - same as working reference
     implementation 'com.gauravk.bubblenavigation:bubblenavigation:1.0.7'
-    
-    // Support library for bubble navigation compatibility
-    implementation 'com.android.support:constraint-layout:1.1.3'
-    implementation 'com.android.support:appcompat-v7:28.0.0'
     
     // ConstraintLayout support
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
