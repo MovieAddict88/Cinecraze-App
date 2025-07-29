@@ -335,7 +335,9 @@ public class DetailsActivity extends AppCompatActivity {
                         // Build clearkey JSON
                         String kid = server.getDrmKid();
                         String key = server.getDrmKey();
-                        String clearkeyJson = "{\"keys\":[{\"kty\":\"oct\",\"kid\":\"" + kid + "\",\"k\":\"" + key + "\"}],\"type\":\"temporary\"}";
+                        String kidB64 = android.util.Base64.encodeToString(hexStringToByteArray(kid), android.util.Base64.NO_WRAP);
+                        String keyB64 = android.util.Base64.encodeToString(hexStringToByteArray(key), android.util.Base64.NO_WRAP);
+                        String clearkeyJson = "{\"keys\":[{\"kty\":\"oct\",\"kid\":\"" + kidB64 + "\",\"k\":\"" + keyB64 + "\"}],\"type\":\"temporary\"}";
                         // Setup DRM session manager
                         UUID drmSchemeUuid = C.CLEARKEY_UUID;
                         LocalMediaDrmCallback drmCallback = new LocalMediaDrmCallback(clearkeyJson.getBytes());
