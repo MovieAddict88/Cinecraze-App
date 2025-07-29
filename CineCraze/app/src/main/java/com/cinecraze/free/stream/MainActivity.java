@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout titleLayout;
     private LinearLayout searchLayout;
     private AutoCompleteTextView searchBar;
+    private SearchSuggestionAdapter searchSuggestionAdapter;
     
     // Pagination UI elements
     private LinearLayout paginationLayout;
@@ -144,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
         titleLayout = findViewById(R.id.title_layout);
         searchLayout = findViewById(R.id.search_layout);
         searchBar = findViewById(R.id.search_bar);
+        searchSuggestionAdapter = new SearchSuggestionAdapter(this, new ArrayList<>());
         
         // Initialize pagination UI elements
         paginationLayout = findViewById(R.id.pagination_layout);
@@ -228,19 +230,37 @@ public class MainActivity extends AppCompatActivity {
     private void setupSearchToggle() {
         searchIcon.setOnClickListener(v -> showSearchBar());
         closeSearchIcon.setOnClickListener(v -> hideSearchBar());
+
+        searchBar.setAdapter(searchSuggestionAdapter);
+        searchBar.setOnItemClickListener((parent, view, position, id) -> {
+            Entry selectedEntry = searchSuggestionAdapter.getItem(position);
+            if (selectedEntry != null) {
+                // Navigate to details activity or perform search
+                Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
+                intent.putExtra("entry", new Gson().toJson(selectedEntry));
+                startActivity(intent);
+            }
+        });
         
         searchBar.addTextChangedListener(new android.text.TextWatcher() {
+            private android.os.Handler handler = new android.os.Handler();
+            private Runnable runnable;
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String query = s.toString().trim();
-                if (query.length() > 2) {
-                    performSearch(query);
-                } else if (query.isEmpty()) {
-                    clearSearch();
-                }
+                handler.removeCallbacks(runnable);
+                runnable = () -> {
+                    String query = s.toString().trim();
+                    if (query.length() > 2) {
+                        performSearch(query);
+                    } else if (query.isEmpty()) {
+                        clearSearch();
+                    }
+                };
+                handler.postDelayed(runnable, 300); // 300ms delay
             }
 
             @Override
@@ -287,13 +307,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void performSearch(String query) {
         currentSearchQuery = query.trim();
-        currentPage = 0;
         loadSearchResults();
     }
 
     private void clearSearch() {
         currentSearchQuery = "";
-        currentPage = 0;
+        searchSuggestionAdapter.clear();
+        searchSuggestionAdapter.notifyDataSetChanged();
         loadPage();
     }
 
@@ -526,18 +546,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadSearchResults() {
-        dataRepository.searchPaginated(currentSearchQuery, currentPage, pageSize, new DataRepository.PaginatedDataCallback() {
+        dataRepository.searchPaginated(currentSearchQuery, 0, 10, new DataRepository.PaginatedDataCallback() {
             @Override
             public void onSuccess(List<Entry> entries, boolean hasMorePages, int totalCount) {
-                findViewById(R.id.progress_bar).setVisibility(View.GONE);
-                updatePageData(entries, hasMorePages, totalCount);
-                Log.d("MainActivity", "Search '" + currentSearchQuery + "' page " + currentPage + ": " + entries.size() + " results");
+                searchSuggestionAdapter.clear();
+                searchSuggestionAdapter.addAll(entries);
+                searchSuggestionAdapter.notifyDataSetChanged();
             }
             
             @Override
             public void onError(String error) {
-                findViewById(R.id.progress_bar).setVisibility(View.GONE);
-                handlePageLoadError(error);
+                // Handle error
             }
         });
     }
