@@ -57,9 +57,18 @@ public class SearchActivity extends AppCompatActivity {
             this.query = bundle.getString("query");
         }
         
+        // Handle empty query case
+        if (query == null || query.trim().isEmpty()) {
+            query = "";
+        }
+        
         Toolbar toolbar = findViewById(R.id.toolbar);
-        if (toolbar != null && query != null) {
-            toolbar.setTitle(query);
+        if (toolbar != null) {
+            if (query.isEmpty()) {
+                toolbar.setTitle("Search");
+            } else {
+                toolbar.setTitle(query);
+            }
             setSupportActionBar(toolbar);
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);

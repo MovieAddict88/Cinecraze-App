@@ -4,15 +4,12 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.util.Log;
 
@@ -232,6 +229,19 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupSearchToggle() {
         searchIcon.setOnClickListener(v -> showSearchBar());
+        
+        // Add long-press option to launch SearchActivity
+        searchIcon.setOnLongClickListener(v -> {
+            // Show a quick way to launch SearchActivity
+            if (searchBar != null && searchBar.getText().toString().trim().length() > 0) {
+                launchSearchActivity(searchBar.getText().toString().trim());
+            } else {
+                // Launch SearchActivity with empty query to let user type there
+                launchSearchActivity("");
+            }
+            return true;
+        });
+        
         closeSearchIcon.setOnClickListener(v -> hideSearchBar());
         
         searchBar.addTextChangedListener(new android.text.TextWatcher() {
@@ -252,78 +262,22 @@ public class MainActivity extends AppCompatActivity {
             public void afterTextChanged(android.text.Editable s) {}
         });
         
-        // Handle search action when user presses enter
+                // Handle search action when user presses enter - keep inline search OR launch SearchActivity
         searchBar.setOnEditorActionListener((v, actionId, event) -> {
             String query = searchBar.getText().toString().trim();
             if (query.length() > 0) {
-                launchSearchActivity(query);
-                hideSearchBar();
+                // Option 1: Keep your existing inline search behavior
+                performSearch(query);
+                
+                // Option 2: Uncomment below to launch SearchActivity instead
+                // launchSearchActivity(query);
+                // hideSearchBar();
             }
             return true;
-                 });
+        });
     }
     
-    private void setupSearchOverlay() {
-        // Back button action
-        if (image_view_activity_actors_back != null) {
-            image_view_activity_actors_back.setOnClickListener(v -> {
-                hideSearchOverlay();
-            });
-        }
-        
-        // Close search button action
-        if (image_view_activity_home_close_search != null) {
-            image_view_activity_home_close_search.setOnClickListener(v -> {
-                if (edit_text_home_activity_search != null) {
-                    edit_text_home_activity_search.setText("");
-                }
-            });
-        }
-        
-        // Search button action
-        if (image_view_activity_home_search != null) {
-            image_view_activity_home_search.setOnClickListener(v -> {
-                if (edit_text_home_activity_search != null) {
-                    String query = edit_text_home_activity_search.getText().toString().trim();
-                    if (query.length() > 0) {
-                        launchSearchActivity(query);
-                        hideSearchOverlay();
-                    }
-                }
-            });
-        }
-        
-        // Handle search action when user presses enter in overlay
-        if (edit_text_home_activity_search != null) {
-            edit_text_home_activity_search.setOnEditorActionListener((v, actionId, event) -> {
-                String query = edit_text_home_activity_search.getText().toString().trim();
-                if (query.length() > 0) {
-                    launchSearchActivity(query);
-                    hideSearchOverlay();
-                }
-                return true;
-            });
-        }
-    }
-    
-    private void showSearchOverlay() {
-        if (relative_layout_home_activity_search_section != null) {
-            relative_layout_home_activity_search_section.setVisibility(View.VISIBLE);
-            if (edit_text_home_activity_search != null) {
-                edit_text_home_activity_search.requestFocus();
-            }
-        }
-    }
-    
-    private void hideSearchOverlay() {
-        if (relative_layout_home_activity_search_section != null) {
-            relative_layout_home_activity_search_section.setVisibility(View.GONE);
-            if (edit_text_home_activity_search != null) {
-                edit_text_home_activity_search.setText("");
-                edit_text_home_activity_search.clearFocus();
-            }
-        }
-    }
+
 
     private void showSearchBar() {
         try {
@@ -742,23 +696,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        
-        if (id == R.id.action_search) {
-            showSearchOverlay();
-            return true;
-        }
-        
-        return super.onOptionsItemSelected(item);
-    }
+    // Menu handling removed to preserve existing toolbar functionality
 
     @Override
     public void onBackPressed() {
