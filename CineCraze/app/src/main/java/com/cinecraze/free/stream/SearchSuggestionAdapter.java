@@ -29,6 +29,15 @@ public class SearchSuggestionAdapter extends ArrayAdapter<Entry> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+        return createSuggestionView(position, convertView, parent);
+    }
+
+    @Override
+    public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+        return createSuggestionView(position, convertView, parent);
+    }
+
+    private View createSuggestionView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View view = convertView;
         if (view == null) {
             view = inflater.inflate(resource, parent, false);
