@@ -694,46 +694,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here
         int id = item.getItemId();
         
-        switch (id) {
-            case R.id.nav_home:
-                // Already on home, just close drawer
-                break;
-            case R.id.my_profile:
-                Toast.makeText(this, "My Profile", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.my_password:
-                Toast.makeText(this, "Change Password", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.login:
-                Toast.makeText(this, "Login", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.my_list:
-                Toast.makeText(this, "My List", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.logout:
-                Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.nav_settings:
-                Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.buy_now:
-                Toast.makeText(this, "Subscribe", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.nav_rate:
-                Toast.makeText(this, "Rate App", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.nav_share:
-                Toast.makeText(this, "Share App", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.nav_help:
-                Toast.makeText(this, "Support", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.nav_policy:
-                Toast.makeText(this, "Privacy Policy", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.nav_exit:
-                finish();
-                break;
+        if (id == R.id.nav_home) {
+            // Already on home, just close drawer
+        } else if (id == R.id.my_profile) {
+            Toast.makeText(this, "My Profile", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.my_password) {
+            Toast.makeText(this, "Change Password", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.login) {
+            Toast.makeText(this, "Login", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.my_list) {
+            Toast.makeText(this, "My List", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.logout) {
+            Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.nav_settings) {
+            Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.buy_now) {
+            Toast.makeText(this, "Subscribe", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.nav_rate) {
+            Toast.makeText(this, "Rate App", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.nav_share) {
+            Toast.makeText(this, "Share App", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.nav_help) {
+            Toast.makeText(this, "Support", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.nav_policy) {
+            Toast.makeText(this, "Privacy Policy", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.nav_exit) {
+            finish();
         }
         
         // Close the navigation drawer
