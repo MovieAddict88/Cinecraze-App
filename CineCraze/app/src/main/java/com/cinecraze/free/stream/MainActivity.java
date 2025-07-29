@@ -714,15 +714,15 @@ public class MainActivity extends AppCompatActivity {
             floatingFilterPanel.setVisibility(View.GONE);
             floatingFilterButton.setVisibility(View.VISIBLE);
         });
-        // Example: populate genre/order spinners (replace with real data)
+        // Populate genres from real data
         List<String> genres = new ArrayList<>();
         genres.add("All Genres");
-        genres.add("Action");
-        genres.add("Comedy");
-        genres.add("Drama");
+        List<String> realGenres = dataRepository.getUniqueGenres();
+        genres.addAll(realGenres);
         ArrayAdapter<String> genreAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, genres);
         genreAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerFloatingFilterGenre.setAdapter(genreAdapter);
+        // Order options
         List<String> orders = new ArrayList<>();
         orders.add("Newest");
         orders.add("Top Rated");
@@ -733,7 +733,13 @@ public class MainActivity extends AppCompatActivity {
         spinnerFloatingFilterGenre.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                // TODO: Apply genre filter logic here
+                if (position == 0) {
+                    currentGenreFilter = null;
+                } else {
+                    currentGenreFilter = genres.get(position);
+                }
+                currentPage = 0;
+                loadFilteredPage();
             }
             @Override
             public void onNothingSelected(android.widget.AdapterView<?> parent) {}
@@ -741,7 +747,9 @@ public class MainActivity extends AppCompatActivity {
         spinnerFloatingFilterOrder.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                // TODO: Apply order filter logic here
+                // For now, just reload the page; implement sorting if needed
+                currentPage = 0;
+                loadFilteredPage();
             }
             @Override
             public void onNothingSelected(android.widget.AdapterView<?> parent) {}
